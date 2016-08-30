@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="metam-4.2" basedir="." default="ptg_configure-eclipse" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  
+  <property environment="env"/>
+
+  <target name="input-fileprefix" unless="fileprefix">
+    <input message="Enter properties fileprefix :" addproperty="fileprefix"/>
+  </target>
+  
+  <target name="package" depends="input-fileprefix">
+    <artifact:mvn pom="pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <sysproperty key="db.name" value="oracle"/>
+      <sysproperty key="env" value="${fileprefix}"/>
+      <arg value="package"/>
+    </artifact:mvn>
+  </target>
+  
+  <!-- configure eclipse for project that pom.xml exists -->
+  <target name="configure-eclipse">
+    <artifact:mvn pom="pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <sysproperty key="eclipse.workspace" value="${env.DSSRC}"/>
+      <arg value="eclipse:configure-workspace"/>
+    </artifact:mvn>
+    <artifact:mvn pom="pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+     <arg value="eclipse:eclipse"/>
+    </artifact:mvn>
+  </target>
+  <!-- to configure manually project for eclipse : example for dspace-rdf
+    1. cd dspace-rdf
+    1. mv pom.xml.d pom.xml
+    2. mvn eclipse:eclipse
+    -->
+
+  <target name="configure-eclipse-old" depends="package">
+    <artifact:mvn pom="pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <sysproperty key="eclipse.workspace" value="${env.DSSRC}"/>
+      <arg value="eclipse:configure-workspace"/>
+    </artifact:mvn>
+    <artifact:mvn pom="pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+     <arg value="eclipse:eclipse"/>
+    </artifact:mvn>
+  </target>
+
+  <!-- public target -->
+  <target name="ptg-configure-eclipse">
+     <antcall>
+        <param name="fileprefix" value="ptg"/>
+        <target name="configure-eclipse"/>
+     </antcall>
+   </target>
+
+  <!-- public target -->
+  <target name="myhome-configure-eclipse">
+     <antcall>
+        <param name="fileprefix" value="myhome"/>
+        <target name="configure-eclipse"/>
+     </antcall>
+   </target>
+
+</project>

@@ -1,0 +1,31 @@
+<dataConfig>
+    <dataSource driver="oracle.jdbc.driver.OracleDriver" url="jdbc:oracle:thin:@//localhost:1521/xe" user="dspace" password="dspace" />
+    <document>
+        <entity name="search" query="
+            SELECT 
+                to_char(sysdate,'YYYY-MM-DD&#x0022;T&#x0022;HH24:MI:SS&#x0022;Z&#x0022;') last_indexed
+                , d.id resourceid
+                , '1001' resourcetype
+                , '1001-'||d.id uniqueid
+                , 'm'||d.topcommunity_id location
+                , d.topcommunity_id location_com
+                , '4-'||d.topcommunity_id location_community
+                , d.code_origine code_origine
+            from t_codeorigine d
+        ">
+            <field name="SolrIndexer.lastIndexed" column="LAST_INDEXED" />
+            <field name="search.uniqueid" column="UNIQUEID" />
+            <field name="search.resourceid" column="RESOURCEID" />
+            <field name="search.resourcetype" column="RESOURCETYPE" />
+            <field name="location" column="LOCATION" />
+            <field name="location.comm" column="LOCATION_COM" />
+            <field name="location.community" column="LOCATION_COMMUNITY" />
+            <field name="code_origine" column="CODE_ORIGINE" />
+            <field name="code_origine_sort" column="CODE_ORIGINE" />
+            <field name="code_origine_partial" column="CODE_ORIGINE" />
+            <field name="code_origine_keyword" column="CODE_ORIGINE" />
+            <field name="code_origine_contain" column="CODE_ORIGINE" />
+        </entity>
+    </document>
+</dataConfig>
+

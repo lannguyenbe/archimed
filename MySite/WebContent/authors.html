@@ -1,0 +1,229 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Authors</title>
+<link rel="stylesheet" href="css/authors.css" />
+
+<script src="js/simulationXhr.js"></script>
+<script>
+	var net = {
+		getXMLHTTPRequest: function () {
+			var xhr = null;
+			
+			try {
+				xhr = new XMLHttpRequest();
+			} catch (exception_IE) {
+				try {
+					xhr = new ActiveXObject("Msxml2.XMLHTTP");
+				} catch (other_exception_IE) {
+					try {
+						xhr = new ActiveXObject("Microsoft.XMLHTTP");
+					} catch (other) {
+						try {
+							xhr = window.createRequest();
+						} catch (fail) {
+							xhr = null;
+						}
+					}
+					
+				}
+			}
+			return xhr;
+		}
+	};
+
+
+	var app = {
+
+		// Properties			
+		 theTextBox: null
+		,objLastActive: null
+		,bMadeRequest: null
+		,strLastValue: null
+		,
+		// Methods
+		debug: function (msg) {
+			console.log("%s", msg);
+		},
+		initialize: function () {
+			var elemSpan = document.createElement("span");
+			elemSpan.id = "spanOutput";
+			elemSpan.className = "spanTextDropdown";
+			document.body.appendChild(elemSpan);
+			
+			document.adv_search_form.txtUserInput.obj = app.setProperties(
+					document.adv_search_form.txtUserInput
+					, document.adv_search_form.txtUserValue
+					, "http://localhost:8070/rs/service/authors/names" // TODO
+					, "name" // TODO
+					, true, true, true, true
+					, "No matching Data", false 
+					, null);
+		},
+		setProperties: function (xElem, xHidden, xServerCode, xServerElem, xIgnoreCase, xMatchAnyWhere
+				, xMatchTextBoxWidth // not use
+				, xShowNoMatchMessage, xNoMatchingDataMessage, xUseTimeout, xTheVisibleTime) {
+			var props = {
+					elem: xElem
+					, hidden: xHidden
+					, serverCode: xServerCode
+					, serverElem: xServerElem
+					, regexFlags: ((xIgnoreCase) ? "i" : "")
+					, regexAny: ((xMatchAnyWhere) ? "^" : "")
+					, matchAnyWhere: xMatchAnyWhere
+					, matchTextBoxWidth: xMatchTextBoxWidth
+					, showNoMatchMessage: xShowNoMatchMessage
+					, noMatchingDataMessage: xNoMatchingDataMessage
+					, useTimeout: xUseTimeout
+					, theVisibleTime: xTheVisibleTime
+			};
+
+			xElem.onkeyup = app.giveOptions;
+			xElem.onblur = function() {
+				if (xElem.obj.useTimeout) StartTimeout();
+			}
+
+			return props;
+		},
+		giveOptions: function(e) {
+			// this = target = the input_field
+			var ev = e ? e : window.event;
+			var target = ev.target ? ev.target : ev.srcElement;
+			var intKey = ev.keyCode;
+			app.theTextBox = target;
+
+			/*
+			if (target.obj.useTimeout) {
+				if (isTiming)
+					eraseTimeout();
+				startTimeout()
+			}
+			*/
+
+			if (target.value.length == 0) {
+				app.buildChoices(null, null); // TODO hide
+				return;
+			}
+
+			// TODO optimization
+			// 1. 
+			//
+			app.objLastActive = app.theTextBox;
+			app.bMadeRequest = true;
+
+			app.typeAhead(app.theTextBox.value, app.theTextBox.obj.serverCode, app.buildChoices);
+			
+			app.strLastValue = app.theTextBox.value;
+			
+		},
+		SAVE_typeAhead: function(s, uri, callback) {
+			var params = "?pt=" + encodeURIComponent(s);
+			var xhr = net.getXMLHTTPRequest();
+			if (xhr) {
+				xhr.open("GET", uri + params, true);
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState == 4 && xhr.status == 200) {
+						callback(s, xhr.responseText);
+					}
+				}
+				xhr.send();
+			}
+		},
+		typeAhead: function(s, uri, callback) {
+			callback(s, simulation.getResponse());
+		},
+		buildChoices: function(s, rawData) {
+			app.bMadeRequest = false;
+			
+			app.setElementPosition(app.theTextBox); //TODO theTextBox
+
+			var arrData = eval("(" + rawData + ")");
+			if (arrData.length > 0) {
+				var theMatches = app.makeMatches(s, arrData);
+				theMatches = theMatches.join().replace(/\,/gi,"");
+				if (theMatches.length > 0) {
+					document.getElementById("spanOutput").innerHTML = theMatches;
+					document.getElementById("spanOutput").firstChild.className = "spanHigh";
+					return;
+				}
+			}
+			document.getElementById("spanOutput").innerHTML = "<span>No match</span>";
+		},
+		setElementPosition: function(tBox) {
+			var posX = 0, posY = 0;
+			var obj = tBox;
+			while (obj) {
+				posX += obj.offsetLeft;
+				posY += obj.offsetTop;
+				obj = obj.offsetParent;
+			}
+
+			var spanContainer = document.getElementById("spanOutput");
+			spanContainer.style.left = posX;
+			spanContainer.style.top = posY + tBox.offsetHeight;
+			spanContainer.style.width = tBox.offsetWidth;
+			spanContainer.style.display = "block";
+			if (tBox.obj.useTimout) {
+				spanContainer.onmouseout = StartTimeout;
+				spanContainer.onmouseover = EraseTimout;
+			} else {
+				spanContainer.onmouseout = null;
+				spanContainer.onmouseover = null;
+			}
+		},
+		makeMatches: function(s, arrData) {
+			var matchArray = new Array();
+			for (var i=0, mi=0, len=arrData.length; i < len; i++) {
+				var elem = arrData[i];
+			// TODO regex filter by s
+				matchArray[mi] = app.createSpan(elem, s, i, mi);
+				mi++;
+			}
+			return matchArray;
+		},
+		createSpan: function(elem, s, i, mi) {
+			var spanStart = "<span style='width=100%;display:block;' class='spanNormal'"
+				+" onmouseout='app.setNormalColor(this);'"
+				+" onmouseover='app.setHightColor(this);'";
+			var spanEnd = "</span>";
+
+			var spanMid = " onclick='app.setText(this);'"
+				+ " id=OptionList_" + mi + " theArrayNumber='" + i + "'>";
+			// TODO hightlight
+			return (spanStart + spanMid + elem[app.theTextBox.obj.serverElem] + spanEnd);
+		},
+		setText: function(target) {
+			// this = app
+			console.log(target.textContent);
+			document.getElementById("spanOutput").style.display = "none";
+
+		},
+		setHightColor: function(target) {
+			// this = app
+			// TODO toggle to 'spanNormal' the whole spanContainer
+			target.className = 'spanHigh';
+		},
+		setNormalColor: function(target) {
+			// this = app
+			target.className = 'spanNormal';
+		}
+		
+			
+	};
+</script>
+</head>
+<body>
+	<h1>Recherche Auteur</h1>
+	<form name="adv_search_form">
+		<input class="input_field" placeholder="Tapez quelques car ..."
+			type="text" name="txtUserInput" oninput="app.debug('debug 100');">
+		<input id="hidden1" type="hidden" name="textUserValue" />
+		<input type="text" name="txtIgnore" style="display:none" />
+	</form>
+	<script>
+            app.initialize();
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd">
+ 
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+   <Set name="contextPath">/xmlui</Set>
+   <!-- <Set name="war">/home/lan/.m2/repository/org/dspace/modules/xmlui/4.2/xmlui-4.2.war</Set> -->
+   <!-- Following is unpack dir where the war was build from -->
+   <Set name="war"><SystemProperty name="dspace.src"/>/dspace/modules/xmlui/target/xmlui-4.2</Set>
+   <!-- NOOK <Set name="war"><SystemProperty name="dspace.src"/>/dspace/dspace-xmlui/target/dspace-xmlui-4.2</Set> -->
+   <Set name="overrideDescriptor">./webapps/devdd.d/override-web.xml</Set>
+</Configure>

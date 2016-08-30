@@ -1,0 +1,4 @@
+java -Xmx512m -Xms256m -XX:MaxPermSize=512m \
+  -Ddspace.dir=$DS \
+  -Ddspace.src=$DSSRC \
+  -DSTOP.PORT=8170 -DSTOP.KEY=1234 -jar $JETTY_HOME/start.jar

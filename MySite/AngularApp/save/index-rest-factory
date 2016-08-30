@@ -1,0 +1,56 @@
+<!doctype html>
+<html ng-app="typaApp">
+<head>
+  <meta charset="utf-8">
+  <title>Type Ahead</title>
+  <script src="angular/1.3.10/angular.js"></script>
+  <script src="angular/1.3.10/angular-resource.js"></script>
+  <script>
+    var app = angular.module('typaApp', ['ngResource']);
+    //
+    // App
+    app.run(['$rootScope', function($rootScope) { 
+      $rootScope.endPoint = 'http://localhost:8070/rs/service'
+//      $rootScope.endPoint = ''
+      $rootScope.resources = {
+         authors: '/authors/names'
+//        authors: 'authors.json'
+        ,series: '/communities/titles'
+      };
+    }]);
+    // 
+    // Factory REST
+    app.factory('authors', ['$resource', '$rootScope', function($resource, $rootScope) {
+      var factory = {};
+
+      // factory is $resource object
+      factory = $resource (
+        $rootScope.endPoint + $rootScope.resources.authors
+//        , {} // paramDefaults
+//        , {} // actions
+      );
+      return factory;
+    }]);
+    //
+    // Controller
+    app.controller('TypaController', ['$scope', 'authors', function($scope, authors) {
+      function init() {
+        $scope.getAuthors();
+      }
+
+      $scope.getAuthors = function() {
+        $scope.authorsList = authors.query();
+      };
+
+      init();
+    }]);
+  </script>
+</head>
+<body ng-controller="TypaController">
+  <input type="text" ng-model="query"/>
+  <ul>
+    <li ng-repeat="author in authorsList | filter:query">{{author.name}}</li>
+  </ul>
+  <br/>
+</body>
+</html>

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="lantest-scope.xsl"?>
+<list xmlns="http://lantest" xmlns:i18n="http://i18n"
+   id="aspect.discovery.SimpleSearch.list.primary-search" type="form" n="primary-search">
+<item>
+<field id="aspect.discovery.SimpleSearch.field.scope" type="select" n="scope">
+<params/>
+<label>Search</label>
+<option returnValue="/">
+<i18n:text catalogue="default">xmlui.ArtifactBrowser.AbstractSearch.all_of_dspa</i18n:text>
+</option>
+<option returnValue="123456789/5504">Sonuma TV</option>
+<option returnValue="123456789/2">Tramontane Radio</option>
+<option returnValue="123456789/4547">Tramontane TV</option>
+<option returnValue="123456789/159299">Tramontane TV 2</option>
+<value type="option" option="/"/>
+</field>
+</item>
+<item>
+<field id="aspect.discovery.SimpleSearch.field.query" type="text" n="query">
+<params/>
+<value type="raw">homme terre</value>
+</field>
+<field id="aspect.discovery.SimpleSearch.field.submit" type="button" rend="search-icon" n="submit">
+<params/>
+<value type="raw">Go</value>
+</field>
+</item>
+
+</list>

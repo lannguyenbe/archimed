@@ -1,0 +1,35 @@
+<!doctype html>
+<html ng-app="demo">
+<head>
+  <meta charset="utf-8">
+  <titleui-typeahead</title>
+  <link rel="stylesheet" type="text/css" href="css/typa.css" />
+  <link rel="stylesheet" type="text/css" href="bootstrap/3.3.4/css/bootstrap.css" />
+  <script src="angular/1.3.10/angular.js"></script>
+  <script src="angular/1.3.10/angular-resource.js"></script>
+  <script src="ui-bootstrap/ui-bootstrap-typeahead-tpls-0.12.1.js"></script>
+  <script>
+  angular.module('demo', ['ui.bootstrap'])
+    .controller('TypeaheadCtrl', function($scope, $http) {
+
+      $scope.selected = undefined;
+      $scope.states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Dakota', 'North Carolina', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
+    });
+  </script>
+
+</head>
+<body>
+<script type="text/ng-template" id="customTemplate.html">
+  <a>
+      <img ng-src="http://upload.wikimedia.org/wikipedia/commons/thumb/{{match.model.flag}}" width="16">
+      <span bind-html-unsafe="match.label | typeaheadHighlight:query"></span>
+  </a>
+</script>
+<div class="container-fluid" ng-controller="TypeaheadCtrl">
+  <h4>Static arrays</h4>
+  <pre>Model: {{selected}}</pre>
+  <input type="text" class="form-control" ng-model="selected" typeahead="state for state in states | filter:$viewValue | limitTo:8">
+  <div ng-include="'template/typeahead/typeahead-popup.html'"></div>
+</div>  
+</body>
+</html>

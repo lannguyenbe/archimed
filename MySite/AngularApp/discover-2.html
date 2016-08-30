@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+            <!--[if lt IE 7]> <html ng-app="discoverApp" class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+            <!--[if IE 7]>    <html ng-app="discoverApp" class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+            <!--[if IE 8]>    <html ng-app="discoverApp" class="no-js lt-ie9" lang="en"> <![endif]-->
+            <!--[if gt IE 8]><!--> <html ng-app="discoverApp" class="no-js" lang="en"> <!--<![endif]-->
+            <head><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta content="width=device-width,initial-scale=1" name="viewport">
+<link rel="shortcut icon" href="/xmlui/themes/Mirage2/images/favicon.ico">
+<link rel="apple-touch-icon" href="/xmlui/themes/Mirage2/images/apple-touch-icon.png">
+<meta name="Generator" content="DSpace 5.0">
+<link href="/xmlui/themes/Mirage2/styles/typa.css" rel="stylesheet">
+<link href="/xmlui/themes/Mirage2/styles/main.css" rel="stylesheet">
+<link type="application/opensearchdescription+xml" rel="search" href="http://localhost:8070/xmlui/description.xml" title="DSpace">
+<script>
+                //Clear default text of emty text areas on focus
+                function tFocus(element)
+                {
+                if (element.value == ' '){element.value='';}
+                }
+                //Clear default text of emty text areas on submit
+                function tSubmit(form)
+                {
+                var defaultedElements = document.getElementsByTagName("textarea");
+                for (var i=0; i != defaultedElements.length; i++){
+                if (defaultedElements[i].value == ' '){
+                defaultedElements[i].value='';}}
+                }
+                //Disable pressing 'enter' key to submit a form (otherwise pressing 'enter' causes a submission to start over)
+                function disableEnterKey(e)
+                {
+                var key;
+
+                if(window.event)
+                key = window.event.keyCode;     //Internet Explorer
+                else
+                key = e.which;     //Firefox and Netscape
+
+                if(key == 13)  //if "Enter" pressed, then disable!
+                return false;
+                else
+                return true;
+                }
+            </script><!--[if lt IE 9]>
+                <script src="/xmlui/themes/Mirage2/vendor/html5shiv/dist/html5shiv.js"> </script>
+                <script src="/xmlui/themes/Mirage2/vendor/respond/respond.min.js"> </script>
+                <![endif]--><script src="/xmlui/themes/Mirage2/vendor/modernizr/modernizr.js"> </script>
+<title>Search</title>
+</head><body>
+<header>
+<div role="navigation" class="navbar navbar-default navbar-static-top">
+<div class="container">
+<div class="navbar-header">
+<button data-toggle="offcanvas" class="navbar-toggle" type="button"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a class="navbar-brand" href="/xmlui/"><img src="/xmlui/themes/Mirage2/images/DSpace-logo-line.svg"></a>
+<div class="navbar-header pull-right visible-xs hidden-sm hidden-md hidden-lg">
+<ul class="nav nav-pills pull-left ">
+<li>
+<form method="get" action="/xmlui/login" style="display: inline">
+<button class="navbar-toggle navbar-link"><b aria-hidden="true" class="visible-xs glyphicon glyphicon-user"></b></button>
+</form>
+</li>
+</ul>
+</div>
+</div>
+<div class="navbar-header pull-right hidden-xs">
+<ul class="nav navbar-nav pull-left"></ul>
+<ul class="nav navbar-nav pull-left">
+<li>
+<a href="/xmlui/login"><span class="hidden-xs">Login</span></a>
+</li>
+</ul>
+<button type="button" class="navbar-toggle visible-sm" data-toggle="offcanvas"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+</div>
+</div>
+</div>
+</header>
+<div class="trail-wrapper hidden-print">
+<div class="container">
+<div class="row">
+<div class="col-xs-12">
+<div class="breadcrumb dropdown visible-xs">
+<a data-toggle="dropdown" class="dropdown-toggle" role="button" href="#" id="trail-dropdown-toggle">Search&nbsp;<b class="caret"></b></a>
+<ul aria-labelledby="trail-dropdown-toggle" role="menu" class="dropdown-menu">
+<li role="presentation">
+<a role="menuitem" href="/xmlui/"><i aria-hidden="true" class="glyphicon glyphicon-home"></i>&nbsp;
+                        DSpace Home</a>
+</li>
+<li role="presentation" class="disabled">
+<a href="#" role="menuitem">Search</a>
+</li>
+</ul>
+</div>
+<ul class="breadcrumb hidden-xs">
+<li>
+<i aria-hidden="true" class="glyphicon glyphicon-home"></i>&nbsp;
+            <a href="/xmlui/">DSpace Home</a>
+</li>
+<li class="active">Search</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="hidden" id="no-js-warning-wrapper">
+<div id="no-js-warning">
+<div class="notice failure">JavaScript is disabled for your browser. Some features of this site may not work without it.</div>
+</div>
+</div>
+<div class="container" id="main-container">
+<div class="row row-offcanvas row-offcanvas-right">
+<div class="horizontal-slider clearfix">
+<div class="col-xs-12 col-sm-12 col-md-9 main-content">
+<div>
+<h2 class="ds-div-head page-header first-page-header">Search</h2>
+<div id="aspect_discovery_SimpleSearch_div_search" class="ds-static-div primary">
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_discovery-json-search-url" class="ds-hidden-field form-control" name="discovery-json-search-url" type="hidden" value="http://localhost:8070/xmlui/JSON/discovery/search">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_contextpath" class="ds-hidden-field form-control" name="contextpath" type="hidden" value="/xmlui">
+</p>
+<div id="aspect_discovery_SimpleSearch_div_discovery-search-box" class="ds-static-div discoverySearchBox" ng-controller="SearchBoxController">
+<form id="aspect_discovery_SimpleSearch_div_general-query" class="ds-interactive-div discover-search-box" action="discover" method="get" onsubmit="javascript:tSubmit(this);">
+<fieldset id="aspect_discovery_SimpleSearch_list_primary-search" class="ds-form-list">
+<script type="text/javascript">
+                      if (!window.DSpace) {
+                          window.DSpace = {};
+                      }
+                      if (!window.DSpace.i18n) {
+                          window.DSpace.i18n = {};
+                      }
+                      if (!window.DSpace.i18n.discovery) {
+                          window.DSpace.i18n.discovery = {};
+                      }
+                      if (!window.DSpace.i18n.discovery.scope) {
+                          window.DSpace.i18n.discovery.scope = [];
+                      }
+                      
+                      window.DSpace.i18n.discovery.scope.push({
+                          id:'\/',
+                          label:'All of DSpace'
+                      });
+                      window.DSpace.i18n.discovery.scope.push({
+                          id:'123456789\/5504',
+                          label:'Sonuma TV'
+                      });
+                      window.DSpace.i18n.discovery.scope.push({
+                          id:'123456789\/2',
+                          label:'Tramontane Radio'
+                      });
+                      window.DSpace.i18n.discovery.scope.push({
+                          id:'123456789\/4547',
+                          label:'Tramontane TV'
+                      });
+                      window.DSpace.i18n.discovery.scope.push({
+                          id:'123456789\/159299',
+                          label:'Tramontane TV 2'
+                      });
+                      if (!window.DSpace.discovery) {
+                          window.DSpace.discovery = {};
+                      }
+                      if (!window.DSpace.discovery.query) {
+                          window.DSpace.discovery.query = [];
+                      }
+                      window.DSpace.discovery.query.push({
+                          scope: '\/',
+                          query: 'homme terre'
+                      });
+                 </script>
+<div class="ds-form-item row" ng-include="'template/handlebars/primary_query.html'"></div>
+<div class="row">
+<div id="filters-overview-wrapper-squared" class="col-sm-offset-3 col-sm-9">
+<div ng-include="'template/handlebars/hbs_simple_filters.html'" id="filters-overview-wrapper"></div>
+</div>
+</div>
+</fieldset>
+<p ng-include="'template/handlebars/hidden_advanced_filters.html'" class="ds-paragraph"></p>
+</form>
+<form id="aspect_discovery_SimpleSearch_div_search-filters" class="ds-interactive-div discover-filters-box " action="discover" method="get" onsubmit="javascript:tSubmit(this);">
+<div class="ds-static-div clearfix">
+<p class="ds-paragraph pull-right">
+<a href="#" class="show-advanced-filters">Show Advanced Filters</a><a href="#" class="hide-advanced-filters hidden">Hide Advanced Filters</a>
+</p>
+</div>
+<h3 class="ds-div-head discovery-filters-wrapper-head hidden">Filters</h3>
+<div id="aspect_discovery_SimpleSearch_div_discovery-filters-wrapper" class="ds-static-div  hidden">
+<p class="ds-paragraph">Use filters to refine the search results.</p>
+<script type="text/javascript">
+                if (!window.DSpace) {
+                    window.DSpace = {};
+                }
+                if (!window.DSpace.discovery) {
+                    window.DSpace.discovery = {};
+                }
+                if (!window.DSpace.discovery.filters) {
+                    window.DSpace.discovery.filters = [];
+                }
+            </script><script>
+            if (!window.DSpace.i18n) {
+                window.DSpace.i18n = {};
+            } 
+            if (!window.DSpace.i18n.discovery) {
+                window.DSpace.i18n.discovery = {};
+            }
+        
+                    if (!window.DSpace.i18n.discovery.filtertype) {
+                        window.DSpace.i18n.discovery.filtertype = {};
+                    }
+                window.DSpace.i18n.discovery.filtertype.identifier_attributor='Source';window.DSpace.i18n.discovery.filtertype.titlecom='Serie Title';window.DSpace.i18n.discovery.filtertype.author='Author';window.DSpace.i18n.discovery.filtertype.subject='Subject';window.DSpace.i18n.discovery.filtertype.dateIssued='Date issued';
+                    if (!window.DSpace.i18n.discovery.filter_relational_operator) {
+                        window.DSpace.i18n.discovery.filter_relational_operator = {};
+                    }
+                window.DSpace.i18n.discovery.filter_relational_operator.contains='Contains';window.DSpace.i18n.discovery.filter_relational_operator.equals='Equals';window.DSpace.i18n.discovery.filter_relational_operator.authority='ID';window.DSpace.i18n.discovery.filter_relational_operator.notcontains='Not Contains';window.DSpace.i18n.discovery.filter_relational_operator.notequals='Not Equals';window.DSpace.i18n.discovery.filter_relational_operator.notauthority='Not ID';</script>
+<div ng-include="'template/handlebars/hbs_advanced_filters.html'" id="new-filters-wrapper"></div>
+<div id="aspect_discovery_SimpleSearch_row_filter-controls" class="ds-form-item apply-filter">
+<div>
+<div class="">
+<p class="btn-group">
+<button id="aspect_discovery_SimpleSearch_field_submit_reset_filter" class="ds-button-field btn btn-default discovery-reset-filter-button discovery-reset-filter-button" ng-click="restoreOriginalFilters()" name="submit_reset_filter" type="button">Reset</button><button class="ds-button-field btn btn-default discovery-add-filter-button visible-xs discovery-add-filter-button visible-xs " ng-click="addFilter()" name="submit_add_filter" type="button">Add New Filter</button><button id="aspect_discovery_SimpleSearch_field_submit_apply_filter" class="ds-button-field btn btn-default discovery-apply-filter-button discovery-apply-filter-button" name="submit_apply_filter" type="submit">Apply</button>
+</p>
+</div>
+</div>
+</div>
+<p ng-include="'template/handlebars/hidden_primary_query.html'" class="ds-paragraph"></p>
+</div>
+</form>
+</div>
+<form id="aspect_discovery_SimpleSearch_div_main-form" class="ds-interactive-div " action="/xmlui/discover" method="post" onsubmit="javascript:tSubmit(this);">
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_search-result" class="ds-hidden-field form-control" name="search-result" type="hidden" value="true">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_query" class="ds-hidden-field form-control" name="query" type="hidden" value="homme terre">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_current-scope" class="ds-hidden-field form-control" name="current-scope" type="hidden" value="">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_filtertype_0" class="ds-hidden-field form-control" name="filtertype_0" type="hidden" value="author">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_filtertype_1" class="ds-hidden-field form-control" name="filtertype_1" type="hidden" value="author">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_filter_relational_operator_1" class="ds-hidden-field form-control" name="filter_relational_operator_1" type="hidden" value="contains">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_filter_relational_operator_0" class="ds-hidden-field form-control" name="filter_relational_operator_0" type="hidden" value="contains">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_filter_1" class="ds-hidden-field form-control" name="filter_1" type="hidden" value="hiel">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_filter_0" class="ds-hidden-field form-control" name="filter_0" type="hidden" value="pilate">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_rpp" class="ds-hidden-field form-control" name="rpp" type="hidden" value="10">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_sort_by" class="ds-hidden-field form-control" name="sort_by" type="hidden" value="score">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_discovery_SimpleSearch_field_order" class="ds-hidden-field form-control" name="order" type="hidden" value="desc">
+</p>
+</form>
+<div class="pagination-masked clearfix top">
+<div class="row">
+<div class="col-xs-9">
+<p class="pagination-info">Now showing items 1-10 of 11</p>
+</div>
+<div class="col-xs-3">
+<div class="btn-group discovery-sort-options-menu pull-right controls-gear-wrapper" id="aspect_discovery_SimpleSearch_div_search-controls-gear">
+<button data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span aria-hidden="true" class="glyphicon glyphicon-cog"></span></button>
+<ul role="menu" class="dropdown-menu">
+<li id="aspect_discovery_SimpleSearch_item_sort-head" class=" gear-head first dropdown-header">Sort Options:</li>
+<li id="aspect_discovery_SimpleSearch_item_relevance" class=" gear-option gear-option-selected">
+<a class="" href="sort_by=score&order=desc"><span class="glyphicon glyphicon-ok btn-xs active"></span>Relevance</a>
+</li>
+<li id="aspect_discovery_SimpleSearch_item_dc_title_sort" class=" gear-option">
+<a class="" href="sort_by=dc.title_sort&order=asc"><span class="glyphicon glyphicon-ok btn-xs invisible"></span>Title Asc</a>
+</li>
+<li id="aspect_discovery_SimpleSearch_item_dc_title_sort" class=" gear-option">
+<a class="" href="sort_by=dc.title_sort&order=desc"><span class="glyphicon glyphicon-ok btn-xs invisible"></span>Title Desc</a>
+</li>
+<li id="aspect_discovery_SimpleSearch_item_dc_date_issued_dt" class=" gear-option">
+<a class="" href="sort_by=dc.date.issued_dt&order=asc"><span class="glyphicon glyphicon-ok btn-xs invisible"></span>Issue Date Asc</a>
+</li>
+<li id="aspect_discovery_SimpleSearch_item_dc_date_issued_dt" class=" gear-option">
+<a class="" href="sort_by=dc.date.issued_dt&order=desc"><span class="glyphicon glyphicon-ok btn-xs invisible"></span>Issue Date Desc</a>
+</li>
+<li class="divider"></li>
+<li id="aspect_discovery_SimpleSearch_item_rpp-head" class=" gear-head dropdown-header">Results Per Page:</li>
+<li id="aspect_discovery_SimpleSearch_item_rpp-5" class=" gear-option">
+<a class="" href="rpp=5"><span class="glyphicon glyphicon-ok btn-xs invisible"></span>5</a>
+</li>
+<li id="aspect_discovery_SimpleSearch_item_rpp-10" class=" gear-option gear-option-selected">
+<a class="" href="rpp=10"><span class="glyphicon glyphicon-ok btn-xs active"></span>10</a>
+</li>
+<li id="aspect_discovery_SimpleSearch_item_rpp-20" class=" gear-option">
+<a class="" href="rpp=20"><span class="glyphicon glyphicon-ok btn-xs invisible"></span>20</a>
+</li>
+<li id="aspect_discovery_SimpleSearch_item_rpp-40" class=" gear-option">
+<a class="" href="rpp=40"><span class="glyphicon glyphicon-ok btn-xs invisible"></span>40</a>
+</li>
+<li id="aspect_discovery_SimpleSearch_item_rpp-60" class=" gear-option">
+<a class="" href="rpp=60"><span class="glyphicon glyphicon-ok btn-xs invisible"></span>60</a>
+</li>
+<li id="aspect_discovery_SimpleSearch_item_rpp-80" class=" gear-option">
+<a class="" href="rpp=80"><span class="glyphicon glyphicon-ok btn-xs invisible"></span>80</a>
+</li>
+<li id="aspect_discovery_SimpleSearch_item_rpp-100" class=" gear-option">
+<a class="" href="rpp=100"><span class="glyphicon glyphicon-ok btn-xs invisible"></span>100</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="aspect_discovery_SimpleSearch_div_search-results" class="ds-static-div primary">
+<div class="row ds-artifact-item ">
+<div class="col-sm-3 hidden-xs">
+<div class="thumbnail artifact-preview">
+<a href="/xmlui/handle/123456789/5233" class="image-link"><img alt="Thumbnail" data-src="holder.js/100%x80/text:No Thumbnail"></a>
+</div>
+</div>
+<div class="col-sm-9 artifact-description">
+<a href="/xmlui/handle/123456789/5233">
+<h4>Les pionniers de la transition : l'impact des <strong>humains</strong> sur l'environnement<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;rft_id=http%3A%2F%2Fhdl.handle.net%2F123456789%2F5233&amp;rfr_id=info%3Asid%2Fdspace.org%3Arepository&amp;rft.identifier[1]/dc:identifier=492351&amp;rft.identifier[1]@formatLabel=TV&amp;rft.isPartOf=ALORS+ON+CHANGE+ALORS+ON+CHANGE">&nbsp;</span>
+</h4>
+</a>
+<div class="artifact-info">
+<span class="author h4"><small><span>Hislaire Anne</span>; <span>Pilate Philippe</span>; <span>Salesse Isabelle</span>; <span>Hiel Lucie</span>; <span>Ruwet Andr&eacute;</span>; <span>Pilate Philippe</span></small></span> <span class="publisher-date h4"><small>(<span class="publisher">Tramontane TV</span>, <span class="date">2014-01-22</span>)</small></span>
+<div class="abstract">Andr&eacute; est journaliste et r&eacute;dacteur en chef du journal "Imagine demain le <strong>monde</strong>". Il essaie de conscientiser les gens sur l'impact des <strong>humains</strong> sur le <strong>monde</strong>....<br>
+</div>
+</div>
+</div>
+</div>
+<div class="row ds-artifact-item ">
+<div class="col-sm-3 hidden-xs">
+<div class="thumbnail artifact-preview">
+<a href="/xmlui/handle/123456789/5263" class="image-link"><img alt="Thumbnail" data-src="holder.js/100%x80/text:No Thumbnail"></a>
+</div>
+</div>
+<div class="col-sm-9 artifact-description">
+<a href="/xmlui/handle/123456789/5263">
+<h4>Vacances autrement : Jean-Fran&ccedil;ois<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;rft_id=http%3A%2F%2Fhdl.handle.net%2F123456789%2F5263&amp;rfr_id=info%3Asid%2Fdspace.org%3Arepository&amp;rft.identifier[1]/dc:identifier=514360&amp;rft.identifier[1]@formatLabel=TV&amp;rft.isPartOf=ALORS+ON+CHANGE+ALORS+ON+CHANGE">&nbsp;</span>
+</h4>
+</a>
+<div class="artifact-info">
+<span class="author h4"><small><span>Pilate Philippe</span>; <span>Hiel Lucie</span></small></span> <span class="publisher-date h4"><small>(<span class="publisher">Tramontane TV</span>, <span class="date">2014-09-20</span>)</small></span>
+<div class="abstract">Jean-Fran&ccedil;ois est architecte de formation mais s'est d&eacute;couvert une passion pour une forme de voyage centr&eacute; sur les relations <strong>humaines</strong>.  Et c'est ce qu'il propose &agrave; ses clients de partager, &agrave; travers le <strong>monde</strong> et ...en Belgique quand ils frappent...<br>
+</div>
+</div>
+</div>
+</div>
+<div class="row ds-artifact-item ">
+<div class="col-sm-3 hidden-xs">
+<div class="thumbnail artifact-preview">
+<a href="/xmlui/handle/123456789/5265" class="image-link"><img alt="Thumbnail" data-src="holder.js/100%x80/text:No Thumbnail"></a>
+</div>
+</div>
+<div class="col-sm-9 artifact-description">
+<a href="/xmlui/handle/123456789/5265">
+<h4>Vacances autrement : Fr&eacute;d&eacute;ric<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;rft_id=http%3A%2F%2Fhdl.handle.net%2F123456789%2F5265&amp;rfr_id=info%3Asid%2Fdspace.org%3Arepository&amp;rft.identifier[1]/dc:identifier=514358&amp;rft.identifier[1]@formatLabel=TV&amp;rft.isPartOf=ALORS+ON+CHANGE+ALORS+ON+CHANGE">&nbsp;</span>
+</h4>
+</a>
+<div class="artifact-info">
+<span class="author h4"><small><span>Pilate Philippe</span>; <span>Hiel Lucie</span></small></span> <span class="publisher-date h4"><small>(<span class="publisher">Tramontane TV</span>, <span class="date">2014-09-20</span>)</small></span>
+<div class="abstract">Pour Fr&eacute;d&eacute;ric, d&eacute;couvrir le <strong>monde</strong>, c'est sur 2 roues ou rien !  Il en est tellement convaincu qu'apr&egrave;s avoir emmen&eacute; ses amis aux 4 coins d'Europe, c'est sa fille de 5 ans, Cl&eacute;mentine, qu'il a initi&eacute;e, cet &eacute;t&eacute;, aux joies des vacances &agrave; v&eacute;lo....<br>
+</div>
+</div>
+</div>
+</div>
+<div class="row ds-artifact-item ">
+<div class="col-sm-3 hidden-xs">
+<div class="thumbnail artifact-preview">
+<a href="/xmlui/handle/123456789/5247" class="image-link"><img alt="Thumbnail" data-src="holder.js/100%x80/text:No Thumbnail"></a>
+</div>
+</div>
+<div class="col-sm-9 artifact-description">
+<a href="/xmlui/handle/123456789/5247">
+<h4>Changements de vie - &eacute;nergies renouvelables<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;rft_id=http%3A%2F%2Fhdl.handle.net%2F123456789%2F5247&amp;rfr_id=info%3Asid%2Fdspace.org%3Arepository&amp;rft.identifier[1]/dc:identifier=487906&amp;rft.identifier[1]@formatLabel=TV&amp;rft.isPartOf=ALORS+ON+CHANGE+ALORS+ON+CHANGE">&nbsp;</span>
+</h4>
+</a>
+<div class="artifact-info">
+<span class="author h4"><small><span>Hislaire Anne</span>; <span>Pilate Philippe</span>; <span>Pilate Philippe</span>; <span>Salesse Isabelle</span>; <span>Hiel Lucie</span>; <span>Hiel Lucie</span></small></span> <span class="publisher-date h4"><small>(<span class="publisher">Tramontane TV</span>, <span class="date">2013-12-11</span>)</small></span>
+<div class="abstract">Quant &agrave; Roger Bourgeois, ancien comptable chez Total et fra&icirc;chement pensionn&eacute;, il entame une nouvelle vie enti&egrave;rement tourn&eacute;e vers les &eacute;nergies renouvelables et le mouvement de la transition vers un <strong>monde</strong> sans p&eacute;trole....<br>
+</div>
+</div>
+</div>
+</div>
+<div class="row ds-artifact-item ">
+<div class="col-sm-3 hidden-xs">
+<div class="thumbnail artifact-preview">
+<a href="/xmlui/handle/123456789/5261" class="image-link"><img alt="Thumbnail" data-src="holder.js/100%x80/text:No Thumbnail"></a>
+</div>
+</div>
+<div class="col-sm-9 artifact-description">
+<a href="/xmlui/handle/123456789/5261">
+<h4>Philippeville : Les incroyables comestibles : potagers install&eacute;s dans la ville et gratuits<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;rft_id=http%3A%2F%2Fhdl.handle.net%2F123456789%2F5261&amp;rfr_id=info%3Asid%2Fdspace.org%3Arepository&amp;rft.identifier[1]/dc:identifier=479558&amp;rft.identifier[1]@formatLabel=TV&amp;rft.isPartOf=ALORS+ON+CHANGE+ALORS+ON+CHANGE">&nbsp;</span>
+</h4>
+</a>
+<div class="artifact-info">
+<span class="author h4"><small><span>Hislaire Anne</span>; <span>Pilate Philippe</span>; <span>Hiel Lucie</span>; <span>Hiel Lucie</span></small></span> <span class="publisher-date h4"><small>(<span class="publisher">Tramontane TV</span>, <span class="date">2013-09-20</span>)</small></span>
+<div class="abstract">Des bacs &agrave; l&eacute;gumes ont &eacute;t&eacute; install&eacute; dans la ville. Lorsque ceux-ci arrivent &agrave; maturit&eacute;, tout le <strong>monde</strong> peut se servir selon ses envies. Le tout est gratuit....<br>
+</div>
+</div>
+</div>
+</div>
+<div class="row ds-artifact-item ">
+<div class="col-sm-3 hidden-xs">
+<div class="thumbnail artifact-preview">
+<a href="/xmlui/handle/123456789/5262" class="image-link"><img alt="Thumbnail" data-src="holder.js/100%x80/text:No Thumbnail"></a>
+</div>
+</div>
+<div class="col-sm-9 artifact-description">
+<a href="/xmlui/handle/123456789/5262">
+<h4>Vacances autrement : Philippe<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;rft_id=http%3A%2F%2Fhdl.handle.net%2F123456789%2F5262&amp;rfr_id=info%3Asid%2Fdspace.org%3Arepository&amp;rft.identifier[1]/dc:identifier=514324&amp;rft.identifier[1]@formatLabel=TV&amp;rft.isPartOf=ALORS+ON+CHANGE+ALORS+ON+CHANGE">&nbsp;</span>
+</h4>
+</a>
+<div class="artifact-info">
+<span class="author h4"><small><span>Pilate Philippe</span>; <span>Hiel Lucie</span></small></span> <span class="publisher-date h4"><small>(<span class="publisher">Tramontane TV</span>, <span class="date">2014-09-20</span>)</small></span>
+<div class="abstract">C'est dans son <strong>domaine</strong> Saint Roch &agrave; Couvin que Philippe accueille des vacanciers pas comme les autres  En &eacute;change du gite et du couvert, il les met &agrave; contribution et les initie &agrave; la gestion durable qu'il fait de son patrimoine...<br>
+</div>
+</div>
+</div>
+</div>
+<div class="row ds-artifact-item ">
+<div class="col-sm-3 hidden-xs">
+<div class="thumbnail artifact-preview">
+<a href="/xmlui/handle/123456789/5246" class="image-link"><img alt="Thumbnail" data-src="holder.js/100%x80/text:No Thumbnail"></a>
+</div>
+</div>
+<div class="col-sm-9 artifact-description">
+<a href="/xmlui/handle/123456789/5246">
+<h4>Changements de vie - naissances<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;rft_id=http%3A%2F%2Fhdl.handle.net%2F123456789%2F5246&amp;rfr_id=info%3Asid%2Fdspace.org%3Arepository&amp;rft.identifier[1]/dc:identifier=487905&amp;rft.identifier[1]@formatLabel=TV&amp;rft.isPartOf=ALORS+ON+CHANGE+ALORS+ON+CHANGE">&nbsp;</span>
+</h4>
+</a>
+<div class="artifact-info">
+<span class="author h4"><small><span>Hislaire Anne</span>; <span>Pilate Philippe</span>; <span>Pilate Philippe</span>; <span>Salesse Isabelle</span>; <span>Hiel Lucie</span>; <span>Masson Anne</span></small></span> <span class="publisher-date h4"><small>(<span class="publisher">Tramontane TV</span>, <span class="date">2013-12-11</span>)</small></span>
+<div class="abstract">Pour Sophie, une premi&egrave;re grossesse <strong>mal</strong> v&eacute;cue sera l'occasion d'une r&eacute;flexion profonde pour accueillir autrement ses deuxi&egrave;me et troisi&egrave;me enfants....<br>
+</div>
+</div>
+</div>
+</div>
+<div class="row ds-artifact-item ">
+<div class="col-sm-3 hidden-xs">
+<div class="thumbnail artifact-preview">
+<a href="/xmlui/handle/123456789/5255" class="image-link"><img alt="Thumbnail" data-src="holder.js/100%x80/text:No Thumbnail"></a>
+</div>
+</div>
+<div class="col-sm-9 artifact-description">
+<a href="/xmlui/handle/123456789/5255">
+<h4>Place aux femmes : 3R, entreprise d'&eacute;conomie sociale<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;rft_id=http%3A%2F%2Fhdl.handle.net%2F123456789%2F5255&amp;rfr_id=info%3Asid%2Fdspace.org%3Arepository&amp;rft.identifier[1]/dc:identifier=494949&amp;rft.identifier[1]@formatLabel=TV&amp;rft.isPartOf=ALORS+ON+CHANGE+ALORS+ON+CHANGE">&nbsp;</span>
+</h4>
+</a>
+<div class="artifact-info">
+<span class="author h4"><small><span>Hislaire Anne</span>; <span>Pilate Philippe</span>; <span>Salesse Isabelle</span>; <span>Hiel Lucie</span></small></span> <span class="publisher-date h4"><small>(<span class="publisher">Tramontane TV</span>, <span class="date">2014-02-19</span>)</small></span>
+<div class="abstract"> dominante avant de travailler &agrave; la construction d'une autre &eacute;conomie. Elle est partie en stage &agrave; l'&eacute;tranger et a commenc&eacute; &agrave; travailler pour l'ASBL <strong>Terre</strong> au Br&eacute;sil avant de prendre la direction des 3R....<br>
+</div>
+</div>
+</div>
+</div>
+<div class="row ds-artifact-item ">
+<div class="col-sm-3 hidden-xs">
+<div class="thumbnail artifact-preview">
+<a href="/xmlui/handle/123456789/5232" class="image-link"><img alt="Thumbnail" data-src="holder.js/100%x80/text:No Thumbnail"></a>
+</div>
+</div>
+<div class="col-sm-9 artifact-description">
+<a href="/xmlui/handle/123456789/5232">
+<h4>Les pionniers de la transition : d&eacute;couverte des plantes sauvages et du savoir des anciens<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;rft_id=http%3A%2F%2Fhdl.handle.net%2F123456789%2F5232&amp;rfr_id=info%3Asid%2Fdspace.org%3Arepository&amp;rft.identifier[1]/dc:identifier=492328&amp;rft.identifier[1]@formatLabel=TV&amp;rft.isPartOf=ALORS+ON+CHANGE+ALORS+ON+CHANGE">&nbsp;</span>
+</h4>
+</a>
+<div class="artifact-info">
+<span class="author h4"><small><span>Hislaire Anne</span>; <span>Pilate Philippe</span>; <span>Salesse Isabelle</span>; <span>Hiel Lucie</span>; <span>Pilate Philippe</span></small></span> <span class="publisher-date h4"><small>(<span class="publisher">Tramontane TV</span>, <span class="date">2014-01-22</span>)</small></span>
+<div class="abstract">Nicole fait d&eacute;couvrir des plantes sauvages et leurs vertus &agrave; de petits groupes de <strong>personnes</strong>....<br>
+</div>
+</div>
+</div>
+</div>
+<div class="row ds-artifact-item ">
+<div class="col-sm-3 hidden-xs">
+<div class="thumbnail artifact-preview">
+<a href="/xmlui/handle/123456789/5236" class="image-link"><img alt="Thumbnail" data-src="holder.js/100%x80/text:No Thumbnail"></a>
+</div>
+</div>
+<div class="col-sm-9 artifact-description">
+<a href="/xmlui/handle/123456789/5236">
+<h4>Energies renouvelables : Dans le cochon, tout est bon... m&ecirc;me le lisier !<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;rft_id=http%3A%2F%2Fhdl.handle.net%2F123456789%2F5236&amp;rfr_id=info%3Asid%2Fdspace.org%3Arepository&amp;rft.identifier[1]/dc:identifier=475310&amp;rft.identifier[1]@formatLabel=TV&amp;rft.isPartOf=ALORS+ON+CHANGE+ALORS+ON+CHANGE">&nbsp;</span>
+</h4>
+</a>
+<div class="artifact-info">
+<span class="author h4"><small><span>Pilate Philippe</span>; <span>Pilate Philippe</span>; <span>Salesse Isabelle</span>; <span>Gasperoni Felice</span>; <span>Hiel Lucie</span></small></span> <span class="publisher-date h4"><small>(<span class="publisher">Tramontane TV</span>, <span class="date">2013-08-03</span>)</small></span>
+<div class="abstract">Rediffusion d'un reportage du 25/05/2013.
+La petite ville de S&atilde;o Gabriel est situ&eacute;e dans une r&eacute;gion du Br&eacute;sil appel&eacute;e Pantanal o&ugrave; la biodiversit&eacute; est reine. Il s'agit de la plus grande zone humide de la <strong>plan&egrave;te</strong>, et pour pr&eacute;server cet environnement...<br>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="pagination-masked clearfix bottom">
+<div class="centered-pagination">
+<ul class="pagination">
+<li class="disabled">
+<a class="previous-page-link" href="discover?rpp=10&etal=0&query=homme+terre&scope=/&group_by=none&page=0&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate">&laquo;</a>
+</li>
+<li class="active">
+<a href="discover?rpp=10&etal=0&query=homme+terre&scope=/&group_by=none&page=1&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate">1</a>
+</li>
+<li class="page-link page-link-offset-1">
+<a href="discover?rpp=10&etal=0&query=homme+terre&scope=/&group_by=none&page=2&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate">2</a>
+</li>
+<li>
+<a class="next-page-link" href="discover?rpp=10&etal=0&query=homme+terre&scope=/&group_by=none&page=2&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate">&raquo;</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="visible-xs visible-sm">
+<footer>
+<div class="row">
+<hr>
+<div class="col-xs-7 col-sm-8">
+<div>
+<a target="_blank" href="http://www.dspace.org/">DSpace software</a> copyright&nbsp;&copy;&nbsp;2002-2013&nbsp; <a target="_blank" href="http://www.duraspace.org/">Duraspace</a>
+</div>
+<div class="hidden-print">
+<a href="/xmlui/contact">Contact Us</a> | <a href="/xmlui/feedback">Send Feedback</a>
+</div>
+</div>
+<div class="col-xs-5 col-sm-4 hidden-print">
+<div class="pull-right">
+<span class="theme-by">Theme by&nbsp;</span>
+<br>
+<a href="http://atmire.com" target="_blank" title="@mire NV"><img src="/xmlui/themes/Mirage2/images/@mirelogo-small.png" alt="@mire NV"></a>
+</div>
+</div>
+</div>
+<a class="hidden" href="/xmlui/htmlmap">&nbsp;</a>
+<p>&nbsp;</p>
+</footer>
+</div>
+</div>
+<div role="navigation" id="sidebar" class="col-xs-6 col-sm-3 sidebar-offcanvas">
+<div class="word-break hidden-print" id="ds-options">
+<h2 class="ds-option-set-head  h6">Browse</h2>
+<div id="aspect_viewArtifacts_Navigation_list_browse" class="list-group">
+<a class="list-group-item active"><span class="h5 list-group-item-heading  h5">All of DSpace</span></a><a href="/xmlui/community-list" class="list-group-item ds-option">Communities &amp; Collections</a><a href="/xmlui/browse?type=dateissued" class="list-group-item ds-option">By Issue Date</a><a href="/xmlui/browse?type=author" class="list-group-item ds-option">Authors</a><a href="/xmlui/browse?type=titlecom" class="list-group-item ds-option">Serie Titles</a><a href="/xmlui/browse?type=subject" class="list-group-item ds-option">Subjects</a>
+</div>
+<h2 class="ds-option-set-head  h6">My Account</h2>
+<div id="aspect_viewArtifacts_Navigation_list_account" class="list-group">
+<a href="/xmlui/login" class="list-group-item ds-option">Login</a><a href="/xmlui/register" class="list-group-item ds-option">Register</a>
+</div>
+<div id="aspect_viewArtifacts_Navigation_list_context" class="list-group"></div>
+<div id="aspect_viewArtifacts_Navigation_list_administrative" class="list-group"></div>
+<h2 class="ds-option-set-head  h6">Discover</h2>
+<div id="aspect_discovery_Navigation_list_discovery" class="list-group">
+<a class="list-group-item active"><span class="h5 list-group-item-heading  h5">Source</span></a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=identifier_attributor&filter_relational_operator=equals&filter=Tramontane+TV" class="list-group-item ds-option">Tramontane TV (11)</a><a class="list-group-item active"><span class="h5 list-group-item-heading  h5">Author</span></a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=author&filter_relational_operator=equals&filter=Hiel+Lucie" class="list-group-item ds-option">Hiel Lucie (11)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=author&filter_relational_operator=equals&filter=Pilate+Philippe" class="list-group-item ds-option">Pilate Philippe (11)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=author&filter_relational_operator=equals&filter=Salesse+Isabelle" class="list-group-item ds-option">Salesse Isabelle (7)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=author&filter_relational_operator=equals&filter=Hislaire+Anne" class="list-group-item ds-option">Hislaire Anne (6)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=author&filter_relational_operator=equals&filter=Gasperoni+Felice" class="list-group-item ds-option">Gasperoni Felice (2)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=author&filter_relational_operator=equals&filter=Masson+Anne" class="list-group-item ds-option">Masson Anne (1)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=author&filter_relational_operator=equals&filter=Ruwet+Andr%C3%A9" class="list-group-item ds-option">Ruwet Andr&eacute; (1)</a><a class="list-group-item active"><span class="h5 list-group-item-heading  h5">Subject</span></a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=subject&filter_relational_operator=equals&filter=ECOLOGIE" class="list-group-item ds-option">ECOLOGIE (4)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=subject&filter_relational_operator=equals&filter=TOURISME" class="list-group-item ds-option">TOURISME (3)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=subject&filter_relational_operator=equals&filter=ESPACE+VERT" class="list-group-item ds-option">ESPACE VERT (2)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=subject&filter_relational_operator=equals&filter=LOGEMENT" class="list-group-item ds-option">LOGEMENT (2)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=subject&filter_relational_operator=equals&filter=PROTECTION+DE+L%27ENVIRONNEMENT" class="list-group-item ds-option">PROTECTION DE L'ENVIRONNEMENT (2)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=subject&filter_relational_operator=equals&filter=RECYCLAGE" class="list-group-item ds-option">RECYCLAGE (2)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=subject&filter_relational_operator=equals&filter=SANTE" class="list-group-item ds-option">SANTE (2)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=subject&filter_relational_operator=equals&filter=VIE+QUOTIDIENNE" class="list-group-item ds-option">VIE QUOTIDIENNE (2)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=subject&filter_relational_operator=equals&filter=VIE+SOCIALE" class="list-group-item ds-option">VIE SOCIALE (2)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=subject&filter_relational_operator=equals&filter=ALIMENT" class="list-group-item ds-option">ALIMENT (1)</a><a href="/xmlui/search-filter?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&field=subject" class="list-group-item ds-option">... View More</a><a class="list-group-item active"><span class="h5 list-group-item-heading  h5">Date Issued</span></a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=dateIssued&filter_relational_operator=equals&filter=2014" class="list-group-item ds-option">2014 (6)</a><a href="/xmlui/discover?query=homme+terre&scope=/&filtertype_0=author&filtertype_1=author&filter_relational_operator_1=contains&filter_relational_operator_0=contains&filter_1=hiel&filter_0=pilate&filtertype=dateIssued&filter_relational_operator=equals&filter=2013" class="list-group-item ds-option">2013 (5)</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="hidden-xs hidden-sm">
+<footer>
+<div class="row">
+<hr>
+<div class="col-xs-7 col-sm-8">
+<div>
+<a target="_blank" href="http://www.dspace.org/">DSpace software</a> copyright&nbsp;&copy;&nbsp;2002-2013&nbsp; <a target="_blank" href="http://www.duraspace.org/">Duraspace</a>
+</div>
+<div class="hidden-print">
+<a href="/xmlui/contact">Contact Us</a> | <a href="/xmlui/feedback">Send Feedback</a>
+</div>
+</div>
+<div class="col-xs-5 col-sm-4 hidden-print">
+<div class="pull-right">
+<span class="theme-by">Theme by&nbsp;</span>
+<br>
+<a href="http://atmire.com" target="_blank" title="@mire NV"><img src="/xmlui/themes/Mirage2/images/@mirelogo-small.png" alt="@mire NV"></a>
+</div>
+</div>
+</div>
+<a class="hidden" href="/xmlui/htmlmap">&nbsp;</a>
+<p>&nbsp;</p>
+</footer>
+</div>
+</div>
+<script>if(!window.DSpace){window.DSpace={};}window.DSpace.context_path='/xmlui';window.DSpace.theme_path='/xmlui/themes/Mirage2/';</script><script src="/xmlui/themes/Mirage2/vendor/jquery/jquery.min.js"> </script><script src="/xmlui/themes/Mirage2/vendor/jquery-ui/ui/jquery.ui.core.js"> </script><script src="/xmlui/themes/Mirage2/vendor/jquery-ui/ui/jquery.ui.datepicker.js"> </script><script src="/xmlui/themes/Mirage2/vendor/handlebars/handlebars.js"> </script><script src="/xmlui/themes/Mirage2/vendor/holderjs/holder.js"> </script><script src="/xmlui/themes/Mirage2/vendor/angular/1.3.10/angular.js"> </script><script src="/xmlui/themes/Mirage2/vendor/angular/1.3.10/angular-route.js"> </script><script src="/xmlui/themes/Mirage2/vendor/angular/1.3.10/angular-resource.js"> </script><script src="/xmlui/themes/Mirage2/vendor/bootstrap-sass-official/assets/javascripts/bootstrap/alert.js"> </script><script src="/xmlui/themes/Mirage2/vendor/bootstrap-sass-official/assets/javascripts/bootstrap/button.js"> </script><script src="/xmlui/themes/Mirage2/vendor/bootstrap-sass-official/assets/javascripts/bootstrap/collapse.js"> </script><script src="/xmlui/themes/Mirage2/vendor/bootstrap-sass-official/assets/javascripts/bootstrap/dropdown.js"> </script><script src="/xmlui/themes/Mirage2/vendor/bootstrap-sass-official/assets/javascripts/bootstrap/modal.js"> </script><script src="/xmlui/themes/Mirage2/vendor/bootstrap-sass-official/assets/javascripts/bootstrap/tab.js"> </script><script src="/xmlui/themes/Mirage2/vendor/bootstrap-sass-official/assets/javascripts/bootstrap/tooltip.js"> </script><script src="/xmlui/themes/Mirage2/vendor/bootstrap-sass-official/assets/javascripts/bootstrap/popover.js"> </script><script src="/xmlui/themes/Mirage2/vendor/bootstrap-sass-official/assets/javascripts/bootstrap/transition.js"> </script><script src="/xmlui/themes/Mirage2/scripts/utils.js"> </script><script src="/xmlui/themes/Mirage2/scripts/search-controls.js"> </script><script src="/xmlui/themes/Mirage2/scripts/sidebar.js"> </script><script src="/xmlui/themes/Mirage2/scripts/community-list.js"> </script><script src="/xmlui/themes/Mirage2/scripts/browse.js"> </script><script src="/xmlui/themes/Mirage2/scripts/choice-support.js"> </script><script src="/xmlui/themes/Mirage2/scripts/vocabulary-support.js"> </script><script src="/xmlui/themes/Mirage2/scripts/access-form-util.js"> </script><script src="/xmlui/themes/Mirage2/scripts/forms.js"> </script><script src="/xmlui/themes/Mirage2/scripts/vendor-extensions.js"> </script><script src="/xmlui/themes/Mirage2/scripts/google-stats-dates.js"> </script><script src="/xmlui/themes/Mirage2/scripts/templates.js"> </script><script src="/xmlui/themes/Mirage2/vendor/datatables/media/js/jquery.dataTables.js"> </script><script src="/xmlui/themes/Mirage2/scripts/person-lookup.js"> </script><script src="/xmlui/themes/Mirage2/scripts/set-devmode.js"> </script><script src="/xmlui/themes/Mirage2/scripts/nln/nln-ui/nln-ui.js"> </script><script src="/xmlui/themes/Mirage2/scripts/nln/discover.js"> </script><script src="/xmlui/static/js/discovery/discovery-results.js"> </script>
+</body></html>

@@ -1,0 +1,6 @@
+# Lan 29.01.2015
+Theme MirageLan has been created from theme Mirage :
+1. copy theme Mirage, rename it MirageLan
+2. cd MirageLan
+3. rename Mirage.xsl to MirageLan.xsl
+4. edit sitemap.xmap, replace "Mirage" to "MirageLan" (<theme-path>, <theme-name>)

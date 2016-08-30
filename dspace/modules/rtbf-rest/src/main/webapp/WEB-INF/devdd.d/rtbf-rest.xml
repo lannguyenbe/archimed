@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE Configure PUBLIC "--//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd">
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+   <Set name="contextPath">/rs</Set>
+   <Set name="war"><SystemProperty name="dspace.src"/>/dspace/modules/rtbf-rest/target/rtbf-rest-5.0</Set>
+   <Set name="overrideDescriptor">./webapps/devdd.d/override-rtbf-rest-web.xml</Set>
+</Configure>

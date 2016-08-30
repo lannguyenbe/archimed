@@ -1,0 +1,348 @@
+<!doctype html>
+<html ng-app="typaApp">
+<head>
+  <meta charset="utf-8">
+  <title>Type Ahead</title>
+  <link rel="stylesheet" type="text/css" href="css/typa.css" />
+  <script src="angular/1.3.10/angular.js"></script>
+  <script src="angular/1.3.10/angular-resource.js"></script>
+  <script>
+  angular.module('nln.ui.utils',[])
+    .factory('focus', ['$timeout', function($timeout) {
+      return function(id) {
+        $timeout(function() {
+          var element = document.getElementById(id);
+          if (element) { element.focus(); }
+        });
+      }
+    }]);
+  </script>
+  <script>
+  angular.module('nln.ui',['nln.ui.tpls', 'nln.ui.typeahead']);
+  angular.module('nln.ui.tpls',['template/typeahead/typa-container.html']);
+  angular.module('nln.ui.typeahead',['ngResource','nln.ui.utils'])
+    //
+    // Directives
+    .directive('nlnTypaPopup', function () {
+      return {
+        restrict: 'E'
+       ,replace: true
+       ,templateUrl: 'template/typeahead/typa-container.html'
+      }
+    })
+    .directive('nlnTypahead', function ($compile, $timeout, $filter, $parse, $document) {
+      return {
+        restrict: 'A'
+       ,require:'ngModel'
+       ,link: function postLink(originalScope, element, attrs, ngModelCtrl) {
+
+          // Mandatory attributes
+          // id of the input field, pass to popup elem as attribute to receive back selected value
+          var inputId = attrs.id;
+          // resource where to search from
+          var resource = originalScope.$eval(attrs.nlnTypaResource);
+
+          // Supported attributes
+          // minimal nb of characters that needs to be entered before typeahead kicks-in
+          var minLength = originalScope.$eval(attrs.nlnTypaMinLength) || 1;
+          // minimal wait time after last character typed before typehead kicks-in
+          var waitTime = originalScope.$eval(attrs.nlnTypaWaitMs) || 0;
+
+          // Setter to assign value 
+          // given a string representing the name of the property, 
+          // use setter to assign value to that property.
+          // setter for ngModel input field
+          var ngModelGetter = $parse(attrs.ngModel); // is a function
+          var ngModelSetter = ngModelGetter.assign; // is a function
+          // setter for output container that will contain selected values
+          if (attrs.nlnTypaSelected) {
+            var selectedSetter = $parse(attrs.nlnTypaSelected).assign;
+          }
+
+          // internal variables & local functions
+          var hasFocus;
+          var timeoutPromise;
+          var forceClose;
+          var activeIdx;
+          var keys = [];
+          var handledKeys = {}; // callulated from keys on init
+
+
+          var selectedList = [];
+          if (selectedSetter) { selectedSetter(originalScope, selectedList); }
+
+          function init() {
+
+            function incrActiveIdx(n) {
+              var modulo = (scope.filterResults) ? scope.filterResults.length : scope.hitsList.length;
+              activeIdx = (activeIdx+modulo+n)%modulo;
+            }
+
+            keys.push({keyCode: 40, keyName:"down", handle: function() { if (!reopen()) { incrActiveIdx(1); }}});
+            keys.push({keyCode: 38, keyName:"up", handle: function() { if (!reopen()) { incrActiveIdx(-1); }}});
+            keys.push({keyCode: 13, keyName:"enter", handle: function() { if (!reopen()) { select(activeIdx); } }});
+            keys.push({keyCode: 27, keyName:"esc", handle: function() { forceClose = ((scope.hitsList||[]).length > 0); }});
+            keys.push({keyCode: 'ctrl+13', keyName:"ctrl+enter", handle: function() { if ((scope.hitsList||[]).length > 0 && !forceClose) { selectAdd(activeIdx); } }});
+
+            for (var i = 0; i < keys.length; i++) {
+              handledKeys[keys[i].keyCode] = keys[i].keyName;
+            }
+          }
+
+          init();
+
+
+          function scheduleSearchWithTimeout(inputValue) {
+            timeoutPromise = $timeout(function() {
+               getHits(inputValue);
+            }, waitTime);
+          }
+
+          function cancelPreviousTimeout() {
+            if (timeoutPromise) { $timeout.cancel(timeoutPromise); }
+          }
+
+          function reopen() {
+            if (forceClose) { // popup is now hidden but was populated
+              forceClose = false;
+              return true;
+            } else if ((scope.hitsList||[]).length) { // popup is already open
+              return false;
+            } else { // popup is not populated
+              getHits(ngModelGetter(originalScope));
+              return true;
+            };
+          }
+
+          function resetHitsList() {
+            if ((scope.hitsList||[]).length > 0) { scope.hitsList = []; }
+            activeIdx = undefined;
+            forceClose = false;
+          }
+
+          function getHits(pattern) {
+            resetHitsList();
+            if (resource instanceof Function) { // async resource
+              scope.hitsList = resource(pattern, function (d) { // on success
+                 if (hasFocus && d.length) {
+                   scope.label = Object.keys(d[0])[0]; // first property
+                   activeIdx = 0;
+                 }
+              }, function (e) { // on error
+                 console.log(e); // TODO retry
+              });
+            } else { // static array
+              var d = scope.hitsList = $filter('filter')(resource, {$: pattern});
+              if (d.length) { 
+                scope.label = Object.keys(d[0])[0]; // first property
+                activeIdx = 0;
+              }
+            }
+          }
+
+          function select(idx) {
+            selectAdd(idx);
+            // TODO setter only once ?
+            ngModelSetter(originalScope, scope.hitsList[idx][scope.label]);
+            forceClose = true; // hide               	
+          }
+
+          function selectAdd(idx, n) {
+            var nbr = n || 1;
+            for (var i = 0; i < nbr; i++, idx++) {
+              if (selectedList.indexOf(scope.hitsList[idx][scope.label]) >= 0) { continue; }
+              selectedList.push(scope.hitsList[idx][scope.label]);          
+            }
+          }
+
+
+          // Create child scope
+          var scope = originalScope.$new();
+          originalScope.$on('$destroy', function(){
+            scope.$destroy();
+          });
+          // Add properties to child scope
+          scope.hitsList = [];
+
+          // Add methods to child scope
+          scope.isEmpty = function () {
+            return ((scope.hitsList||[]).length == 0);
+          }
+
+          scope.isForceClose = function () {
+            return (forceClose ? true : false);
+          }
+
+          scope.isActive = function (idx) {
+            return (activeIdx === idx);
+          }
+
+          scope.setActive = function (idx) {
+            activeIdx = idx;
+          }
+
+          scope.onClick = function (idx, ev) {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+
+            if (ev.ctrlKey)
+              selectAdd(idx);
+            else
+              select(idx);
+
+
+           // return focus to the input element if a match was selected via a mouse click event
+           // use timeout to avoid $rootScope:inprog error
+           // focus(inputId)
+           $timeout(function() { element[0].focus(); }, 0, false);
+
+          }
+
+          element.bind('keydown', function (ev) {
+            var kcode = (ev.ctrlKey) ? 'ctrl+'+ev.keyCode : ev.keyCode;
+            var key = handledKeys[kcode];
+
+            if ( !key || ev.shiftKey || ev.altKey ) { return; } 
+
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            keys.forEach(function(o) {
+              if (o.keyName !== key) {return;}
+              o.handle();
+              scope.$apply(); // trigger all listeners to propagate changes
+            });
+          });
+
+          element.bind('blur', function (ev) {
+            hasFocus = false;
+          });
+
+          // Keep reference to click handler to unbind it.
+          var dismissClickHandler = function (ev) {
+            if (element[0] !== ev.target) {
+              forceClose = true;
+              // scope.$digest();
+            }
+          };
+
+          $document.bind('click', dismissClickHandler);
+
+          originalScope.$on('$destroy', function(){
+            $document.unbind('click', dismissClickHandler);
+          });          
+
+          // ngModelCtrl
+          // $parsers kick-in on all the changes coming from the view as well as manually triggered by $setViewValue
+          ngModelCtrl.$parsers.unshift(function(inputValue) {
+
+            hasFocus = true;
+
+            if (inputValue && inputValue.length >= minLength) {
+              if (waitTime > 0) {
+                cancelPreviousTimeout();
+                scheduleSearchWithTimeout(inputValue);
+              } else {
+                getHits(inputValue);
+              }
+            } else {
+              cancelPreviousTimeout();
+              resetHitsList();
+            }
+          });
+
+
+          // Create popup element
+          var popUpEl = angular.element('<nln-typa-popup/>');
+
+          popUpEl.attr({
+            'input-idref': inputId
+          });
+
+          // Compile the popup and attach it to the DOM
+          var popup = $compile(popUpEl)(scope);
+          element.after(popup);
+        }
+      } // return
+    });
+  </script>
+
+  <script>
+    var app = angular.module('typaApp', ['ngResource','nln.ui','nln.ui.utils']);
+    //
+    // Run
+    app.run(['$rootScope', function($rootScope) { 
+      $rootScope.limitTo = 8; // TODO should come from the view
+      $rootScope.endPoint = 'http://localhost:8070/rs/service';
+      $rootScope.resources = {
+         authors: '/authors/names'
+        ,authorsJ: 'authors.json'
+        ,series: '/communities/titles'
+      };
+    }]);
+    //
+    // Factories   
+    app.factory('Authors', ['$rootScope', '$resource', function($rootScope, $resource) {
+      return resource = $resource($rootScope.resources.authorsJ);
+//      return $resource($rootScope.endPoint + $rootScope.resources.authors);
+    }]);    
+    app.factory('Series', ['$rootScope', '$resource', function($rootScope, $resource) {
+      return $resource($rootScope.endPoint + $rootScope.resources.series);
+    }]);    
+    //
+    // Controller
+    app.controller('TypaController', ['$scope', '$rootScope', 'focus', 'Authors', 'Series',
+    function($scope, $rootScope, focus, Authors, Series) {
+          focus('search-author');
+
+          $scope.myAuthors = [{"name":"Bouquet Michel"},{"name":"Bourgaux Pascale"},{"name":"Bourguignon Philippe"},{"name":"Bourguignon Serge"},{"name":"Bove Jose"},{"name":"Boxus Louis"},{"name":"Bozzuffi Marcel"},{"name":"Brach Gérard"},{"name":"Bracke Siegfried"},{"name":"Braeckman Colette"},{"name":"Brahms Johannes"},{"name":"Braibant Alain"},{"name":"Brando Marlon"},{"name":"Braoudé Patrick"},{"name":"Brasseur Claude"},{"name":"Brasseur Claudine"},{"name":"Brasseur Pierre"},{"name":"Bratlavsky Carine"},{"name":"Brauman Rony"},{"name":"Brebois Bertrand"}];
+
+
+          $scope.getAuthors = function (pattern, success, error) {
+            return(Authors.query({pt: pattern}, success, error));
+          };
+
+          $scope.getSeries = function (pattern, success, error) {
+            return(Series.query({pt: pattern}, success, error));
+          };
+
+    }]);
+
+  </script>
+</head>
+<body>
+  <div ng-controller="TypaController">
+    <pre>pattern:{{author.pattern}}</pre>
+    <ul ng-model="author.selected">
+      <li ng-repeat="item in author.selected">{{item}}</li>
+    </ul>
+    <input id="search-author" ng-model="author.pattern" style="width: 234px;" type="text" placeholder="Author name ..."
+      nln-typahead nln-typa-resource="getAuthors" nln-typa-selected="author.selected"/>
+
+    <pre>pattern:{{serie.pattern}}</pre>
+    <ul ng-model="serie.selected">
+      <li ng-repeat="item in serie.selected">{{item}}</li>
+    </ul>
+    <input id="search-serie" ng-model="serie.pattern" style="width: 234px;" type="text" placeholder="Serie title ..."
+      nln-typahead nln-typa-resource="myAuthors"  nln-typa-selected="serie.selected"/>
+
+  </div>
+
+  <script>
+  angular.module('template/typeahead/typa-container.html',[])
+    .run(['$templateCache', function($templateCache) {
+      $templateCache.put('template/typeahead/typa-container.html',
+        '<div class="typa-container" ng-show="!isEmpty() && !isForceClose()" style="width: 234px;">\n'+
+        '  <div class="typa-item" ng-repeat="item in hitsList | limitTo:7 as filterResults" ng-click="onClick($index, $event)"\n'+
+        '    ng-class="{\'active\': isActive($index)}"\n'+
+        '    ng-mouseenter="setActive($index)">\n'+
+        '    <span class="typa-icon typa-icon-marker"></span>\n'+
+        '    <span class="typa-item-query">{{item[label]}}</span>\n'+
+        '  </div>\n'+
+        '</div>\n'+
+        '');
+    }]);
+
+  </script>  
+</body>
+</html>

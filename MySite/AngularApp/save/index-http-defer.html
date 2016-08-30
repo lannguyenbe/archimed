@@ -1,0 +1,149 @@
+<!doctype html>
+<html ng-app="typaApp">
+<head>
+  <meta charset="utf-8">
+  <title>Type Ahead</title>
+  <script src="angular/1.3.10/angular.js"></script>
+  <script>
+    var app = angular.module('typaApp', []);
+    //
+    // App
+    app.run(['$rootScope', function($rootScope) { 
+//      $rootScope.endPoint = 'http://localhost:8070/rs/service'
+      $rootScope.endPoint = ''
+      $rootScope.resources = {
+//         authors: '/authors/names'
+        authors: 'authors.json'
+        ,series: '/communities/titles'
+      };
+    }]);
+    //
+    // Service utils
+    app.service('utils', ['$http', '$q', '$rootScope', function ($http, $q, $rootScope) {
+      var utils = this;      
+
+      // return : List of String values
+      utils.getSimpleList = function (resource) {
+        var defer = $q.defer();
+
+        $http.get($rootScope.endPoint + resource)
+          .success(function(data) {
+            var sl = new Array();
+            if (data.length > 0) {
+              // Build array of values only, remove the property name
+              var propertyName = Object.keys(data[0])[0];
+              for (var i = 0, len = data.length; i < len; i++) {
+                sl.push(data[i][propertyName]);
+              }
+            }
+            defer.resolve(sl);
+          })
+          .error(function(data, status) {
+            defer.reject('Request failed status=' + status);
+          });
+        return defer.promise;
+      }
+
+      return utils;
+    }]);
+    //
+    // Service authors
+    app.service('authors', ['$q', '$rootScope', 'utils', function ($q, $rootScope, utils) {
+      var cacheData;
+
+      var authors = this;      
+      authors.simpleList = {};
+
+      authors.getSimpleList = function () {
+        var defer = $q.defer();
+
+        if (cacheData) {
+          defer.resolve(cacheData);
+        } else {
+          utils.getSimpleList($rootScope.resources.authors)
+            .then(function(data) {
+                authors.simpleList = data;
+                cacheData = data;
+                defer.resolve(data);
+              }, function(errMesg) {
+                defer.reject(errMesg);
+              });
+
+        }
+        return defer.promise;
+      };
+      return authors;
+    }]);
+    //
+    // Service series
+    app.service('series', ['$q', '$rootScope', 'utils', function ($q, $rootScope, utils) {
+      var cacheData;
+
+      var series = this;      
+      series.simpleList = {};
+
+      series.getSimpleList = function () {
+        var defer = $q.defer();
+
+        if (cacheData) {
+          defer.resolve(cacheData);
+        } else {
+          utils.getSimpleList($rootScope.resources.series)
+            .then(function(data) {
+                series.simpleList = data;
+                cacheData = data;
+                defer.resolve(data);
+              }, function(errMesg) {
+                defer.reject(errMesg);
+              });
+
+        }
+        return defer.promise;
+      };
+      return series;
+    }]);
+    //
+    // Filter
+    app.filter('nameSearch', function() {
+      return function(input) {
+        
+      };
+    });
+    //
+    // Controller
+    app.controller('TypaController', ['$scope', 'authors', 'series', function($scope, authors, series) {
+      function init() {
+        $scope.getAuthors();
+//        $scope.getSeries();
+      }
+
+      $scope.getAuthors = function() {
+        authors.getSimpleList()
+          .then(function(data) {
+              $scope.authorsList = authors.simpleList;
+            }, function(errMesg) {
+              console.log(errMesg)
+            });
+      };
+      $scope.getSeries = function() {
+        series.getSimpleList()
+          .then(function(data) {
+              $scope.seriesList = series.simpleList;
+            }, function(errMesg) {
+              console.log(errMesg)
+            });
+      };
+
+      init();
+    }]);
+  </script>
+</head>
+<body ng-controller="TypaController">
+  <input type="text" ng-model="query"/>
+  <ul>
+    <li ng-repeat="author in authorsList | filter:query">{{author}}</li>
+    <!--li ng-repeat="serie in seriesList">{{serie}}</li-->
+  </ul>
+  <br/>
+</body>
+</html>

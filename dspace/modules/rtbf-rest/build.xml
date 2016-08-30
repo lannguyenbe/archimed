@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project name="rtbf-rest" basedir="." default="touch" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  
+  <!-- Ask for destination dir -->
+  <property environment="env"/>
+
+  <!-- Get version from pom -->
+  <artifact:pom id="mypom" file="pom.xml" />
+  <property name="dspace.version" value="${mypom.version}"/>
+  
+  <!--property name="dspace.dir" value="${env.DS}"/-->
+  <target name="ask_dspace_dir">
+    <input
+        message="Enter intall directory :"
+        addproperty="dspace.dir"
+        defaultvalue="${env.DS}"
+    />
+  </target>
+
+  <!-- Timestamp date used when creating backup directories -->
+  <tstamp>
+    <format property="build.date" pattern="yyyyMMdd-HHmmss" />
+  </tstamp>
+
+  <condition property="os.unix">
+    <os family="unix"/>
+  </condition>
+
+  <target name="touch">
+    <touch file="${env.DS}/webapps/rtbf-rest.xml"/>
+  </target>
+
+  <target name="touch-dev4">
+    <touch file="${env.DS}/../dspace-dev4/webapps/rtbf-rest.xml"/>
+  </target>
+
+  <target name="mytest" depends="ask_dspace_dir">
+   <echo message="dspace.dir=${dspace.dir}"/>
+  </target>
+
+  <target name="update" depends="ask_dspace_dir" description="Update Web Applications">
+
+      <move todir="${dspace.dir}/webapps/rtbf-rest.bak-${build.date}" failonerror="no">
+          <fileset dir="${dspace.dir}/webapps/rtbf-rest">
+              <include name="**/*" />
+          </fileset>
+      </move>
+
+      <echo>
+====================================================================
+ ${dspace.dir}/webapps/rtbf-rest was backed up to ${dspace.dir}/webapps/rtbf-rest.bak-${build.date}
+      </echo>
+
+      <copy todir="${dspace.dir}/webapps/rtbf-rest" preservelastmodified="true" failonerror="no">
+          <fileset dir="target/rtbf-rest-${dspace.version}">
+              <exclude name="**/web.xml" />
+              <exclude name="**/robots.txt" />
+          </fileset>
+      </copy>
+
+      <copy todir="${dspace.dir}/webapps/rtbf-rest" preservelastmodified="true" failonerror="no">
+          <fileset dir="target/rtbf-rest-${dspace.version}">
+              <include name="**/web.xml" />
+              <include name="**/robots.txt" />
+          </fileset>
+          <filterchain>
+              <expandproperties />
+          </filterchain>
+      </copy>
+
+      <echo>
+ Updated ${dspace.dir}/webapps/rtbf-rest
+====================================================================
+      </echo>
+
+  </target>
+
+</project>

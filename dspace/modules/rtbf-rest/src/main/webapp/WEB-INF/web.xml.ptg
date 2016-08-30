@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This web.xml file is not required when using Servlet 3.0 container,
+     see implementation details http://jersey.java.net/nonav/documentation/latest/jax-rs.html -->
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  <servlet>
+    <servlet-name>Jersey Web Application</servlet-name>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+    <!--init-param>
+      <param-name>jersey.config.server.provider.packages</param-name>
+      <param-value>org.dspace.rtbf.rest</param-value>
+    </init-param-->
+    <init-param>
+      <param-name>javax.ws.rs.Application</param-name>
+      <param-value>org.dspace.rtbf.rest.application.RsApplication</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Jersey Web Application</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+  <context-param>
+    <param-name>dspace-config</param-name>
+    <param-value>/opt/dspace2/config/dspace.cfg</param-value>
+  </context-param>
+  <context-param>
+    <description>
+         The location of the main DSpace configuration file
+       </description>
+    <param-name>dspace.dir</param-name>
+    <param-value>/opt/dspace2</param-value>
+  </context-param>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+            /WEB-INF/applicationContext.xml
+        </param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.dspace.app.util.DSpaceContextListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.dspace.servicemanager.servlet.DSpaceKernelServletContextListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>
+         org.springframework.web.context.ContextLoaderListener
+      </listener-class>
+  </listener>
+  <!-- 09.11.2015 Lan: to support name mapping of metadata -->
+  <listener>
+      <listener-class>org.dspace.rtbf.rest.util.RsContextListener</listener-class>
+  </listener>
+  <filter>
+    <filter-name>cross-origin</filter-name>
+    <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+    <init-param>
+      <param-name>allowedOrigins</param-name>
+      <param-value>*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>allowedMethods</param-name>
+      <param-value>GET,POST,HEAD</param-value>
+    </init-param>
+    <init-param>
+      <param-name>allowedHeaders</param-name>
+      <param-value>X-Requested-With,Content-Type,Accept,Origin</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>cross-origin</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+</web-app>

@@ -1,0 +1,7 @@
+{
+    "directory": "vendor"
+   ,"storage": {
+      "packages": "/usr/local/devhome/nln/.cache/bower"
+    }
+
+}

@@ -1,0 +1,39 @@
+.debug {
+	display: none;
+}
+
+#photo {
+	float:right;
+	width: 84px;
+	height: 84px;
+/*	visibility: hidden;*/
+	display: none;
+}
+
+ul {
+	list-style-type: none;
+	padding : 0;
+}
+
+li  {
+	margin-bottom: 2px;
+	background-color: lightgray;
+}
+
+li:hover {
+	background-color: grey;
+	cursor: pointer; /* not exists on Mobile device */
+}
+
+form {
+	width: 240px;
+}
+.field {
+	width: 99%;
+}
+.fieldSlim {
+	width: 30%;
+}
+.fieldLarge {
+	width: 60%;
+}

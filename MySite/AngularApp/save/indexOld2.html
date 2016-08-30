@@ -1,0 +1,259 @@
+<!doctype html>
+<html ng-app="typaApp">
+<head>
+  <meta charset="utf-8">
+  <title>Type Ahead</title>
+  <link rel="stylesheet" type="text/css" href="css/typa.css" />
+  <script src="angular/1.3.10/angular.js"></script>
+  <script src="angular/1.3.10/angular-resource.js"></script>
+  <script>
+  angular.module('nln.ui.utils',[])
+    .factory('focus', ['$timeout', function($timeout) {
+      return function(id) {
+        $timeout(function() {
+          var element = document.getElementById(id);
+          if (element) { element.focus(); }
+        });
+      }
+    }]);
+  </script>
+  <script>
+  angular.module('nln.ui',['nln.ui.tpls', 'nln.ui.typeahead']);
+  angular.module('nln.ui.tpls',['template/typeahead/typa-container.html']);
+  angular.module('nln.ui.typeahead',['ngResource','nln.ui.utils'])
+    //
+    // Directives
+    .directive('nlnTypaPopup', function () {
+      return {
+        restrict: 'E'
+/*       ,scope: {
+         inputField: '=inputRef'
+       }*/
+       ,templateUrl: 'template/typeahead/typa-container.html'
+       ,link: function postLink(scope, element, attrs) {         
+         scope.inputField = attrs.inputRef;
+       }
+       ,controller: function($scope, $rootScope, Authors, focus) {
+
+          var resource = Authors;
+          var limitTo;
+          var active;
+          var forceClose;
+          var keys = [];
+          var handledKeys = {}; // callulated from keys on init
+
+          // Private functions
+         function init() {
+
+            limitTo = $rootScope.limitTo;
+
+            keys.push({keyCode: 40, keyName:"up", handle: function() { if (!reopen()) { var modulo = ($scope.hitsList.length < limitTo) ? $scope.hitsList.length :limitTo; active = (active+modulo+1)%modulo; } }});
+            keys.push({keyCode: 38, keyName:"down", handle: function() { if (!reopen()) { var modulo = ($scope.hitsList.length < limitTo) ? $scope.hitsList.length :limitTo; active = (active+modulo-1)%modulo; } }});
+            keys.push({keyCode: 13, keyName:"enter", handle: function() { if (!reopen()) { select(active); } }});
+            keys.push({keyCode: 27, keyName:"esc", handle: function() { forceClose |= true; }});
+            keys.push({keyCode: 'ctrl+13', keyName:"ctrl+enter", handle: function() { selectAdd(active) }});
+
+            for (var i = 0; i < keys.length; i++) {
+              handledKeys[keys[i].keyCode] = keys[i].keyName;
+            }
+          }
+
+          function resetHitsList() {
+            $scope.hitsList = [];
+            $scope.active = undefined;
+          }
+
+          function reopen() {
+            if ($scope.isForceClose()) {
+              forceClose = false;
+              return true;
+            } else if ($scope.isEmpty()) {
+              $scope.queryHits();
+              return true;
+            } else {
+              return false;
+            };
+          }
+
+          function select(idx) {
+            selectAdd(idx);
+            $scope.pattern = $scope.hitsList[idx].name;
+            // resetHitsList(); // empty the List
+            forceClose = true; // only hide               	
+          }
+
+          function selectAdd(idx, n) {
+            var nbr = n || 1;
+            for (var i = 0; i < nbr; i++, idx++) {
+              if ($scope.selectedList.indexOf($scope.hitsList[idx].name) >= 0) { continue; }
+              $scope.selectedList.push($scope.hitsList[idx].name);          
+            }
+          }
+
+          // Public properties
+          $scope.selectedList = [];
+/*          
+          $scope.hitsList = [];
+          $scope.pattern = '';
+          // Public functions
+          $scope.queryHits = function() {
+            if ($scope.pattern) {    	
+
+                $scope.hitsList = resource.query({pt: $scope.pattern}
+                , function (d) { active = (d.length) ? 0 : undefined; } // default action
+                , function (e) { console.log(e); }
+                );
+
+            } else
+              resetHitsList();  
+            forceClose = false;               	
+          }
+*/
+          $scope.isEmpty = function () {
+            return (!($scope.hitsList && $scope.hitsList.length > 0));
+          }
+
+          $scope.isForceClose = function () {
+            return (forceClose ? true : false);
+          }
+
+
+          $scope.isActive = function (idx) {
+            return (active === idx);
+          }
+
+          $scope.setActive = function (idx) {
+            active = idx;
+          }
+
+          $scope.onClick = function (idx, ev) {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+
+            if (ev.ctrlKey)
+              selectAdd(idx);
+            else
+              select(idx);
+
+           // reset focus to pattern field
+           // inputField is set by directive.link
+           focus($scope.inputField);
+          }
+
+          $scope.onKeydown = function (ev) {
+            var kcode = (ev.ctrlKey) ? 'ctrl+'+ev.keyCode : ev.keyCode;
+            var key = handledKeys[kcode];
+
+            if ( !key || ev.shiftKey || ev.altKey ) { return; } 
+
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            keys.forEach(function(o) {
+              if (o.keyName !== key) {return;}
+              o.handle();
+            });
+          }
+
+
+          init();
+
+
+
+
+
+
+        } // controller
+      } // return
+    });
+  </script>
+
+  <script>
+    var app = angular.module('typaApp', ['ngResource','nln.ui','nln.ui.utils']);
+    //
+    // Run
+    app.run(['$rootScope', function($rootScope) { 
+      $rootScope.limitTo = 8; // TODO should come from the view
+      $rootScope.endPoint = 'http://localhost:8070/rs/service';
+      $rootScope.resources = {
+         authors: '/authors/names'
+        ,authorsJ: 'authors.json'
+        ,series: '/communities/titles'
+      };
+    }]);
+    //
+    // Factories   
+    app.factory('Authors', ['$rootScope', '$resource', function($rootScope, $resource) {
+//      return resource = $resource($rootScope.resources.authorsJ);
+      return $resource($rootScope.endPoint + $rootScope.resources.authors);
+    }]);    
+    //
+    // Controller
+    app.controller('AuthorsTypaController', ['$scope', '$rootScope', 'Authors', 'focus',
+    function($scope, $rootScope, resource, focus) {
+          focus('search-author');
+
+          $scope.hitsList = [];
+          $scope.pattern = '';
+          // Public functions
+          $scope.queryHits = function() {
+            if ($scope.pattern) {    	
+
+                $scope.hitsList = resource.query({pt: $scope.pattern}
+                , function (d) { active = (d.length) ? 0 : undefined; } // default action
+                , function (e) { console.log(e); }
+                );
+
+            } else
+              resetHitsList();  
+            forceClose = false;               	
+          }
+
+    }]);
+    app.controller('SeriesTypaController', ['$scope', '$rootScope', 'Authors', 'focus',
+    function($scope, $rootScope, resource, focus) {
+    }]);
+
+  </script>
+</head>
+<body>
+  <div ng-controller="AuthorsTypaController">
+    <pre>pattern:{{pattern}}</pre>
+    <ul ng-model="selectedList">
+      <li ng-repeat="item in selectedList">{{item}}</li>
+    </ul>
+    <input id="search-author" style="width: 234px;" type="text" placeholder="Author name ..." ng-model="pattern"
+      ng-change="queryHits()"
+      ng-keydown="onKeydown($event)"
+      nln-typa-resource="Authors"/>
+     <nln-typa-popup input-ref="search-author"/>
+  </div>
+
+  <div ng-controller="SeriesTypaController">
+    <pre>pattern:{{pattern}}</pre>
+    <ul ng-model="selectedList">
+      <li ng-repeat="item in selectedList">{{item}}</li>
+    </ul>
+    <input id="search-serie" style="width: 234px;" type="text" placeholder="Serie title ..." ng-model="pattern"
+      ng-change="queryHits()"
+      ng-keydown="onKeydown($event)"/>
+    <nln-typa-popup input-ref="search-serie"/>
+  </div>
+
+  <script>
+  angular.module('template/typeahead/typa-container.html',[])
+    .run(['$templateCache', function($templateCache) {
+      $templateCache.put('template/typeahead/typa-container.html',
+        '<div class="typa-container" ng-show="!isEmpty() && !isForceClose()" style="width: 234px;">\n'+
+        '  <div class="typa-item" ng-repeat="item in hitsList | limitTo:8" ng-click="onClick($index, $event)"\n'+
+        '    ng-class="{\'active\': isActive($index)}"\n'+
+        '    ng-mouseenter="setActive($index)">\n'+
+        '    <span class="typa-icon typa-icon-marker"></span>\n'+
+        '    <span class="typa-item-query">{{item.name}}</span>\n'+
+        '  </div>\n'+
+        '</div>\n'+
+        '');
+    }]);
+  </script>  
+</body>
+</html>

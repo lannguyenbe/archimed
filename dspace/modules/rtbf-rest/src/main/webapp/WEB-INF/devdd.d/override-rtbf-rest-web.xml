@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This web.xml file is not required when using Servlet 3.0 container,
+     see implementation details http://jersey.java.net/nonav/documentation/latest/jax-rs.html -->
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <!-- DSpace Configuration Information -->
+    <context-param>
+        <param-name>dspace-config</param-name>
+        <param-value>C:/local/dspace2/config/dspace.cfg</param-value>
+    </context-param>
+
+  <!-- new ConfigurationService initialization for dspace.dir -->
+  <context-param>
+    <description>
+      The location of the main DSpace configuration file
+    </description>
+    <param-name>dspace.dir</param-name>
+    <param-value>C:/local/dspace2</param-value>
+  </context-param>
+  
+  <!--  configures the locations that Spring configurations are searched for.
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/spring/*.xml</param-value>
+  </context-param>
+  -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            /WEB-INF/applicationContext.xml
+        </param-value>
+        <!--
+            Add this context if using Spring Security
+            /WEB-INF/applicationContext-security.xml
+        -->
+    </context-param>
+
+    <listener>
+        <listener-class>org.dspace.app.util.DSpaceContextListener</listener-class>
+    </listener>
+
+    <!-- kernel start listener (from impl)
+    	The following listener can be used instead of the filter below, it is simpler, cleaner
+    	and eliminates the need for a DSpaceKernelServletFilter filter to be involved with the
+    	request cycle.
+    -->
+    <listener>
+        <listener-class>org.dspace.servicemanager.servlet.DSpaceKernelServletContextListener</listener-class>
+    </listener>
+
+    <listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+
+</web-app>

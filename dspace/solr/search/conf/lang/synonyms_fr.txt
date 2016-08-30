@@ -1,0 +1,2118 @@
+# Lan 16.10.2014 : compile from WOLF (Wordnet fr)
+# 3 abnormal things still to resolve (abnormal encoding is more visible in vi) for char "oe"
+# - line 88, 408 for manuvre,manoevre
+# - line 1540 for cur,coeur; this line have spirous code other than french words 
+chose,objet
+ensemble,totalité,tout,unité
+organisme,organisme vivant,être
+cause,raison
+homme,humain,individu,personne,quelqu'un,quelqu’un,être humain
+agir,se comporter
+geler,devenir glacial
+animal,bête,créature,faune,être
+flore,plante,végétal
+affecter,léser
+matière,substance
+aliment,nourriture,nutriment
+artefact,artéfact
+irriter,stimuler
+article,objet
+connaissance,savoir,science
+besoin,motif,motivation
+bander,raidir,tendre
+lieu,localisation
+durée,temps
+évènement,événement
+processus,procédure
+acte,l'action humaine
+ensemble,groupe,groupement
+rire,se bidonner
+rapport,relation
+bien,propriété
+paraître,sembler
+aboutissement,accomplissement,achèvement,haut fait,ouvrage,réalisation,succès
+nettoyer,laver
+effort,exploit,haut fait
+cours,cour|cours
+découverte,invention
+perdre du poids,se maigrir
+recouvrement,reprise,récupération
+grossir,prendre
+enregistrement,enrôlement,immatriculation,inscription,recommandation
+mettre,passer,porter
+adieu,au revoir
+accoucher,avoir,donner naissance,mettre au monde
+issue,sortie
+réussite,succès
+apaiser,calmer,soulager
+faire mal,blesser
+endurer,souffrir
+atteindre,avoir,continuer,devenir,devoir,endurer,obtenir,prendre,recevoir,souffrir,subir,tenir,être
+vagir,gémir
+défaillance,échec
+capitulation,reddition
+erreur,faute
+blot,souillure,tache
+bévue,oubli
+Bêtisier,blooper,bobo,bévue,bêtisier,perle,trique
+fatiguer,user
+congeler,geler
+administrer,dispenser,donner
+héritage,patrimoine
+restauration,restitution,retour
+quittance,reçu,réception,récépissé
+recouvrer,retrouver,récupérer
+mécanique,mécanisme
+pâlir,blêmir
+excréter,libérer,renvoyer
+demeurer,rester
+tir,lancer
+changer,varier
+changer,modifier,transformer
+prochain,suivant
+affecter,toucher
+baiser,bisou
+devenir,retourner,tourner
+contrôle,vérification,échec
+façonner,former
+tordre,torsader
+accroire,accroître,augmenter
+augmenter,monter,grimper
+accroître,augmenter
+augmenter,élever
+accumuler,entasser,rassembler
+changer,convertir,transformer,échanger
+choix,option,sélection
+conclusion,décision
+désignation,nomination
+manuvre,manœuvre
+délocalisation,déménagement
+adapter,modifier
+façon,manière,mode,moyen,voie
+enlever,retirer,retrancher,ôter
+scrutin,voix,votation,vote
+comporter,comprendre,inclure,inscrire,reprendre
+changement,modification
+économie,épargne
+combiner,mélanger
+dessiner,tirer,éventrer
+corriger,rectifier
+adaptation,ajustement,modification
+passage,transition
+opposition,résistance
+refus,rejet
+détériorer,s'aggraver
+amender,améliorer,réformer
+amender,améliorer
+conclusion,fin
+conserver,préserver
+arriver,autoriser,conserver,habiliter,pouvoir,risquer
+congé,licenciement,limogeage,renvoi
+destruction,dévastation,ravage
+essorer,sécher
+essorer,sécher
+assassinat,exécution,meurtre
+fortifier,renforcer
+disparition,estompement
+augmenter,développer,grandir,pousser
+développer,grandir,pousser
+abrogation,annulation
+limiter,prescrire,restreindre,retenir
+jalonner,quadriller
+retournement,revirement
+limiter,prescrire,restreindre
+début,lancement
+concentrer,réduire
+constitution,création,formation,organisation,établissement
+concentrer,souder
+diminuer,rétrécir,se rétracter
+croître,diminuer,réduire
+abaisser,abréger,amoindrir,limiter,raccourcir,réduire
+cuisine,cuisson,cuistance,lexique de techniques culinaires,préparation,techniques culinaires
+diminuer,réduire
+améliorer,avancer,progresser
+développer,grandir,mûrir
+lavage,nettoyage
+correction,rectification
+accoutumer,habituer
+contamination,pollution
+déplacement,mouvement
+colorer,décolorer
+déplacement,locomotion
+fixer,régler
+accommoder,adapter,ajuster
+parachutage,parachutisme
+jambe,phase,scène,stade,étape
+fleurir,prospérer
+importation,livraison
+prolonger,rallonger
+prolonger,tirer en longueur
+courant,flux
+rapidité,vitesse
+broyer,moudre
+casser,diviser,séparer
+arriver,avoir lieu,passer,se dérouler,se passer,se produire,survenir
+aller,devenir,dire,faire,partir,passer,procéder
+arriver,se passer
+commencer,débuter
+continuer,persister,persévérer
+abaissement,diminution,réduction
+finir,terminer
+abandonner,interrompre
+moulin,pulvérisation,égrugeage
+arrêter,casser,terminer
+finir,laisser tomber
+casser,rompre
+chauffer,réchauffer
+entreposage,stockage
+chauffer,réchauffer
+accroissement,élévation
+brûler,cautériser
+congeler,geler
+bouillir,faire bouillir,fermenter
+congeler,surgeler
+dissoudre,décongeler,dégeler,fondre
+brûler,incinérer
+unification,union
+transformer,transmuter
+changer,traduire,transformer
+coupe,découpe,incision
+abattre,affaiblir,drainer,débiliter
+baisser,bémoliser
+combiner,mélanger,mêler
+division,segmentation
+dommage,dégât,préjudice
+blessure,plaie
+fixer,préparer
+coutume,habitude,usage
+appel,application,coutume,emploi,exploitation,grâce,habitude,travers,usage,utilisation
+prendre racine,s'installer,installer
+chemin,manière,mode de vie
+raidir,affermir,durcir
+débander,relâcher
+abus,maltraitance
+attacher,fixer,lier
+apparaître,se pointer
+amusement,loisir,récréation
+badinage,jeu,plaisanterie,tour
+amusement,divertissement,récréation
+diminuer,réduire
+escapisme,évacuation,évasion
+badinage,jeu
+amusement,intérêt,passe-temps,passetemps
+diminuer,réduire
+congeler,geler
+assécher,drainer
+jeu,partie
+fermenter,marcher,travailler
+presser,se dépêcher,se hâter
+luxer,démettre,disloquer
+ballon,foot,football,soccer
+annihiler,anéantir,décimer,exterminer,supprimer,éradiquer
+parfaire,perfectionner
+détériorer,corrompre,altérer,gâter
+achever,décider,finaliser
+achever,finir,terminer
+Jeu de cartes,cartes,jeu de cartes
+mesurer,quantifier,évaluer
+poker,tisonnier
+Dames,checkers,dame,dames,jeu de dames
+inscrire,marquer
+récréation,divertissement
+célébration,solennisation
+festival,kermesse
+avoir,obtenir,recevoir
+acquérir,développer
+intérimaire,jeu
+décollage,parodie
+animation,vigueur
+bagarre,chahut,commotion,grabuge,rixe
+hâte,se dépêcher,se hâter
+dessiner,faire,tirer
+blocage,obstruction
+opération,procédure,procédé
+emploi,fonction,place,position,situation
+appréhender,comprendre,saisir
+comprendre,réaliser,voir
+comprendre,entendre,lire,traduire
+connaître,savoir
+absorber,accaparer,captiver,obnubiler,occuper
+captiver,obnubiler
+former,préparer,éduquer
+commerce,métier
+penser,rappeler,remémorer,réfléchir,se rappeler,se souvenir
+aberrant,abracadabrant,bizarre,singulier
+métier,profession
+identifier,reconnaître
+rappeler,se rappeler
+enseignement,formation,éducation
+laisser,oublier
+écriture,rédaction
+faire erreur,fauter,se tromper
+labeur,travail
+clarifier,débrouiller,expliquer,illuminer,redéfinir,résoudre,élucider
+effort,peine
+analyser,comprendre,entendre,interpréter,traduire,voir
+penser,réfléchir,cogiter
+corporel,matériel
+méditer,réfléchir
+croire,estimer,imaginer,penser,supposer
+présumer,supposer
+conjecturer,spéculer,supposer
+enquête,investigation,recherche
+cerner,régler,résoudre,solutionner
+contrôle,examen
+deviner,déduire,supposer
+recherche,recherche scientifique
+calculer,compter,computer
+expérience,expérimentation
+déduire,retrancher,soustraire
+analyser,examiner,étudier
+mesurer,tailler
+différencier,distinguer,séparer
+différencier,distinguer,démarquer,singulariser
+distinguer,décrire,identifier
+classer,classifier,contenir,former,remporter,séparer,trier
+aide,attention,soin
+confirmer,démontrer,montrer,prouver,valider,établir
+accomplir,atteindre,continuer,demeurer,endurer,observer,porter,prêter,respecter,rester,souffrir,soutenir,subir,supporter,tolérer
+juger,évaluer
+estimer,juger,supposer,évaluer
+choisir,opter,prendre,sélectionner,élire
+adopter,choisir,élire
+apprécier,estimer,mesurer,évaluer
+comprendre,inclure
+refuser,rejeter
+accepter,admettre
+avoir foi,compter sur,faire confiance
+considérer,croire,estimer,penser,trouver,être d'avis
+estimer,réputer
+considérer,estimer,juger,voir
+assimiler,considérer,croire,estimer,juger,regarder,retenir,réputer,supposer,tenir
+apprécier,estimer,respecter
+décider,se décider
+décider,déterminer,juger,résoudre
+déterminer,fixer,établir
+planifier,programmer
+chercher,envisager,planifier
+avoir l'intention,concevoir,croire,entendre,envisager,penser,prévoir,réfléchir,signifier,trouver,voir,être d'avis
+associer,correspondre,lier,relier
+conclure,finir,terminer
+devoir,obligation,service
+travail,tâche
+anticiper,prévoir
+fonction,mission,rôle
+centrer,concentrer
+admettre,considérer,donner,laisser,permettre,tenir compte,tenir en compte
+accuser,appliquer,attribuer,imputer
+avoir en tête,vouloir dire
+mission,tâche
+garde,garde-côte
+commission,mission
+incurie,négligence
+communiquer,passer
+gaspillage,perte
+immoralité,mal
+dire,enjoindre
+perfidie,trahison
+escroquerie,supercherie
+demander,exiger,réclamer
+demander,exiger,imposer,prier,requérir
+encourager,engager,exhorter,inciter,presser,prier
+crime,délit
+convaincre,déterminer,inspirer,persuader
+agression,attaque,attentat
+abattre,convaincre,convertir,inspirer,surmonter,vaincre
+Infraction,délit,forfait,infraction,injure,offense,violation
+causer,entraîner,faire,motiver
+laisser,permettre
+présenter,représenter
+bataille,combat,effort,lutte
+enquêter,interroger,étudier
+appeler,téléphoner
+essai,test,épreuve
+entreprise,projet
+aventure,escapade
+accepter,agréer,approuver,consentir
+campagne,cause,effort,mouvement
+barrer,biffer,rayer,supprimer
+bouder,méconnaître,mépriser,négliger,refuser,rejeter
+danger,risque
+autoriser,laisser,permettre
+approuver,autoriser
+concéder,céder,donner
+possession,propriété
+discuter,débattre,délibérer,s'entretenir sur
+contester,défendre,protéger,rejeter,réfuter
+objectif,but
+confronter,réagir,répondre
+admettre,concéder,confesser,déclarer
+déclarer,juger
+apprendre,enseigner,éduquer
+entraîner,exercer,former
+induire en erreur,égarer
+consommation,ingestion
+réaction,réponse
+célébrer,exalter,glorifier,proclamer
+alerter,avertir
+alerter,avertir
+appréciation,jugement,tribunal,évaluation
+recommander,préconiser
+conseiller,proposer,suggérer
+regard,être
+amadouer,flatter
+odeur,odorat
+assurer,garantir,promettre
+assurer,promettre
+classe,cours
+consacrer,dédier
+entraînement,exercice,formation,préparation,éducation
+activité,exercice,perceuse,récitation
+incliner,courber
+informer,introduire,mettre,offrir,présenter
+introduire,mettre,présenter
+désirer,souhaiter
+excuser,pardonner
+accomplir,acquitter,exonérer
+bâtiment,construction,immeuble
+fabrication,montage
+production,rendement
+chuchoter,susurrer
+horticulture,jardinage
+déterminer,trouver
+indiquer,montrer
+fabrication,industrie
+désigner,indiquer,montrer
+interroger,se demander
+indiquer,montrer
+communiquer,donner,véhiculer
+dénommer,référer,signifier
+signifier,vouloir dire
+art,beaux-arts,création artistique
+dire,divulguer,exposer,révéler
+exprimer,parler
+exprimer,montrer
+chasse,recherche
+coutume,emploi,exercice,travail,usage,utilisation
+communiquer,dire
+conter,dire,narrer,raconter,rapporter
+bataille,combat,conflit
+opération,opération militaire
+avoir l'intention,signifier,vouloir dire
+disserter,développer
+caractériser,demeurer,distinguer,définir,mentionner,paraître,privilégier,qualifier,reposer,ressembler,être
+faire,rappeler,respecter,répéter
+redire,reformuler,réitérer,répéter
+bataille,conflit,lutte,bagarre
+escarmouche,échaffourée,accrochage,affrontement
+manuvre,manœuvre,manœuvrer,évitement
+insurrection,rébellion,révolte
+exprimer,parler,discuter
+agression,hostilité
+converser,discuter
+apporter,compter,correspondre,décrire,rapporter,représenter,étudier
+force,violence
+communiquer,informer
+annoncer,déclarer
+rapporter,signaler
+campagne,campagne militaire
+autre,inconnu
+circuler,propager,répandre
+déclarer,juger,prononcer,étiqueter
+assaut,attaque
+annoncer,prédire
+annoncer,signifier
+articuler,dire,prononcer
+attaque,offensive
+bafouiller,balbutier,bégayer
+dessiner,décrire,présenter
+adresser,interpeller
+chiffrer,coder,crypter,encoder
+calibrage,étalonnage
+ajustement,rectification,réajustement,réglage
+effacer,supprimer
+déposer,enregistrer,inscrire,mettre
+affirmer,dire,déclarer
+ordre,classement
+succession,suite,séquence
+affirmer,assurer,jurer
+affirmer,assurer,confirmer,constater
+déposer,jurer
+agrégation,collecte,collection
+collecte,réunion
+attester,démontrer,montrer,prouver,témoigner
+affirmer,durer,imposer,maintenir
+accommoder,arranger,disposer,organiser
+processus,procédure
+rite,rituel
+appeler,dénommer,nommer
+désigner,identifier
+babiller,bavarder
+mariage,noce
+baptisme,baptême
+babiller,bavarder,causer,papoter
+chanter,siffler
+marmonner,murmurer
+camouflage,déguisement
+emplacement,place,placement,position,situation,endroit
+résidence,séjour
+bouder,méconnaître,snober
+endosser,exprimer,porter,représenter
+appeler,demander,exiger,inviter,passer
+délai,retard
+concourir,rivaliser
+ingérence,entrave
+arrêt,escale,halte,point
+Action de groupe,action de groupe
+abandonner,jeter l'éponge
+distribution,répartition
+allocation,découpage,répartition
+part,portion
+cadeau,donation,présent
+faire,mettre,placer,poser
+batailler,combattre,lutter
+commerce,mercantilisme
+combattre,lutter
+se faire la guerre,faire la guerre
+desservir,servir
+commerce,échange
+investissement,placement
+opération,transaction
+marchandisage,merchandising,vente
+résister,tenir tête,rester ferme
+assaillir,attaquer
+paiement,versement
+assiéger,cerner,encercler
+défendre,protéger
+assurer,protéger,préserver,sauvegarder
+devoir,obligation,responsabilité
+administration,direction,gestion
+administration,direction,gestion
+organisation,établissement
+mandat,habilitation
+faire,mettre,orienter,placer,poser
+jouer,parier
+consommer,prendre
+arroser,consommer,consumer,dévorer,vider,épuiser
+consommer,dissiper,gaspiller,prodiguer,répandre
+consommer,employer,utiliser
+châtiment,correction,peine,punition,sanction
+exploiter,travailler
+appliquer,employer,utiliser
+employer,exercer
+alimenter,déjeuner,manger
+confrontation,opposition
+bataille,combat,lutte
+protestation,manifestation
+alimenter,nourrir
+alimenter,nourrir
+Sécurité juridique,sécurité juridique
+donner,fournir,procurer
+combler,exaucer,répondre,satisfaire
+arrêt,décision,jugement
+désirer,mourir,mourir de faim,souhaiter
+nécessiter,requérir,avoir besoin de
+essayer,goûter,priser,tenter
+dissiper,gaspiller
+abstenir,désister
+mastiquer,mâcher
+collaboration,coopération
+aide,assistance,secours
+coup de main,coup de pouce
+frapper,heurter
+consolation,réconfort
+appui,soutien
+appui,soutien
+prendre,tenir
+protection,égide
+arrêter,choper,prendre,saisir
+attraper,capturer
+aide,appui,soutien
+adhérer,coller
+comportement,conduite
+courtoisie,injure,offense
+contrôler,opérer
+affront,injure,insulte
+branler,caresser,tripoter
+entrer,perforer,pénétrer
+assemblée,rassemblement,réunion
+creuser,poignarder
+assemblée,rencontre,réunion
+contrepartie,retour,échange
+pétrir,travailler
+accordailles,fiançailles,implication,participation
+Jeûne#Je.C3.BBne politique,grève de la faim,jeûne#je.c3.bbne politique
+dessiner,tirer
+courir,dessiner,donner,passer,tirer
+frotter,gratter
+consultation,référence
+recouvrir,revêtir
+fameux,grand,éminent
+attacher,lier,nouer,relier
+attacher,nouer,relier
+apposer,attacher,fixer,joindre,lier
+joindre,rejoindre,relier
+connecter,joindre,unir
+attacher,lier
+relier,lier
+creuser,entamer,remettre,retourner
+creuser,excaver
+chercher,rechercher
+bête de charge,bête de somme
+bête de charge,bête de somme
+peigner,saccager
+cultiver,faucher,glaner,moissonner,recueillir,retirer,récolter
+jeune,petit,progéniture
+bébé,enfant,nourrisson,petit
+liquider,supprimer,tuer,éliminer
+ajouter,appliquer,apposer,fixer,joindre
+attacher,fixer,lier,relier
+fermer,ouvrir
+adhérer,attacher
+appliquer,mettre
+barboter,clapoter
+disperser,éparpiller
+propager,répandre
+collecter,rassembler,recueillir
+grand,gros,large,nombreux
+accueil,amphitryon,hôte
+comprimer,contracter,presser
+Algue,algue,algues,cil
+faible,modeste,petit
+entrer,insérer,introduire,mettre,présenter
+aimer,avoir,avoir des relations sexuelles,baiser,connaître,enconner,enculer,faire l'amour,fourrer,foutre,niquer,savoir
+apparier,coïter
+endosser,porter,soutenir
+passer,transférer,transmettre
+envoyer,transmettre,virer
+attraper,capturer,comprendre
+court,petit,succinct,bref
+forer,percer
+porter,transporter
+faible,jeune,petit
+pincer,presser
+associer,combiner
+mélanger,mêler
+entremêler,mélanger
+disposer,organiser,ranger
+exclure,expulser
+détourner,pirater
+insignifiant,mineur
+suspendre,accrocher
+adulte,grand,gros,majeur,mûr
+mettre,placer,poser
+activer,allumer,brancher,donner,ouvrir,tourner
+couper,disjoncter,trancher,trouver,éteindre
+engager,fonctionner,opérer
+chasser,inciter,pousser,propulser
+méchant,sévère,terrible
+jeter,précipiter,rejeter
+fonctionner,marcher
+blanchir,laver,lessiver,purifier
+déposer,poser,coucher
+surgir,sursauter,être debout
+diviser,partager,séparer
+détruire,dévaster,ravager
+fixer,mettre
+asphyxier,étouffer
+installer,mettre
+fermer,ouvrir,étendre
+dessiner,tirer
+inscrire,marquer,étiqueter
+porter,retenir,tenir
+créer,faire
+amphibie,amphibien
+conceptualiser,concevoir,convertir,imaginer
+controuver,fabriquer,inventer,manufacturer
+comprendre,imaginer,prévoir,visualiser,voir
+contempler,envisager,imaginer,prévoir
+découvrir,trouver
+créer,faire
+aboutir,accomplir,assurer,atteindre,combler,effectuer,exaucer,exécuter,parvenir,remplir,réaliser,répondre,satisfaire
+engager,fonder,introduire
+comprendre,réaliser
+causer,entraîner,provoquer
+aller,conduire,rendre
+constituer,créer,fonder,instituer,lancer,établir
+engendrer,procréer
+commencer,débuter,partir
+contrefaire,falsifier,fausser
+assembler,bâtir,construire
+couler,mouler
+cuire,faire,préparer,cuisiner
+fonctionner,travailler
+initial,original
+compiler,copier
+colorer,colorier
+composer,rédiger,écrire
+accomplir,effectuer,exécuter,faire,réaliser
+accomplir,exécuter,jouer,présenter,représenter
+faire semblant,feindre,simuler
+pratiquer,répéter
+avoir,devoir,donner,faire,prendre,rendre,retenir,tenir,être
+cultiver,produire,élever
+compiler,copier,faire,imiter,simuler
+carrer,deviner,imaginer,imprimer,publier,rétorquer,éditer
+compiler,copier
+attirer,dessiner,provoquer,tirer
+agiter,exciter,stimuler
+donner,hérisser,irriter
+affecter,remuer
+arachnida,arachnide
+déranger,gêner,préoccuper
+ressentir,sentir,éprouver
+nourrir,entretenir
+aimer,faire l'amour
+effrayer,redouter
+enrager,hérisser,rendre furieux
+déconfire,décontenancer
+faire mal,peiner
+blesser,offenser
+endurer,subir
+lasser,regretter,repentir
+humilier,rabaisser
+torturer,tourmenter
+languir,mourir,soupirer
+inviter,tenter
+abreuver,dépasser,vaincre
+animer,exalter,transporter
+souhaiter,vouloir
+désirer,souhaiter,vouloir
+aimer,souhaiter,vouloir
+désirer,souhaiter,vouloir
+aimer,vouloir
+aspirer,rêver de,désirer
+aller,circuler,déplacer,marcher,voyager
+approcher,venir
+déplacer,transférer
+tourner,rouler
+déraper,glisser
+secouer,ébranler
+battre,tambouriner
+divaguer,errer,vaguer,vagabonder
+errer,méandrer
+faire,ramper
+mollet,veau
+peau,fourrure
+dépasser,onduler
+dériver,flotter,souffler
+flotter,nager,naviguer
+renverser,retourner
+aller,conduire,rendre
+conduire,diriger,guider,orienter
+stationner,garer
+coquillage,mollusque
+naviguer,piloter,voler
+envoyer,expédier,transporter
+envoyer,expédier
+barbe,byssus
+coquillage,coquille
+aller,asseoir,chevaucher
+démonter,désarçonner
+baisser,descendre,tomber
+enfoncer,sombrer
+abaisser,descendre
+augmenter,lever,soulever,élever
+crustacé,crustacés
+causer,provoquer,sembler,tomber,éviter
+causer,provoquer,sembler,tomber,éviter
+devenir,se lever,surgir,sursauter
+placer,poser
+arriver,avancer,continuer,prendre,progresser,se passer
+avancer,progresser,ramener
+avancer,continuer,progresser
+marcher,défiler
+amener,conduire,guider
+poursuivre,suivre
+pister,poursuivre
+chasser,repousser
+abandonner,donner,départir,mourir,partir,quitter
+partir,quitter,sortir
+aboutir,arriver,atteindre,gagner,parvenir
+disperser,dissiper,parsemer
+diviser,séparer,trier
+diviser,partager,séparer
+détourner,dévier
+incliner,pencher
+chiffonner,ébouler
+circuler,distribuer
+communiquer,donner,dépasser,passer,prononcer
+passer,traverser
+approcher,rapprocher
+précipiter,se dépêcher,se hâter
+diffuser,propager,répandre,étendre
+autre,différent,distinct
+passer,se passer,écouler
+échapper,s'échapper,s'évader
+échapper,prendre ses jambes à son coup,fuir en courant
+fuir,s'enfuir,voler,échapper,évacuer
+ramener,remettre,rentrer,retourner,revenir
+disperser,éparpiller
+comprendre,percevoir
+rêver,songer
+démanger,frotter,gratter
+flairer,sentir
+empester,puer
+flairer,sentir
+flairer,sentir
+voir,percevoir
+examiner,voir,vérifier
+sembler,avoir l’air de
+souffler,siffler
+afficher,exposer,indiquer,montrer
+créer,produire,présenter,exhiber
+apparaître,confirmer,déceler,découvrir,dépouiller,développer,dévoiler,révéler
+cacher,dissimuler
+montrer,présenter,exposer
+gibier,jeu
+examiner,scruter
+apercevoir,déceler,détecter,trouver
+brouiller,couvrir,obscurcir
+déguiser,masquer
+capital,grand,primordial
+apercevoir,voir
+prêter,écouter
+résonner,vibrer
+sonner,tinter
+gargouiller,glouglouter
+donner,offrir
+conserver,garder
+avoir,disposer,posséder
+avoir,disposer,posséder
+acheter,acquérir
+Scop,ouvrier,travailleur
+militaire,soldat
+louer,prendre
+avoir,recevoir
+accepter,recevoir
+acquérir,obtenir
+abjurer,nier,refuser,rejeter
+refuser,retenir
+aider,soutenir
+passer,transférer
+éliminer,se débarasser
+abandonner,laisser
+allouer,assigner,attribuer,découper,fixer,répartir
+donner,laisser,léguer,transmettre
+donner,passer,remettre
+adjuger,allouer,assigner,attribuer,dispatcher,dispenser,distribuer,découper,répartir,ventiler
+abandonner,céder,livrer,rendre
+accepter,admettre,avoir,devoir,prendre,recevoir,recueillir,tenir,être
+accepter,admettre,assumer,permettre,prendre,recevoir,recueillir
+acquérir,avoir,avoir succès,obtenir,procurer,réussir
+engager,recruter
+commercialiser,vendre
+opérer,négocier
+rattraper,recouvrer,regagner,reprendre,restituer,récupérer,trouver
+découvrir,rencontrer,trouver
+connecter,identifier
+compenser,indemniser
+acquitter,payer,verser
+payer,rembourser
+accorder,admettre,autoriser,donner,laisser,offrir,permettre
+aimer,apprécier,estimer
+changer,échanger
+remplacer,substituer,échanger
+commercialiser,vendre,échanger
+accorder,attribuer,présenter
+accorder,attribuer,octroyer
+calculer,compter
+injecter,investir,mettre,placer
+conserver,retenir
+rendre,rembourser
+trouver,retrouver
+payer,prendre
+paumer,perdre
+paumer,perdre
+acquérir,gagner,obtenir
+comprendre,faire,gagner,mériter,obtenir,ouvrir,rendre,réaliser
+gagner,mériter
+bénéficier,profiter
+fournir,livrer,présenter,rendre
+dispenser,distribuer
+offrir,proposer
+détenir,porter
+contribuer,donner
+dessiner,retirer,tirer
+abandonner,renoncer
+abandonner,abdiquer,accorder,croire,céder,donner,fournir,offrir
+Echinodermata,echinodermata,échinoderme,échinodermes
+accorder,donner,octroyer
+echinoidea,hérisson de mer,oursin
+comparer,facturer
+ajouter,apporter,conférer,contribuer,donner,rajouter
+fournir,pourvoir
+rodentia,rongeur
+donner,causer
+munir,équiper
+adopter,suivre
+institutionnaliser,interner
+charger,confier
+charger,confier,donner,laisser,partir
+agir,faire
+passer,procéder
+perissodactyla,périssodactyle
+cheval,equus caballus
+accomplir,effectuer,faire
+fréquenter,interagir
+partir,quitter
+former,éduquer,cultiver
+attribuer,déléguer
+artiodactyla,artiodactyle,artiodactyles
+cochonnet,goret,porcelet
+choisir,élire
+mouton,ovin
+peiner,s'épuiser à la tâche
+laisser,permettre
+offrir,se proposer,se porter volontaire
+administrer,contrôler,gérer
+administrer,fonder,organiser,reconstituer,rétablir,établir
+diriger,gérer,traiter
+faire attention,prendre soin,s'occuper de 
+approcher,entreprendre
+conduire,diriger,guider
+contrôler,commander
+accepter,accéder,admettre,comporter,comprendre,inclure,inscrire,permettre,recueillir,renfermer
+impliquer,participer,prendre part
+empêcher,entraver
+garder,guetter,observer,protéger,regarder,suivre,veiller
+lier,être
+assigner,députer
+diviser,partager,répartir,séparer
+unifier,s’unir
+primat,primate,primates
+enregistrer,enrôler,inscrire,recruter
+enregistrer,inscrire
+homme,homo sapiens sapiens,humain,humaine,être humain,homo sapien
+homme,humanité,monde
+assigner,attribuer,charger,déléguer,désigner,nommer
+abattre,assassiner,tuer
+effectuer,exécuter
+rassembler,rencontrer,réunir
+marier,épouser
+célébrer,faire la fête,fêter
+amuser,distraire
+punir,pénaliser
+admettre,introduire,permettre
+contraindre,presser
+contraindre,imposer,obliger
+limiter,restreindre
+contenir,contrôler,retenir,réprimer,surveiller,tenir
+gouverner,régir,réglementer,réguler
+jeune,microscopique,petit
+aboutir,acquitter,déporter,expulser,porter,s'accorder avec,se comporter,se tenir,soutenir
+arriver,faire,gérer
+arriver,gagner,gagner son bifteck,parvenir,réussir,succéder
+aboutir,accomplir,atteindre,obtenir,parvenir,remporter,réaliser
+bousiller,enculer,foirer,gâcher,niquer
+chercher,efforcer,essayer,tenter
+essayer,tester,vérifier
+attacher,lier
+compromettre,exposer,provoquer,risquer,éviter
+aider,assister,secourir
+améliorer,encourager,favoriser,presser,promouvoir,précipiter
+accomplir,effectuer,faire
+appliquer,assurer,employer,exercer,faire,pratiquer
+choyer,dorloter,gâter
+faire attention,prêter attention,écouter
+arracher,entuber,niquer,tromper
+avoir,tromper,duper,rouler
+abaisser,abâtardir,corrompre,débaucher,dégrader,dépraver,renverser
+commettre,perpétrer
+convaincre,inspirer,persuader
+administrer,dominer,gouverner,régir,régner
+parvenir,se débrouiller,s'en sortir
+surprendre,étonner
+exister,être
+aboutir,achever,clore,clôturer,conclure,fermer,finir,superviser,terminer
+vivre,être
+subsister,vivre
+survivre,vivre
+constituer,représenter,être
+constituer,contenir,faire,former,offrir,présenter
+advenir,devenir
+coûter,être debout
+comprendre,contenir,renfermer
+avoir,comporter,demeurer,devoir,disposer,distinguer,mentionner,paraître,posséder,prendre,privilégier,reposer,ressembler,tenir,être
+posséder,s'emparer de
+comporter,comprendre,inclure
+révéler,s'avérer
+aboutir,découler,résulter
+faire,hésiter
+différer,postposer,reculer,reporter,repousser,retarder
+totaliser,s'élever
+agir,compter,peser,procéder
+demeurer,habiter,occuper,peupler,résider,vivre
+demeurer,habiter,loger,résider,séjourner,vivre
+habiter,peupler
+appartenir,appartenir à,composer,comprendre,consister,constituer,demeurer,gésir,mentir
+être,égaler
+ressembler,ressembler à
+remplir,répondre,satisfaire
+faire,répondre,servir,suffire
+conserver,correspondre,dépendre,fonctionner,servir
+accès,entrée
+combler,contenter,remplir,réaliser,satisfaire
+pondérer,équilibrer
+addition,adjonction,ajout
+arrêter,cesser
+maintenir,rester,tenir
+distancer,distancier,éloigner
+aller,amener,conduire,diriger,mener
+avion,aéronef
+aérodrome,terrain,piste
+diffuser,propager
+se trouver,être
+avion,aéroplane
+airport,aérodrome,aéroport
+faire face à,se faire face
+élever,s'élever,dresser
+compromettre,menacer,mettre en danger
+caractériser,demeurer,distinguer,mentionner,paraître,privilégier,reposer,ressembler
+correspondre,harmoniser,s'accorder
+contenir,renfermer
+coûter,être
+adapter,ajuster,convenir
+continuer,durer,persister
+analgésique,antalgique
+passer,occuper
+faire,servir
+aile,annexe,annexion
+avoir,prendre
+admettre,donner,fournir,laisser,partir,permettre,pourvoir
+constituer,poser,présenter
+apporter,correspondre,lier,être
+demeurer,rester
+appareil,engin
+commercialiser,vendre
+abside,apside,apside inférieure,périapse,périapside,péricentre
+aire,espace,zone
+appartenir,appartenir à
+aller,appartenir,appartenir à,devenir,dire,faire,passer
+assurer,promettre
+accepter,comporter,prendre,recueillir
+acide acétylsalicylique,aspirine
+dracher,pleuvoir comme vache qui pisse,pleuvoir des cordes,pleuvoir des hallebardes,pleuvoir à boire debout,pleuvoir à verse,verser
+allumer,rallumer
+balle,bille
+barge,chaland,péniche
+barrière,entrave
+base,piédestal,socle,support
+cave,sous-sol
+baignoire,bain,salle de bains,toilette
+baignoire,bain,bassine,salle de bains
+break,chariot,charrette
+feu,phare
+bicyclette,vélo
+bloc,brique
+blocage,blocus
+planche,tableau
+planche,plateau,plateau de jeu
+bateau,canot,embarcation
+bombardement,bombe
+livre,volume
+botte,chaussure,soulier
+boite,boîte,caisse
+passerelle,pont
+bâtiment,immeuble,maison,édifice
+fiacre,taxi
+cabriolet,fiacre
+boite de conserve,boîte,canette,étain
+canot,canoë,canoës,kayak
+casquette,couvercle
+calotte,capital,capitale,casquette
+auto,automobile,voiture
+voiture,wagon
+Transport de marchandises,cargaison,cargo,charge,chargement,fret,transport de marchandises
+carrosse,wagon
+autocommutateur,bourse,central,centre,commutateur téléphonique,échange
+chaise,fauteuil
+caisson,chambre,pièce,puits,salle
+chandelier,lustre,pendentif
+damier,échiquier
+agence,bureau,commode,secrétaire,sein
+Cigarette,cigare,cigarette
+horloge,pendule
+habillement,tenue,vêtement
+col,collet
+bien,bien de consommation courante,denrée,marchandise,produit
+composant,composante,constituant,élément
+calculateur,ordinateur
+connecteur,connexion
+bac,baquet,container,conteneur,récipient
+correcteur,correction
+course,cours
+couverture,revêtement
+crème,pommade,émollient
+manteau,rideau,tenture
+décoration,ornement,parure
+contre-torpilleur,destroyer,destructeur
+appareil,dispositif,mécanisme,système
+dé,dé à jouer
+poupée,vierge
+droguerie,pharmacie
+demeure,domicile,foyer,habitation,logement,maison
+arête,bord,corne,côté
+bord,bordure
+production,résultat
+escalator,escalier mécanique
+bourse,marché,orage,échange
+issue,sortie
+chiffon,linge,matière,tenue,textile,tissu,toile,étoffe
+atelier,fabrique,usine
+ventilateur,éventail
+exploitation,exploitation agricole,ferme
+clôture,escrime
+bac,ferry,ferry-boat
+escalier,volée
+pays,plancher,sol,étage
+niveau,étage
+chaussure,soulier
+base,fondation,pied
+cadre,encadrement,fenêtre,ossature,structure
+club,crosse
+tombe,tombeau
+serre,serre|serres
+premier étage,rez-de-chaussée
+dispositif de sécurité,sécurité
+fusil,pistolet
+manche,poignée,prise
+casquette,chapeau,couvercle
+chauffage,radiateur
+banane,hélicoptère
+cavité,trou
+anneau,cercle
+niveau,quantité
+auberge,posada
+habitat,habitation,résidence
+boîtier,carter
+instrument,outil
+base,infrastructure
+institution,établissement
+instrument,outil,ustensile
+fer,fer à repasser
+blouson,couverture,veston
+clef,clé,touche
+chemin,ruelle,voie
+babord,bâbord
+couche,lit
+bibliothèque,librairie
+briquet,lumière
+domicile,logement
+cadenas,serrure
+cadenas,fermer à clé,serrure
+tente,hutte,tipi
+loge,pavillon de chasse
+galetas,grenier,mansarde
+machine,machine simple
+mach,machine,machinerie
+magazine,revue
+courrier,poste
+carte,plan
+matière,matériau,matériel
+médicament,remède
+monument,mémorial
+marchand,marchandise,produit
+moto,motocyclette
+glace,miroir
+simulation,maquette
+cyclomoteur,vélomoteur,mobylette
+moto,motocycle,motocyclette,vélo
+instrument,instrument de musique
+drogue,narcotique
+aiguille,seringue,épingle
+journal,journal|journau,journaux,papier
+colis,paquet
+bourre,emballage,rembourrage
+peinture,tableau
+part,partie,portion,élément
+cloison,mur,séparation
+parcours,piste
+patio,terrasse
+photo,photographie
+icône,image
+morceau,part
+pixel,px
+fabrique,usine
+plaque,plaque photographique
+barre,timon,perche
+Embrasure,embrasure,hublot,port,ébrasement oblique
+fruit,production,produit
+arrière,derrière
+bouton,interrupteur
+chemin,route,voie
+cylindre,rouleau
+toit,toiture
+local,pièce,salle
+chaise,siège
+partie,section,segment,tronçon
+feuille,feuillet,plaque
+bouclier,écu
+bateau,navire,vaisseau
+chemise,maillot
+boutique,commerce,magasin
+côté,partie
+article de sport,équipement sportif
+arène,stade
+gare,station
+bateau à vapeur,vapeur
+baïonnette,escalier,marche,pas,échelon
+dépôt,entrepôt,réserve
+tram,tramway,trolley,trolleybus
+construction,structure
+machin,truc
+chose,contenu,matière,sujet
+complet,costume
+agrégat,montant,somme,total,totalité
+appui,soutien,support
+appui,support
+dispositif,système
+char de combat,tank
+nounours,ours,ours en peluche
+chose,objet
+cabinet,petit coin,salle de bains,toilette,toilettes
+instrument,outil
+traçabilité,traçage
+colonne de production,tube
+dessous,sous-vêtement
+outil,ustensile
+récipient,vaisseau
+armoire,armoire à linge,penderie,dressing
+Navire de guerre,bâtiment,navire,navire de guerre
+distribution de l'eau,eau,eau minérale
+chemin,trajet,voie
+arme,armement
+armes,système d'armes
+et,poids
+fenêtre,vitre
+fenêtre,vitre
+job,ouvrage,travail
+conditionnement,couverture,emballage,enveloppe
+fruit,rendement
+chose,machin,truc
+caractère,personnalité
+identité,individualité
+frigidité,froid,froideur
+apparence,aspect
+face,surface,visage
+air,expression
+difficulté,mal
+austérité,rigueur,souffrance,épreuve
+propriété,qualité
+identité,indistinguabilité
+similarité,similitude
+finesse,élégance
+pompe,splendeur
+égocentrisme,égoïsme
+ambitieux,ambition
+morale,moralité
+fierté,orgueil
+jugement,perspicacité
+comportement,conduite,agissement
+façon,manière
+façon,manière,mode
+composition,constitution
+couleur,teinte
+nuance,ombre,ordinaire,teinte,ton,variables
+arôme,odeur
+bouquet,douceur,fragrance
+Genre sexuel,sexe,sexualité
+force,puissance
+force,vigueur
+efficacité,force
+force,pouvoir,puissance,vigueur
+faible,faiblesse
+fatigue,lassitude,léthargie
+rapidité,vitesse
+arrangement,disposition,placement
+importance,magnitude
+dimension,proportion
+degré,niveau,échelle
+calibre,dimension,grandeur,taille
+augmentation,lever
+ampleur,mesure,taille,étendue
+aire,superficie,surface
+mérite,vertu
+coût,prix
+fonction,rôle,usage,utilisation
+importance,intérêt
+force,pouvoir,puissance
+force,puissance
+commande,contrôle
+efficacité,efficience,rendement
+aptitude,capacité
+cadavre,dépouille
+réseau,système
+cuir,peau
+orifice,ouverture
+cheveu,poil
+bec,dent
+bouche,embouchure
+bai,bouche,embouchure
+cristallin,lentille
+vaisseau,vas
+Groupe sanguin,groupe sanguin
+cellule germinale,cellules germinales,gamète,germen
+ovule,œuf
+appareil reproducteur,organe sexuel,sexe
+gorge,pharynx
+supporter,épaule
+buste,torse,tronc
+sein,poitrine
+nombril,ombilic,omphalos,umbilicus
+abdomen,estomac,ventre
+cul,derrière,postérieur,fesses
+extrémité,membre
+cheville,enkel
+assiette,plaque
+face,vis,visage
+caractéristique,lynx,particularité,trait
+joue,visage
+cerveau,esprit,tête
+endroit,place
+aptitude,capacité,faculté,habilité
+cerveau,cervelle,mentalité,tête
+cerveau,esprit,intellect
+astuce,perspicacité
+adresse,aptitude,habileté,intelligence
+fantaisie,imagination,vision,vue
+Inferno,disparition,mort,perte
+conception,invention
+accomplissement,aptitude,connaissance,habileté,qualification
+adresse,habileté
+compétence,technique
+mémoire,souvenir,tête
+abord,cause,intellect,raison
+testament,volition,volonté,vouloir
+mode,méthode,procédé,technique
+pratique,coutume
+intérêt,préoccupation
+monde,planète,terre
+affaire,chose,question
+connaissance,conscience
+difficulté,emmerde,problème
+certitude,sécurité
+autorité,certitude,confiance,confiance en soi,sécurité
+doute,incertitude
+incrédulité,scepticisme
+opération,processus
+absorption,concentration,immersion
+goût,saveur
+bruit,vacarme
+organisation,système
+catégorisation,classement,classification,tri
+style,tendance,mode
+acquisition,apprentissage,obtention
+association,connexion,relation
+cérébration,pensée,raisonnement
+cogitation,raisonnement
+alternative,choix,option,possibilité
+base,fondation,fondement,pierre angulaire
+planification,préparation
+accord,contrat,rapport
+monde,réalité
+existence,vie
+chose,objet
+Passion,amour
+problème,question,sujet
+aire,domaine,région,zone
+détail,point
+exemple,illustration
+exemple,prise,échantillon
+défense,justification
+stimulation,stimulus
+souci,ennui,inquiétude,tracas
+activité,problème,affaire
+idée,pensée
+concept,idée,notion
+forme,genre,sorte,type
+genre,type
+variante,version,édition
+attribut,dimension,propriété
+caractère,qualité,spécificité
+caractéristique,trait,trait de caractère
+aspect,facette
+montant,nombre,quantité,somme,total
+division,part,partie,section,élément
+fin,issue,terme
+composant,constituant,facteur,ingrédient,point,élément
+ensemble,totalité,tout
+morceau,unité
+droit,loi
+hypothèse,possibilité,théorie
+plan,programme,projet
+projet,stratégie
+sens,sen|sens,signification,substance
+charge,fardeau
+guêpe,motif,thème
+centre,coeur,cœur,essentiel,fond,moelle,noyau,somme,substance,viande
+personnage,rôle
+conviction,croyance,foi
+conviction,certitude
+confiance,foi
+doctrine,philosophie
+avis,idée,opinion,pensée,sentiment
+foi,religion
+avis,opinion,opinion publique,vox populi
+égocentrisme,égoïsme
+but,fin,objectif
+cible,objectif,objet
+discipline,domaine,sujet
+maths,mathématiques
+population,univers
+Philosophie naturelle,physique
+ingénierie,recherche appliquée,technique,technologie
+mentalité,perspective
+impartialité,justice
+estime,respect,égard
+perspective,position,vue
+message,signal
+médium,medium,moyen
+contact,liaison,lien
+poste,service postal
+langage,langue
+cas,cas grammatical
+catégorie lexicale,classe lexicale,partie du discours
+besoin,personnage,personne,travailleur
+dénomination,nom
+nom de famille,patronyme
+appellation,dénomination,désignation,nom,titre
+en-tête,intitulé,ligne,rubrique,titre,tête
+blanc,espace
+partie,rubrique,section
+caractère,dédicace,inscription,lettrage
+livre de référence,référence
+numéro,numéro de téléphone,numéro téléphonique
+document,papier,pièce
+point,élément
+carte,menu
+chronique,histoire,récit
+biographie,vie
+acte,loi
+droit,loi,législation
+constitution,loi organique
+décret,fiat,ordonnance,ordre,édit
+programme,programme informatique
+fonction,procédure,routine
+collecte,collection,compendium,manuel
+journal,périodique,revue
+contenu,message
+matière,objet,sujet,thème
+importance,importation,intérêt,sens,sen|sens,signifiance,signification
+programme,émission
+lettre,missive
+remerciement,reconnaissance
+salut,salutation
+carte,carte de visite
+info,information,renseignement
+matière,matériau,matériel
+banque de données,base de données,database
+enregistrement,registre
+règle,réglementation
+avis,conseil
+agrément,approbation,visa
+compte,explication
+conséquence,réponse
+commentaire,observation,remarque
+signal,signe
+marque,stigmate,tache
+occurrence,occurence
+touche,trait
+marque,signe
+caractère,graphème,lettre
+marque,marque commerciale
+geste,gesticulation,mouvement,symbolique
+démo,démonstration,manifestation
+expression,mention,reflet,réflexion,terme
+allégorie,emblème,symbole
+exécution,performance
+acte,loi,nombre,numéro,routine
+langue,langue ethnique,langue naturelle
+art,graphique,graphisme,illustration
+dramaturgie,théâtre
+composition,morceau,opus,pièce
+manière,style
+genre,genre littéraire
+phonation,voix
+son,phone
+conversation,dialogue
+discours,discussion,débat
+discussion,délibération,mot,parole,propos
+argument,argumentation,débat
+dialogue,négociation
+dicton,expression,locution,proverbe,sentence
+expression,locution,locution figée
+offre,propos,proposition
+propos,proposition
+commande,ordre
+convocation,citation
+accord,contrat,pacte
+conflit,différence,différend,dispute,litige
+demande,requête
+oraison,prière
+examen,interrogatoire
+examen,test,épreuve
+caractérisation,description,délimitation,image
+déni,refus
+abjuration,désaveu
+abjuration,abnégation
+objection,opposition
+rapport,étude
+histoire,récit
+cancan,commentaire,commérage,ragot
+merci,remerciement
+adresse,conférence,discours,suscription
+arme,armement,artillerie
+marquage,marque
+difficulté,problème
+possibilité,éventualité
+dénouement,issue,résultat
+décision,victoire
+codécision,décision
+altération,changement,modification,variation
+accident,coup
+collision,heurt
+feu,incendie
+guigne,malchance,poisse
+infirmité,maladie
+détonation,explosion
+cas,exemple
+déplacement,mouvement
+déplacement,voyage
+réussite,succès
+commencement,début,origine
+début,départ
+aube,matin
+cause,raison
+conception,création,idée
+destin,destinée
+annihilation,destruction,démolition
+fluctuation,variation
+dire,répétition
+retour,récurrence
+onde,ondulation
+ascenseur,lever
+onde,vague
+décès,mort
+passage,transition
+transformation,transmutation
+arrêt,halte,point
+différence,divergence,écart
+cloche,glas,sonnette
+grondement,retentissement
+anneau,bague,tintement
+abord,rencontre,réunion
+dommage,dégât,détérioration,préjudice
+impulsion,pouls,pulsation
+début,déclenchement,foyer,irruption,épidémie,éruption
+aventure,fois,fonction,occasion
+fête,partie
+célébration,festivité,réjouissance
+enterrement,funérailles,obsèques,rite funéraire,funéraille,obsèque
+mariage,noce
+compétition,concours
+course de relais,relais
+triomphe,victoire
+revers,coup du sort,contretemps
+abaissement,automne,chute,disparition,perte
+ambition,rêve,souhait
+désir,souhait
+mal du pays,nostalgie
+concupiscence,désir
+douleur,peine
+gré,sympathie
+gratitude,ingratitude,reconnaissance,remerciement
+choc,stupéfaction
+anticipation,attente
+anticipation,attente,espérance
+colère,ire
+fureur,furie
+crainte,effroi,peur,épouvante
+carquois,frisson,tremblement
+effroi,panique,peur,terreur
+angoisse,anxiété,crainte
+crainte,inquiétude,peur
+bonheur,joie
+allégresse,joie
+malheur,tristesse
+crève-cœur,deuil,peine de cœur
+espoir,espérance
+Affection#G.C3.A9n.C3.A9ralit.C3.A9,affection,affection#g.c3.a9n.c3.a9ralit.c3.a9,amour,cur,cœur,tendance,tendresse
+hostilité,inimitié
+aliment,alimentation,nourriture,nutriment,nutrition
+art culinaire,cuisine
+potage,soupe
+bonbon,confiserie
+bonbon,friandise,sucrerie
+hase,lapin,lièvre
+chignon,roulé
+légume,végétal
+légumes verts,vert
+date,datte
+aliment,alimentation
+céréale,grain
+aromatisant,assaisonnement,parfum,épice,aromate
+laitage,produit laitier
+boisson,breuvage
+boisson,consommation
+eau-de-vie,esprit,spiritueux
+Brandy,brandy,cognac,eau-de-vie,pálinka
+arrangement,disposition
+royaume,règne
+common people,peuple
+agrégation,collection
+paquet,jeu de cartes
+bloc,boule
+masse,monticule
+corps,groupe,organe,organisation,organisme
+Terre,domaine,monde
+couleur,gens de couleur
+groupe d'intérêt,groupe de pression,lobby
+clan,tribu
+famille,peuple,phratrie
+peuple,tribu
+classe,classe sociale
+rassemblement,réunion
+andouille,paire,saucisse
+bibliothèque,librairie
+bibliothèque,librairie
+couple,paire
+pièce,salle
+homme,mariage,époux
+biologie,faune et flore
+ensemble,série
+catégorie,classe,famille,groupe
+espace topologique,structure topologique
+groupe,tranche
+colis,paquet
+organisation,organisme
+agence,organisme
+compagnie,entreprise,société
+entreprise,firme
+fraternité,sodalité
+famille,foyer,ménage
+culte,foi,religion
+descendance,origine,sang
+espèce,genre,type
+communauté,métier,profession
+domaine,département,ministère,section,service
+nation,peuple
+Pouvoir législatif,corps législatif,parlement,pouvoir législatif
+assemblée,rassemblement,réunion
+administration,gérance,organisation,établissement
+nation,pays,peuple
+contrée,nation,pays,état
+monde,public
+foule,gens,masse,peuple,plèbe
+bourgeoisie,classe moyenne
+groupe,unité
+service,service militaire
+armée,forces armées
+droit,loi,police,policier
+actif,gens,hommes,main d'œuvre,main-d’œuvre,on
+quartier,voisinage
+commune,municipalité
+métropole,ville
+cité,town,ville
+petite ville,village
+club,corporation,guilde,ordre,société
+consortium,entreprise conjointe,groupe
+année,classe
+cercle,groupe
+clique,coterie,cénacle,ingroup,inner circle,meute
+gang,équipage
+anneau,bague,bande,cercle,gang,meute
+fête,partie
+parti,parti politique
+table,tableau
+galaxie,nébuleuse
+bande,gang,groupe
+convoi,flotte
+alliance,coalition,convent
+confédération,fédération
+abord,rencontre,réunion
+rencontre,réunion
+réunion au sommet,sommet
+assemblée,parlement
+comité,commission
+comité,commission
+cour,tribunal
+administration fédérale,agence,autorité,bureau,ministère,office,organisme
+communauté,démocratie,république
+activité économique,régime économique,système économique,économie
+Régime politique,régime politique,système politique
+peuple,tribu
+assortiment,mélange,pot-pourri
+branche,service,subdivision,succursale
+activité,business,clientèle,commerce,commercial,patronage
+commission,délégation,mission
+profession,vocation
+expo,exposition,salon
+défilé,parade
+ligne,rangée
+réseau,système
+flore,végétation
+arbrisseau,arbuste,buisson,chaparral,maquis
+bois,forêt
+droit,loi,législation
+code civil,droit civil
+série,train,suite
+data,donnée,information,renseignement
+femme,féminité
+voix,vote
+accueil,amphitryon,armée,hôte
+apex,bout,cime,pointe
+aire,contrée,pays,région,zone
+début,origine,racine,source
+forêt vierge,jungle
+côté,face
+bas,derrière,fond
+frontière,limite
+frontière,limite
+endroit,lieu,place,propriété
+centre,milieu
+centre,milieu,œil,coeur
+arrondissement de commune,district
+région,zone
+pays,terre
+comté,département
+diocèse,éparchie,épiscopat,évêché
+circonscription,district,quartier,territoire,zone
+domaine,pays,terre
+demeure,domicile,résidence
+domicile,foyer,maison
+ciel,nirvana,paradis
+bord,frontière,orée
+bout,extrémité,fin
+alentour,environnement,milieu,voisinage
+avant,recto,devant
+recours,ressort,terrain favori
+antre,cachette,planque,cache
+cache,cachette
+dedans,interne,intérieur
+droite,ligne
+dehors,extérieur
+jardin public,parc
+fête,parc,park,vert
+stationnement,zone bleue
+chemin,itinéraire,liaison,route,trajet
+carré,esplanade,place,rond-point
+place,rond-point
+endroit,lieu,point
+place,position
+emploi,gare,place,poste,station
+arrière,fond
+cité,commune,municipalité
+partie,région
+havre,port,sphère
+environs,proximité,quartier,vicinité,voisinage
+endroit,lieu
+pâté de maisons,îlot,îlot urbain
+refuge,sécurité
+place,siège
+partie,région
+côté,flanc,page,partie
+lieu,place,site
+espace,local
+vacuum,vide
+province,état
+station,base
+arrêt,escale
+bout,pointe
+endroit,lieu,point
+cité,commune,town,ville
+canton,commune,hameau,municipalité,ville
+Unité urbaine,unité urbaine,zone urbaine
+chemin,trajet
+tendance,cours
+région,zone
+morale,moralité,éthique
+eau,étendue d'eau
+ascendant,derrière
+bloc,rocher
+astre,corps céleste
+escarpement,falaise
+crevasse,fente,fissure
+cortex,croûte,pie
+niveau,plancher,étage
+bois,forêt,timberland
+colline,montagne
+île,îles
+lac,lac|lacs,laque
+sol,terre,terre ferme
+sol,terre
+marais,marsh,marécage
+météore,météoroïde
+lune,mois
+mont,montagne
+bouche,embouchure
+bouche,embouchure
+altitude,élévation
+espace,ouverture
+morceau,partie
+Col de montagne,col,col de montagne
+chemin,cours,route,trajet
+champ,plaine
+chaine de montagnes,cordillère
+accroc,déchirure
+fleuve,rivière,torrent
+pierre,roc,roche
+ligne,rang
+dépôt,sédiment
+coque,coquille
+côte,rive
+côte,côté,inclinaison,pente,talus
+star,étoile
+courant,ruisseau,cours d'eau
+empreinte,trace
+cosmos,création,monde,univers
+val,vallée
+destin,destination,destinée,fatalité,fortune,hasard,sort
+dieu,divinité,déité,dévas,immortel
+Dieu,Éternel
+communicateur,communicatrice
+consommateur,usager
+défenseur,gardien,protecteur,tuteur
+ambianceur,ambianceuse,amuseur,divertisseur
+expert,savant,spécialiste
+femelle,femme
+habitant,habitante
+autochtone,natif
+amant,amoureux
+chef,dirigeant,leader,maître
+homme,mâle
+intermédiaire,modérateur,médiateur,truchement
+ouvrier,travailleur
+Juif,Juifs,Juive,hébreu,juif,juive
+Européen,Européenne
+académicien,universitaire
+as,expert,génie,sensation
+ami,copain,relation
+acteur,agent,comédien,joueur,musicien,personnage
+administrateur,directeur,gérant,régisseur
+avocat,défenseur,partisan
+agent,courtier,représentant
+ancêtre,aïeul
+adjoint,aide,assistant
+athlète,sportif
+beauté,bébé,chéri,enfant,nourisson,nourrisson,nouveau-né
+amour,chéri
+camarade,compagnon,frère
+camarade,compagnon,compère,copain,faire-valoir
+bâtisseur,constructeur
+businessman,commerçant,homme d'affaires,marchand
+bourgeois,commerçant
+chancelier,premier ministre
+gars,individu,mec
+cas,genre,personnage,type
+bambin,enfant,môme
+enfant,môme
+citoyen,citoyenne
+camarade,compagnon,partenaire
+compositeur,compositeur de musique,compositeurs
+conducteur,contrôleur
+connexion,correspondance,liaison
+connexion,relation
+cousin,cousin germain,cousine
+artisan,artisanat
+créature,wight,être
+dame,madame
+administrateur,directeur,directrice,gestionnaire,gérant
+docteur,médecin,toubib
+domestique,employée de maison,employé de maison
+excentrique,olibrius
+instituteur,pédagogue,éducateur
+employé,employée,salarié,travailleur
+juge,magistrat
+directeur,exécutif
+fifille,fille,fillette,gamine,jeune fille,petite
+étranger,étrangère
+chef,contremaitre,directeur
+monstre,monstruosité
+ami,amie,copain
+géniteur,vieux
+collègue,gentilhomme,messieurs,monsieur,seigneur
+fille,jeune fille,jeune femme
+aïeul,bon-papa,grand-papa,grand-père,papi,papy,pépé
+aïeule,bonne-maman,grand-maman,grand-mère,mamie,mémé
+aïeul,grand-parent
+chef d'État,chef d'état,chef d’État
+femme au foyer,maîtresse de maison,personne au foyer
+individu,individuel,particulier
+juge,juriste,justice,magistrat
+famille,parent
+avocat,avocate,défenseur,homme de loi,juriste
+factionnaire,garde,sentinelle
+juge,juriste,justice,magistrat
+constructeur,décideur
+mannequin,modèle
+constructeur,fabricant,producteur
+maître,professionnel,spécialiste
+bourgmestre,directeur général,gérant municipal,maire,syndic
+fonctionnaire,officier
+mère,maman
+instrumentiste,musicien
+négociateur,négociatrice
+voisin,voisine
+infirmier,infirmière
+cadre,fonctionnaire
+descendance,descendant,enfant,progéniture
+gestionnaire,opérateur
+adversaire,opposant,opposition
+châtelain,maître,overlord,seigneur
+patron,propriétaire,seigneur
+possesseur,propriétaire
+acteur,interprète
+agent,agent de police,keuf,officier,policier,policière
+homme politique,politicien
+force,pouvoir,puissance
+président,secrétaire général
+détenu,prisonnier
+mandataire,représentant
+chalengeur,challengeur,compétiteur,compétitrice,concurrence,concurrent,rival
+pupille,écolier,élève
+domestique,servant
+imprésario,promoteur
+infirmière,nonne,sœur
+militaire,soldat
+conjoint,partenaire,épouse,époux
+espion,agent secret
+pupille,élève,étudiant
+supérieur,supériorité
+contrôleur,superviseur
+oncle,tonton
+garde,gardien,guetteur
+conjoint,femme,kobièta,épouse,époux
+auteur,écrivain
+cause,conséquence,effet,incidence,résultat,suite
+aléa,chance,destinée,fortune,hasard,opportunité
+chance,destinée,fortune
+actuel,courant,courant électrique
+électricité,énergie électrique
+onde électromagnétique,rayonnement électromagnétique
+orage,tempête
+chaleur,énergie thermique
+lumière,lumière visible
+clair de lune,lune
+ensoleillement,soleil,lumière du soleil
+radiation,rayonnement
+casquette,chapeau,pileus
+herbe,plante graminée
+herbe,plante herbacée
+capsicum,poivron
+arbre à thé,camellia sinensis,thé,théier
+fongus,mycota,mycète,champignon
+culture,moisson,récolte
+cep,vigne
+arbrisseau,arbuste,buisson,maquis
+pédoncule,tige
+feuillage,feuille
+avoir,bien,possession,propriété
+immeuble,immobilier,propriété immobilière
+terrain,terre
+bail,crédit-bail,lease,location
+terrain,terre
+prospérité,richesse
+achat,acquisition
+gain,profit
+cadeau,donation,présent
+aide,aide économique
+paiement,versement
+gaine,loyer,rémunération,sala,salaire,salarié,traitement
+compensation,indemnisation,réparation
+commission,part,portion,pourcentage
+impôt,prélèvement,taxe
+impôt,taxe
+perte,rouge
+montant,somme
+protection,sécurité
+garantie,sécurité
+capital,fonds
+capital,fonds de roulement
+accumulation,cumul
+réserve,stock
+acompte,avance
+fric,pognon
+devise,monnaie
+espèce,monnaie
+pièce,pièce de monnaie
+dette,emprunt
+emprunt,prêt
+document,pièce
+carie,carie dentaire
+consommation,usage
+développement,évolution
+flux,écoulement
+croissance,développement,ontogenèse
+accroissement,augmentation,croissance,développement
+action,activité
+fonctionnement,opération,performance
+accouchement,naissance,parturition
+façonnage,maturation moléculaire,traitement,transformation,procédure
+succession,succession écologique
+approvisionnement,fourniture,offre
+unité,unité de mesure
+ft,patte,pied
+ligne,ligne agate
+clef,clé,touche
+carré,place
+ne...rien or rien,nixe,néant,que dalle,que pouic,rien,zilch,zéro
+addition,adjonction,ajout,augmentation,gain
+pas,enjambée
+limite,valeur d'adhérence,point d'accumulation,point limite
+amas,lot,masse,montagne
+approvisionnement,fourniture
+espace,marge de manœuvre,place
+lien,rapport,relation
+bases,fondement
+connexion,connexité,relation
+passerelle,pont
+pertinence,rapport,à-propos
+chose,détail,particulier
+reste,résidu,résiduaire,équilibre
+parenté,relation
+proportion,rapport,ratio,taux
+efficacité,rendement
+accélération,rapidité,vitesse
+direction,sens
+point,point cardinal
+altitude,hauteur,élévation
+figure,forme
+droite,ligne
+connexion,liaison,lien
+Conique,conique,coniques
+disque,soucoupe
+ellipse,ovale
+bosse,enflure,extrusion,protubérance,saillie
+arc,proue
+bord,frontière,limite
+ligne,ride,sillon
+articulation,joint
+bloc,cube,pavé
+position,situation
+endroit,lieu,place
+lien,rapport,relation
+compagnie,société
+amant,intimité,liaison
+scène,tableau
+nature,état de nature
+degré,niveau,stade
+cime,crête,haut,hauteur,pointe,sommet
+cas,circonstance,condition
+statut social,classe sociale
+existence,être
+non-existence,inexistence
+existence,vie
+situation de famille,état civil,situation matrimoniale,statut marital
+mariage,union
+accord,ensemble,harmonie
+accord,concordance,entente
+hostilité,inimitié
+conflit,désaccord,friction,frottement
+bonheur,félicité,joie
+abattement,affliction,tristesse
+autonomie,liberté
+indépendance,liberté
+détention,rétention
+action,activité
+gestation,grossesse,maternité
+infirmité,mal,maladie,malaise
+néoplasme,tubercule,tumeur
+blessure,mal,traumatisme
+maladie mentale,psychopathie
+neuroticisme,névrose
+Psychose,psychose,psychoses
+unification,union
+coalition,fusion
+alliance,confédération
+connexion,lien
+cohérence,cohésion
+marche,échelon
+gloire,renom,renommée,réputation
+déshonneur,honte
+honte,ignominie
+ascendance,autorité,contrôle,domination
+besoin,demande
+absence,carence,défaut,déficience,insuffisance,manque
+étroitesse,rigueur
+néant,vide
+grâce,état de grâce
+chance,destin,destinée,fortune,sort
+banqueroute,faillite
+chance,occasion,opportunité
+audience,audition
+fortune,richesse
+abondance,aisance,richesse
+fortune,luxe,richesse,somptuosité
+cadre,circonstance,contexte
+immunité,insensible
+sec,sècheresse
+destruction,fin,mort,terme
+matière,matériau
+atome,molécule,particule
+alliage,métal
+matière première,matières
+acide,aigre
+alcali,base
+élément,élément chimique
+carbone,charbon
+AU,or
+FE,fer
+sn,étain
+essence,gaz
+kérosène,pétrole
+pierre,roc,roche
+adhésif,colle
+protide,protéine
+agent,représentant
+chimie,substance
+complexe,complexité,compliqué
+sol,terre
+pays,sol,terre
+sol,terre
+eau,eau minérale
+graisse,gras,matière grasse
+formulation,préparation
+carburant,combustible
+colorant,couleur,teinte,teinture
+poison,toxique
+durée,période,temps
+accès,combat,crise,lutte
+avenir,futur
+moment,temps
+jour,journée
+âge,époque
+adolescence,puberté
+troisième âge,vieillesse,âge
+nuit,soirée
+jour,journée
+jour,journée
+avant-midi,matin,matinée
+soir,soirée
+nuit,obscurité,sombre
+date,date butoire,date limite,délai,échéance
+congé,fête,jet,vacance
+an,année
+an,année
+an,année
+dizaine,décennie
+lunaison,lune,mois
+jour,jour sidéral
+jour,journée
+période,terme
+session,séance
+min,minute
+s,seconde
+période,saison
+âge,époque
+instant,minute,moment,seconde
+heure,moment,temps
+période,âge,ère,époque
+jour,journée
+préhistoire,préhistoire ; préhistoire
+cadre,calendrier,délai,manche
+jeu,set
+intermission,interruption,pause,repos,trêve
+morbidité,mortalite,mortalité,taux de mortalité
+Vitesse,allure,rapidité,vitesse
+phase,période,stade,étape

@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <link rel="stylesheet" href="css/authors2.css" />
+    
+	<script>
+	var app = {
+		debug: function (msg) {
+			console.log("%s", msg);
+		}
+			
+	};
+	</script>
+</head>
+<body>
+<h1>Recherche Auteur</h1>
+<form name="adv-search-form">
+<input class="input-field" placeholder="Tapez quelques car ..." type="text" name="filter" oninput="app.debug('debug 100');" >
+<div class="pac-container" style="width: 238px;">
+	<div class="pac-item">
+		<span class="pac-icon pac-icon-marker"></span>
+		<span class="pac-item-query">Avenue d'Auderghem</span>
+		<span><span class="pac-matched">4</span>5, Bruxelles, Belgique</span>
+	</div>
+	<div class="pac-item">
+		<span class="pac-icon pac-icon-marker"></span>
+		<span class="pac-item-query">Rue du Fossé aux Loups</span>
+		<span><span class="pac-matched">47</span>, Bruxelles, Belgique</span>
+	</div>
+	<div class="pac-item">
+		<span class="pac-icon pac-icon-marker"></span>
+		<span class="pac-item-query"><span class="pac-matched">4</span>000</span>
+		<span>Liège, Belgique</span>
+	</div>
+	<div class="pac-item">
+		<span class="pac-icon pac-icon-marker"></span>
+		<span class="pac-item-query">Avenue de la Toison d'Or</span>
+		<span><span class="pac-matched">4</span>0, Ixelles, Belgique</span>
+	</div>
+</div><!-- pac-container -->
+</form>
+</body>
+</html>

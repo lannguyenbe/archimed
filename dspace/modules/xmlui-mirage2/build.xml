@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project name="xmlui-mirage2" basedir="." default="help" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  
+  <property environment="env"/>
+  
+  <condition property="os.unix">
+    <os family="unix"/>
+  </condition>
+
+  <target name="help">
+    <echo message="in Eclipse, execute target : deploy"/>
+    <echo message="to deploy in directory modules/xmlui/target of the source tree"/>
+    <echo message="What deploy is doing ... "/>
+    <echo message="------------------------"/>
+    <echo message="1. skip : mvn install dspace-xmlui-mirage2"/>
+    <echo message="2. mvn this main war modules/xmlui-mirage2"/>
+    <echo message="3. copy themes/Mirage2 to modules/xmlui/target/xmlui-4.2/themes/Mirage2"/>
+    <echo message="4. skip : touch the jetty context descriptor xmlui.xml"/>
+    <echo message="... you should see the redeployment messages on jetty console"/>
+  </target>
+
+  <target name="install">
+    <artifact:mvn pom="../../../dspace-xmlui-mirage2/pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <arg value="install"/>   
+   </artifact:mvn>
+  </target>
+      
+  <!--target name="overlay" depends="install"-->
+  <target name="overlay-full">
+    <artifact:mvn pom="pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <!--sysproperty key="mirage2.deps.included" value="false"/-->
+      <arg value="-P mirage2_dev,mirage2-deps-preinstalled-fast"/>   
+      <arg value="clean"/>   
+      <arg value="package"/>         
+    </artifact:mvn>
+  </target>
+
+  <!-- this overlay only works for xsl modifications, doesn't regenerate main.css and theme.js -->
+  <target name="overlay">
+    <artifact:mvn pom="pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <arg value="-P mirage2_dev,mirage2-xfast"/>   
+      <arg value="clean"/>   
+      <arg value="package"/>         
+    </artifact:mvn>
+  </target>
+
+  <target name="cp2xmlui">
+    <copy todir="../xmlui/target/xmlui-5.0/themes/Mirage2" preservelastmodified="true" overwrite="true">
+      <fileset dir="target/xmlui-mirage2-5.0/themes/Mirage2" includes="**/*">
+        <different targetdir="../xmlui/target/xmlui-5.0/themes/Mirage2" ignoreFileTimes="true" />
+      </fileset>
+    </copy>
+  </target>
+   
+  <target name="deploy" depends="overlay,cp2xmlui">
+    <!--touch file="${env.DS}/webapps/xmlui.xml"/-->
+  </target>
+
+  <target name="touch">
+    <touch file="${env.DS}/webapps/xmlui.xml"/>
+  </target>
+
+</project>

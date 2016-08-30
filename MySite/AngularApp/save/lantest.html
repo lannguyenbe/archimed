@@ -1,0 +1,26 @@
+<!doctype html>
+<html ng-app="demo">
+<head>
+  <meta charset="utf-8">
+  <title>ui-typeahead</title>
+  <!--link rel="stylesheet" type="text/css" href="css/typa.css" /-->
+  <link rel="stylesheet" type="text/css" href="bootstrap/3.3.4/css/bootstrap.css" />
+  <script src="angular/1.3.10/angular.js"></script>
+  <!--script src="ui-bootstrap/ui-bootstrap-typeahead-tpls-0.12.1.js"></script-->
+  <script>
+angular.module("template/typeahead/typeahead-match.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/typeahead/typeahead-match.html",
+    "<a tabindex=\"-1\" bind-html-unsafe=\"match.label | typeaheadHighlight:query\"></a>");
+}]);
+angular.module("demo", ["template/typeahead/typeahead-match.html"])
+  .controller("demoController", function ($scope) {
+    $scope.greeting = "Hello !";
+  });
+  </script>
+
+</head>
+<body ng-controller="demoController">
+<h1>{{greeting}}</h1>
+<div ng-include="'template/typeahead/typeahead-match.html'"></div>
+</body>
+</html>

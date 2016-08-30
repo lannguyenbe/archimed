@@ -1,0 +1,5 @@
+# Synonym mappings used to user-friendly label our local rtbf repositories name
+tramontane=>Tramontane TV
+tramsonuma=>Sonuma TV
+tramradio=>Tramontane Radio
+

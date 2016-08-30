@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="rtbf-devutils" basedir="." default="help">
+	<target name="help">
+		<echo message="Encrypt/decrypt ../properties files : "/>
+	    <echo message="ant encrypt - to encrypt files .properties to .cast5"/>
+	    <echo message="ant decrypt - to decrypt files .cast5 to .properties"/>
+	</target>
+
+	<property environment="env"/>
+
+	<property name="root.dir" value=".."/>
+	
+	<condition property="eclipse.running">
+		<isset property="eclipse.pdebuild.home"/>
+	</condition>
+		
+	<!-- this target is NOT executed from inside eclipse -->
+	<!-- handler is not supported -->
+	<target name="askpwdsecure" unless="${eclipse.running}">
+        <input message="Enter password :" addproperty="pwd">
+        	<handler type="secure"/>
+        </input>
+    </target>
+
+	<!-- this target is executed from inside eclipse -->
+    <target name="askpwde" if="eclipse.running">
+        <input message="Enter password :" addproperty="pwd"/>
+    </target>
+	
+	<target name="askpwd" depends="askpwde,askpwdsecure"></target>
+	
+    <target name="encrypt" depends="askpwd">
+		<apply executable="openssl" dest="${root.dir}" inputstring="${pwd}" failonerror="true">
+			<arg value="cast5-cbc"/>
+			<arg value="-e"/>
+			<arg value="-pass"/><arg value="stdin"/>
+			<arg value="-in"/><srcfile/>
+			<arg value="-out"/><targetfile/>
+			<fileset dir="${root.dir}">
+				<include name="*.properties"/>
+				<exclude name="build.properties"/>
+			</fileset>
+			<mapper type="glob" from="*" to="*.cast5"/>
+		</apply>
+    </target>
+
+    <target name="decrypt" depends="askpwd">
+		<apply executable="openssl" dest="${root.dir}" inputstring="${pwd}" failonerror="true">
+			<arg value="cast5-cbc"/>
+			<arg value="-d"/>
+			<arg value="-pass"/><arg value="stdin"/>
+			<arg value="-in"/><srcfile/>
+			<arg value="-out"/><targetfile/>
+			<fileset dir="${root.dir}">
+				<include name="*.properties.cast5"/>
+			</fileset>
+			<mapper type="glob" from="*.properties.cast5" to="*.properties"/>
+		</apply>
+    </target>
+
+
+</project>

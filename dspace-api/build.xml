@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project name="dspace-api" basedir="." default="help" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  
+  <property environment="env"/>
+  
+  <condition property="os.unix">
+    <os family="unix"/>
+  </condition>
+
+  <target name="help">
+    <echo message="Type : ant install"/>
+    <echo message="What install is doing ..."/>
+    <echo message="------------------------"/>
+    <echo message="1. compile"/>
+    <echo message="2. package .jar"/>
+    <echo message="3. install in .m2"/>
+  </target>
+
+  <target name="install">
+    <artifact:mvn pom="pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <sysproperty key="db.name" value="oracle"/>
+      <arg value="clean"/>   
+      <arg value="install"/>   
+   </artifact:mvn>
+  </target>
+    
+</project>

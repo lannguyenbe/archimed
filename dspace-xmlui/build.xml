@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project name="dspace-xmlui" basedir="." default="help" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  
+  <property environment="env"/>
+  
+  <condition property="os.unix">
+    <os family="unix"/>
+  </condition>
+
+  <target name="help">
+    <echo message="Type : ant deploy"/>
+    <echo message="What deploy is doing ..."/>
+    <echo message="------------------------"/>
+    <echo message="1. mvn this current overlay dspace-xmlui"/>
+    <echo message="2. mvn the main war modules/xmlui"/>
+    <echo message="3. touch the jetty context descriptor xmlui.xml"/>
+    <echo message="... you should see the redeployment messages on jetty console"/>
+  </target>
+
+  <target name="install">
+    <artifact:mvn pom="pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <sysproperty key="db.name" value="oracle"/>
+      <arg value="clean"/>   
+      <arg value="install"/>   
+   </artifact:mvn>
+  </target>
+    
+  <target name="clean" if="${os.unix}">
+    <artifact:mvn pom="../dspace/modules/xmlui/pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <sysproperty key="db.name" value="oracle"/>
+      <!--arg value="clean"/ make target fail on Windows -->   
+      <arg value="clean"/>   
+    </artifact:mvn>
+  </target>
+  
+  <target name="overlay" depends="install,clean">
+    <artifact:mvn pom="../dspace/modules/xmlui/pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <sysproperty key="db.name" value="oracle"/>
+      <arg value="clean"/>   
+      <arg value="package"/>         
+    </artifact:mvn>
+  </target>
+  
+  <target name="deploy" depends="overlay">
+    <touch file="${env.DS}/webapps/xmlui.xml"/>
+  </target>
+
+  <target name="touch">
+    <touch file="${env.DS}/webapps/xmlui.xml"/>
+  </target>
+
+</project>

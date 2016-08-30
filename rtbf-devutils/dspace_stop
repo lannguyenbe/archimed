@@ -1,0 +1,1 @@
+java -DSTOP.PORT=8170 -DSTOP.KEY=1234 -jar $JETTY_HOME/start.jar --stop

@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project name="additions" basedir="." default="touch" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  
+  <!-- Ask for destination dir -->
+  <property environment="env"/>
+
+  <!-- Get version from pom -->
+  <artifact:pom id="mypom" file="pom.xml" />
+  <property name="dspace.version" value="${mypom.version}"/>
+  
+  <property name="dspace.sourcedir" value="${env.DSSRC}"/>
+  <property name="dspace.dir" value="${env.DS}"/>
+  <target name="ask_dspace_dir">
+    <input
+        message="Enter intall directory :"
+        addproperty="dspace.dir"
+        defaultvalue="${env.DS}"
+    />
+  </target>
+  
+  <!-- Timestamp date used when creating backup directories -->
+  <tstamp>
+    <format property="build.date" pattern="yyyyMMdd-HHmmss" />
+  </tstamp>
+
+  <condition property="os.unix">
+    <os family="unix"/>
+  </condition>
+
+  <target name="touch">
+    <touch file="${env.DS}/webapps/rtbf-rest.xml"/>
+  </target>
+
+  <target name="touch-dev4">
+    <touch file="${env.DS}/../dspace-dev4/webapps/rtbf-rest.xml"/>
+  </target>
+
+  <target name="mytest" depends="ask_dspace_dir">
+   <echo message="dspace.dir=${dspace.dir}"/>
+   <echo message="dspace.sourcedir=${dspace.sourcedir}"/>
+  </target>
+  
+  <target name="update_lib" description="Update jar file in lib">
+    <!--
+    Copy jar file in target to *.old suffix
+    -->
+    <copy todir="${dspace.dir}/lib" preservelastmodified="true" overwrite="true" >
+        <fileset dir="${dspace.dir}/lib" includes="*.jar" >
+            <present present="both" targetdir="target" />
+        </fileset>
+        <globmapper from="*" to="*-${build.date}.old" />
+    </copy>
+    
+    <!--
+    Force overwrite
+    -->
+    <copy todir="${dspace.dir}/lib" preservelastmodified="true" overwrite="true" >
+        <fileset dir="target" includes="*.jar">
+            <different targetdir="${dspace.dir}/lib" ignoreFileTimes="true" />
+        </fileset>
+    </copy>
+  </target>
+
+  <target name="update_webapps_lib" description="Update jar file in webapps lib">
+    <!--
+    Copy jar file in target to *.old suffix
+    -->
+    <copy todir="${dspace.dir}/webapps" preservelastmodified="true" overwrite="true" >
+        <fileset dir="${dspace.dir}/webapps" includes="**/lib/*.jar" >
+            <present present="both" targetdir="target" >
+                <flattenmapper/>
+            </present>
+        </fileset>
+        <globmapper from="*" to="*-${build.date}.old" />
+    </copy>
+    
+    <!--
+    Force overwrite : TODO
+    -->
+  </target>
+
+</project>

@@ -24,12 +24,12 @@ import org.dspace.rtbf.rest.search.Resource;
 @Path("{alternatePaths: serie_titles|ispartof_titles}")public class LOVSerieTitles extends Resource {
     private static Logger log = Logger.getLogger(LOVSerieTitles.class);
     
-    // public static final String FACETFIELD = "ispartof_title";
+    // public static final String FACETFIELD = "serie_title";
     /*
-     *  Lan 02.05.2015 : now is list of title of all communitites even if there is no child sequence
-     *  title_keyword only exists for document of resource_type_id=4
+     *  Lan 07.09.2016 : list of title of all communitites even if there is no child collection or sequence
+     *  for serie : ispartof_title = title of the serie itself
      */
-    public static final String FACETFIELD = "serie_title";
+    public static final String FACETFIELD = "ispartof_title";
     public static final SimpleNode.Attribute ELEMENT = SimpleNode.Attribute.TITLE;
 
     

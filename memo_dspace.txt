@@ -421,6 +421,13 @@ http://localhost:8070/solr/search/selectNoCollapse?group.ngroups=true&group=true
 http://localhost:8070/solr/search/selectNoCollapse?group.main=true&group.ngroups=true&group=true&sort=dc.date.issued_sort%20asc&q=*&fq=search.resourcetype%3A2&rows=100&fl=dc.date.issued%2Cscore%2Cispartof_title%2Cowning_community%2C+identifier_origin&wt=json&indent=true&group.field=owning_community
 # facet.query and qroup.query and non group.field
 http://localhost:8070/solr/search/selectNoCollapse?group=true&group.format=grouped&group.query=owning_community:4-999&rows=100&facet=true&facet.query=date_issued_dt%3A%5B+NOW%2FDAY-1YEAR+TO+NOW%2FDAY-1MILLI+%5D&sort=dc.date.issued_sort%20asc&q=*&fq=search.resourcetype%3A2&fl=dc.date.issued%2Cscore%2Cispartof_title%2Cowning_community%2C+identifier_origin&wt=json&indent=true
+http://localhost:8070/solr/search/selectNoCollapse?
+group=true&group.limit=10&group.sort=search.resourcetype+desc%2Cscore%20+desc
+&group.field=owning_community&rows=100&facet=true
+&facet.field=date_issued.year&sort=dc.date.issued_sort%20asc
+&q=*&fq=search.resourcetype%3A2
+&fl=search.uniqueid%2Csearch.resourcetype%2Cdate_issued_dt%2Cscore%2Cispartof_title%2Cowning_community%2C+identifier_origin
+&wt=json&indent=true
 
 
 ### solr grouping or field collapse :

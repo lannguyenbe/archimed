@@ -172,6 +172,7 @@
             <list>
                 <ref bean="searchFilterIdAttributor" />
                 <ref bean="searchFilterSerieTitle" />
+                <ref bean="searchFilterTitleCommunity" />
                 <ref bean="searchFilterRoyalty" />
                 <ref bean="searchFilterProductionType" />
             </list>
@@ -184,6 +185,7 @@
                 <property name="sortFields">
                     <list>
                         <ref bean="sortTitle" />
+                        <ref bean="sortTitleCommunity" />
                         <ref bean="sortRoyalty" />
                         <ref bean="sortProductionType" />
                     </list>
@@ -218,6 +220,7 @@
                 <!-- Lan 16.02.2015 Remove title, add TitleCommunity to advanced search -->
                 <!-- ref bean="searchFilterTitle" /-->
                 <ref bean="searchFilterTitleCommunity" />
+                <ref bean="searchFilterTitleCollection" />
                 <!-- ref bean="searchFilterAuthor" /-->
                 <ref bean="searchFilterContributor" />
                 <ref bean="searchFilterChannel" />
@@ -243,6 +246,8 @@
                 <property name="sortFields">
                     <list>
                         <ref bean="sortTitle" />
+                        <ref bean="sortTitleCommunity" />
+                        <ref bean="sortTitleCollection" />
                         <ref bean="sortDateIssued" />
                         <ref bean="sortRoyalty" />
                         <ref bean="sortProductionType" />
@@ -348,6 +353,7 @@
                 <!-- Lan 16.02.2015 Remove title, add titlecom to advanced search -->
                 <!-- ref bean="searchFilterTitle" /-->
                 <ref bean="searchFilterTitleCommunity" />
+                <ref bean="searchFilterTitleCollection" />
                 <!-- ref bean="searchFilterAuthor" /-->
                 <ref bean="searchFilterContributor" />
                 <ref bean="searchFilterChannel" />
@@ -373,6 +379,8 @@
                 <property name="sortFields">
                     <list>
                         <ref bean="sortTitle" />
+                        <ref bean="sortTitleCommunity" />
+                        <ref bean="sortTitleCollection" />
                         <ref bean="sortDateIssued" />
                         <ref bean="sortRoyalty" />
                         <ref bean="sortProductionType" />
@@ -582,8 +590,9 @@
         </property>
     </bean>
 
-    <!-- Lan 21.06.2016 - add this filter for serie_title rtbf_rest filter -->
-    <!-- th index field resir_title is actually hard code index field for resource_type_id 4 only in SolrServiceImple.java -->
+    <!-- Lan 07.09.2016 - not use anymore : serie_titles LOV is now based on ispartof_title which exists for any document -->
+    <!-- Lan 21.06.2016 - add this filter for serie_titles LOV -->
+    <!-- this index field only exists for serie only eg. resource_type_id = 4 -->
     <bean id="searchFilterSerieTitle" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
         <property name="indexFieldName" value="serie_title"/>
         <property name="metadataFields">
@@ -599,6 +608,16 @@
         <property name="metadataFields">
             <list>
                 <value>dcterms.isPartOf.title</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Lan 06.09.2016 - add this filter to advanced search -->
+    <bean id="searchFilterTitleCollection" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+        <property name="indexFieldName" value="ispartof_program_title"/>
+        <property name="metadataFields">
+            <list>
+                <value>rtbf.isPartOf.program_title</value>
             </list>
         </property>
     </bean>
@@ -832,6 +851,14 @@
     
     <bean id="sortProductionType" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
         <property name="metadataField" value="rtbf.production_type"/>
+    </bean>
+    
+    <bean id="sortTitleCommunity" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
+        <property name="metadataField" value="dcterms.isPartOf.title"/>
+    </bean>
+    
+    <bean id="sortTitleCollection" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
+        <property name="metadataField" value="rtbf.isPartOf.program_title"/>
     </bean>
     
 </beans>

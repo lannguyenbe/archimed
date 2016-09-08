@@ -248,6 +248,7 @@ public class ItemAdd extends Item {
             		case "dcterms.isPartOf.title" :
 	            	case "dc.date.issued" :
 	            	case "rtbf.channel_issued" : 
+            		case "rtbf.isPartOf.program_title" :
 	            		iterator.remove();
 	            		break;
 	            	default:
@@ -282,6 +283,19 @@ public class ItemAdd extends Item {
             patch.element = "channel_issued";
             patch.qualifier = null;
             patch.value = dit.getChannel();
+            dcValues.add(patch);
+
+            // Add program title for dup item
+            patch = new Metadatum();
+            patch.schema = "rtbf";
+            patch.element = "isPartOf";
+            patch.qualifier = "program_title";
+            try {
+				patch.value = this.getOwningCollection().getName();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             dcValues.add(patch);
 
             // Create an array of matching values

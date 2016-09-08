@@ -211,6 +211,8 @@ public class SolrServiceImpl implements SearchService, IndexingService {
      * @param force   Force update even if not stale.
      * @throws SQLException
      * @throws IOException
+     * 
+     * 01.08.2016 Lan : ajouter la duplication des items dans l'index
      */
     @Override
     public void indexContent(Context context, DSpaceObject dso,
@@ -239,6 +241,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                             unIndexContent(context, handle);
                             
                             ItemAdd.DiffusionItem[] dItems = ItemAdd.DiffusionItem.findDupById(context, item.getID());
+                            // duplicate the item as many as diffusion_path
                             if (dItems.length == 0) { // there is no dup
                                 buildDocument(context, (Item) dso);                           	
                             } else {
@@ -1288,7 +1291,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
      * @throws SQLException sql exception
      */
 
-    protected List<String> getItemLocations(Item myitem, DSpaceObject[] owningCCByRef)
+    protected List<String> getItemLocations(Item myitem)
             throws SQLException {
         List<String> locations = new Vector<String>();
 
@@ -1303,9 +1306,6 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         Community owningCommunity = (Community) owningCollection.getParentObject();
         locations.add("om" + owningCommunity.getID());
         locations.add("ol" + owningCollection.getID());
-        // Return owning records by ref
-        owningCCByRef[0] = owningCommunity;
-        owningCCByRef[1] = owningCollection;
 
         // now put those into strings
         int i = 0;
@@ -1328,6 +1328,13 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 
         // build list of community ids
         Community[] communities = target.getCommunities();
+        
+        // 06.09.2016 Lan : add owning_community and owning_collection
+        // the collection owns itself
+        Collection owningCollection = target;
+        Community owningCommunity = (Community) owningCollection.getParentObject();
+        locations.add("om" + owningCommunity.getID());
+        locations.add("ol" + owningCollection.getID());
 
         // now put those into strings
         for (Community community : communities)
@@ -1339,17 +1346,21 @@ public class SolrServiceImpl implements SearchService, IndexingService {
     }
     
     protected List<String> getCommunityLocations(Community target) throws SQLException {
-        List<String> communities = new Vector<String>();
+        List<String> locations = new Vector<String>();
 
         // build list of community ids
         Community parentCommunity = target.getParentCommunity();
+        
+        // 07.06.2016 Lan : add owning_community
+        // the community owns itself
+        locations.add("om" + target.getID());
 
         // now put those into strings
         if (parentCommunity != null) {
-        	communities.add("m" + parentCommunity.getID());
+        	locations.add("m" + parentCommunity.getID());
         }
                 
-        return communities;
+        return locations;
     }
 
     protected List<String> getCodeOrigineLocations(CodeOrigine target) throws SQLException {
@@ -1664,35 +1675,6 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             
             doc.addField(field, value);
 
-if (false) { // TODO remove this
-	
-            switch (field) {
-            case "dc.description":
-            case "dc.description.abstract":
-            case "dc.description.tableofcontents":
-            case "dc.rights":
-                doc.addField(field, value);
-                break;
-            case "dc.title":
-                doc.addField(field, value);
-                doc.addField(field + "_sort", value);
-                // Lan 04.05.2016 : for "notequals" and "notcontains" search on serie title
-                doc.addField("serie_title", value);
-                // Lan 28.04.2016 : for "equals" search on serie title
-                doc.addField("serie_title_keyword", value);
-                // Lan 28.04.2016 : for "contains" search on serie title
-                doc.addField("serie_title_contain", value);
-                // Lan 02.05.2016 : for LOV on serie title
-                doc.addField("serie_title_partial", value);
-                break;
-            case "rtbf.identifier.attributor":
-            case "rtbf.royalty_code":
-                doc.addField(field, value);
-                break;
-            default: 
-            	break;
-            }
-}
         }
 
         //Do any additional indexing, depends on the plugins
@@ -1706,10 +1688,14 @@ if (false) { // TODO remove this
     }
 
     /**
+     * Build a Lucene document for a DSpace Item and write the index
+     *
      * @param context
      * @param collection
      * @throws SQLException
      * @throws IOException
+     * 
+     * 01.07.2016 Lan : copy of buildDOcument(Context, Item) where Item is replaced by Collection
      */
     protected void buildDocument(Context context, Collection collection)
     throws SQLException, IOException {
@@ -1718,7 +1704,7 @@ if (false) { // TODO remove this
         // Create Lucene Document
         SolrInputDocument doc = buildDocument(Constants.COLLECTION, collection.getID(),
                 collection.getHandle(), locations);
-        
+
         //Keep a list of our sort values which we added, sort values can only be added once
         List<String> sortFieldsAdded = new ArrayList<String>();
 
@@ -1977,72 +1963,6 @@ if (false) { // TODO remove this
             doc.addField(field, value);
 
             
-if (false) { // TODO : remove this
-	
-            
-            String yearUTC;
-            String sort_dt;
-            
-            switch (field) {
-            case "dc.description":
-            case "dc.description.abstract":
-            case "dc.description.tableofcontents":
-            case "dc.provenance":
-            case "dc.rights":
-            case "dc.rights.license":
-                doc.addField(field, value);
-                break;
-            case "dc.title":
-                doc.addField(field, value);
-                doc.addField(field + "_sort", value);
-                break;
-            case "dc.date.issued": // TODO: remove hardcode
-                value_dt = MultiFormatDateParser.parse(value);
-                value = DateFormatUtils.formatUTC(value_dt, "yyyy-MM-dd");
-                /* searchFilter of this name exists in discovery.conf */
-                indexFieldName = "date_issued";
-            	doc.addField(indexFieldName + "_dt", value_dt);
-            	doc.addField(indexFieldName + "_keyword", value);
-                yearUTC = DateFormatUtils.formatUTC(value_dt, "yyyy");
-            	doc.addField(indexFieldName + "_keyword", yearUTC);
-            	doc.addField(indexFieldName + "_contain", value);
-            	doc.addField(indexFieldName, value);
-                /* sortFieldConfig of this name exists in discovery.conf */
-            	sort_dt = DateFormatUtils.ISO_DATETIME_FORMAT.format(value_dt);
-            	/* field index */
-            	doc.addField(field + "_sort", sort_dt);
-                doc.addField(field, value);
-            	break;
-/*
-            case "rtbf.date_diffusion.version": // TODO: remove hardcode
-                value_dt = MultiFormatDateParser.parse(value);
-                value = DateFormatUtils.formatUTC(value_dt, "yyyy-MM-dd");
-                 searchFilter of this name exists in discovery.conf 
-                indexFieldName = "date_diffusion";
-            	doc.addField(indexFieldName + "_dt", value_dt);
-            	doc.addField(indexFieldName + "_keyword", value);
-                yearUTC = DateFormatUtils.formatUTC(value_dt, "yyyy");
-            	doc.addField(indexFieldName + "_keyword", yearUTC);
-            	doc.addField(indexFieldName + "_contain", value);
-            	doc.addField(indexFieldName, value);
-                 sortFieldConfig of this name exists in discovery.conf 
-            	sort_dt = DateFormatUtils.ISO_DATETIME_FORMAT.format(value_dt);
-            	 field index 
-                doc.addField(field, value);
-            	break;
-*/
-            case "rtbf.channel_issued":
-            case "rtbf.identifier.attributor":
-            case "rtbf.royalty_code":
-                doc.addField(field, value);
-                break;
-            default: 
-            	break;
-            }
-            
-}
-            
-            
         }
 
 
@@ -2140,12 +2060,7 @@ if (false) { // TODO : remove this
         }
 
         // get the location string (for searching by collection & community)
-        Community owningCommunity = null;
-        Collection owningCollection = null;
-    	DSpaceObject dsoArray[] = new DSpaceObject[] { null, null };
-        List<String> locations = getItemLocations(item, dsoArray);
-        owningCommunity = (Community) dsoArray[0];
-        owningCollection = (Collection) dsoArray[1];
+        List<String> locations = getItemLocations(item);
 
         SolrInputDocument doc = null;
         if (item instanceof ItemAdd.ItemDup) {
@@ -2417,35 +2332,6 @@ if (false) { // TODO : remove this
 
                         }
 
-                        /* 
-                         * Lan 25.07.2016 : as the consequence of duplicated items in Solr index, 
-                         * index only if the value is the title of owningCommunity
-                        if (field.equals("dcterms.isPartOf.title") && owningCommunity != null) { 
-                        	if (! value.equals(owningCommunity.getName())) {
-                        		value = null;
-                        		continue;
-                        	}
-                        }
-                        */
-
-                        /* 
-                         * Lan 25.07.2016 : as the consequence of duplicated items in Solr index, 
-                         * index only if the values are the same as of owningCollection
-                            if (field.equals("rtbf.channel_issued") && owningCollection != null) {
-                        	Metadatum[] channels = owningCollection.getMetadataByMetadataString(field);
-                        	int i;
-                        	for (i = 0; i < channels.length; i++) {
-								if (value.equals(channels[i].value)) { // break when value is found in channels
-									break;
-								}
-							}
-                        	
-                        	if (i == channels.length) { // value is not found
-                        		value = null;
-                        		continue;
-                        	}                        	
-                        }
-                        */
                         
                         doc.addField(searchFilter.getIndexFieldName(), value);
                         doc.addField(searchFilter.getIndexFieldName() + "_keyword", value);
@@ -2817,80 +2703,6 @@ if (false) { // TODO : remove this
             log.error("Error while writing item to discovery index: " + handle + " message:"+ e.getMessage(), e);
         }
         
-        // duplicate the item as many as diffusion_path
-/*        ItemAdd.DiffusionItem[] dItems = ItemAdd.DiffusionItem.findDupById(context, item.getID());
-        
-        for (DiffusionItem dit : dItems) {  TODO: remove hard code 
-        	String indexFieldName;
-        	String field;
-        	String value;
-
-        	Community owningCommunity = Community.find(context, dit.getCommunity_id());
-        	Collection owningCollection = Collection.find(context, dit.getCollection_id());
-
-            doc.setField("search.uniqueid", dit.getDiffusion_path());
-            doc.setField("owning_community", Constants.COMMUNITY+"-"+owningCommunity.getID());
-            doc.setField("owning_collection", Constants.COLLECTION+"-"+owningCollection.getID());
-            
-            field = "dcterms.isPartOf.title";
-            indexFieldName = "serie_title";
-            value = owningCommunity.getName();
-            doc.setField(indexFieldName + "_contain", value);
-            doc.setField(indexFieldName + "_keyword", value);
-            doc.setField(indexFieldName + "_partial", value);
-            doc.setField(indexFieldName, value);
-            doc.setField(field, value);
-
-            field = "rtbf.channel_issued";
-            indexFieldName = "channel";
-        	Metadatum[] channels = owningCollection.getMetadataByMetadataString(field);
-        	for (int i = 0; i < channels.length; i++) {
-				value = channels[i].value;
-				if (i == 0) {
-		            doc.setField(indexFieldName + "_contain", value);
-		            doc.setField(indexFieldName + "_keyword", value);
-		            doc.setField(indexFieldName + "_partial", value);
-		            doc.setField(indexFieldName, value);
-		            doc.setField(field, value);
-				} else {
-		            doc.addField(indexFieldName + "_contain", value);
-		            doc.addField(indexFieldName + "_keyword", value);
-		            doc.addField(indexFieldName + "_partial", value);
-		            doc.addField(indexFieldName, value);
-		            doc.addField(field, value);
-				}
-			}
-            
-            field = "dc.date.issued";
-            value = dit.getDate_diffusion();
-            Date value_dt = MultiFormatDateParser.parse(value);
-            value = DateFormatUtils.formatUTC(value_dt, "yyyy-MM-dd");
-            String yearUTC = DateFormatUtils.formatUTC(value_dt, "yyyy");
-             searchFilter of this name exists in discovery.conf 
-            indexFieldName = "date_issued";
-        	doc.setField(indexFieldName + "_dt", value_dt);
-        	doc.setField(indexFieldName + "_keyword", value);
-        	doc.addField(indexFieldName + "_keyword", yearUTC);
-        	doc.setField(indexFieldName + "_contain", value);
-        	// 19.05.2016 Lan : index fields .year and .year_sort are mandotory for facetting
-        	doc.setField(indexFieldName + ".year", yearUTC);
-        	doc.setField(indexFieldName + ".year_sort", yearUTC);
-        	doc.setField(indexFieldName, value);
-             sortFieldConfig of this name exists in discovery.conf 
-        	String sort_dt = DateFormatUtils.ISO_DATETIME_FORMAT.format(value_dt);
-        	 field index 
-        	doc.setField(field + "_sort", sort_dt);
-            doc.setField(field, value);
-
-            try {
-                writeDocument(doc, streams);
-                log.info("Wrote Dup Item: " + handle + " on resourceid "+ dit.getDiffusion_path() + " to Index");
-            } catch (RuntimeException e)
-            {
-                log.error("Error while writing item to discovery index: " + handle + " message:"+ e.getMessage(), e);
-            }
-        }*/
-       
         
     }
 

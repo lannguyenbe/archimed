@@ -26,9 +26,10 @@ nbactions.xml
 nb-configuration.xml
 META-INF/
 
+## Lan 05.09.2016 : comment out since svn is internal storage
 ## Ignore all *.properties file in root folder, EXCEPT build.properties (the default)
-/*.properties
-!/build.properties
+#/*.properties
+#!/build.properties
 
 ## Ignore work dir/files
 *.Old/

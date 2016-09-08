@@ -1,0 +1,475 @@
+===================================== INSTALL ARCHIMED-ACC =============================================================
+-- install sur archimed-acc 19.07.2016
+-- dir_source sur $DSSRC/../archimed-acc vers dir_installation $DSACC
+-- en standard avec Mirage
+mvn clean package -Ddb.name=oracle -Denv=archimed-acc
+-- avec Mirage2
+mvn clean package -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=archimed-acc
+vi $DSACC/config/xmlui.xconf
+    changer Mirage en Mirage2
+dans webapps/xmlui : mv WEB-INF/web.dev4 WEB-INF/web.xml   
+
+===================================== DID-YOU-MEAN IN METAM-5.0 =============================================================
+
+# 3. cp C:\local\metam-5.0\dspace\modules\xmlui-mirage2\target\xmlui-mirage2-5.0\themes\Mirage2
+#    to C:\local\metam-5.0\dspace\modules\xmlui\target\xmlui-5.0\themes
+cd C:\local\metam-5.0\dspace\modules\xmlui\target\xmlui-5.0\themes
+copy themes\Mirage2 
+
+# 2.
+cd \local\metam-5.0\dspace\modules\xmlui-mirage2
+modify C:\local\metam-5.0\dspace\modules\xmlui-mirage2\src\main\webapp\themes\Mirage2 to correctly point to angular :
+    <script src="vendor/angular/angular.js">&#160;</script>
+    <script src="vendor/angular-route/angular-route.js">&#160;</script>
+    <script src="vendor/angular-resource/angular-resource.js">&#160;</script>
+mvn package -P mirage2_dev -Dmirage2.deps.included=false # non mimified main.css
+# vi C:\local\metam-5.0\dspace\modules\xmlui-mirage2\target\xmlui-mirage2-5.0\themes\Mirage2\styles\main.css should contains didYouMean
+
+# 1. to install dspace-xmlui-mirage2 in .m2 local repository
+cd \local\metam-5.0\dspace-xmlui-mirage2
+mvn package
+cd target
+mvn install:install-file -Dfile=dspace-xmlui-mirage2-5.0.war -DgroupId=org.dspace -DartifactId=dspace-xmlui-mirage2 -Dversion=5.0 -Dpackaging=war
+
+# 0. modified files
+C:\local\metam-5.0\dspace-xmlui-mirage2\src\main\webapp\styles\classic_mirage_color_scheme\_general.scss
+C:\local\metam-5.0\dspace\modules\xmlui-mirage2\src\main\webapp\themes\Mirage2\xsl\aspect\discovery\discovery.xsl
+C:\local\metam-5.0\dspace\modules\xmlui-mirage2\src\main\webapp\themes\Mirage2\xsl\preprocess\discovery.xsl
+
+===================================== UPGRADE DEV4 TO METAM-5.0 =============================================================
+mvn install:install-file -Dfile=ojdbc6-12.1.0.1.0.jar -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=12.1.0.1.0 -Dpackaging=jar -DgeneratePom=true
+
+edit [dspace-source]/pom.xml to adjust ocjdbc driver to version 11.2.0.2.0 already in .m2 repository
+
+cd dspace
+mvn -U clean package -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=dev4
+
+# Fail !
+add .bowerrc to $DSSRC/dspace/modules/xmlui-mirage2/target/themes/Mirage2
+add the following to specify .cache directory
+{
+    "storage":{
+        "packages" : "/usr/local/devhome/nln/.cache/bower"
+    }
+}
+cd $DSSRC/dspace/modules/xmlui-mirage2
+mvn package -Dmirage2.deps.included=false    
+# OK
+
+cd $DSSRC
+vi pom.xml # edit to add module additions otherwise compile of dspace/module/xmlui fails
+
+cd dspace
+mvn -U clean package -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=dev4
+cd target
+cd dspace-installer
+ant fresh_intall # on empty dspace2
+
+cd dspace2/bin
+./dspace database info
+./dspace database migrate
+
+=====================================================================================
+mvn install:install-file -Dfile=jetty-servlets-9.2.1.v20140609.jar -DgroupId=org.eclipse.jetty -DartifactId=jetty-servlets -Dversion=9.2.1.v20140609 -Dpackaging=jar
+
+curl -HAccept:application/json http://localhost:8070/rs/service/authors/names
+
+main: No Spring WebApplicationInitializer types detected on classpath
+
+ant overwrite_solr_configs
+mvn install:install-file -Dfile=dspace-xmlui-5.0.war -DgroupId=org.dspace -DartifactId=dspace-xmlui -Dversion=5.0 -Dpackaging=war
+
+mvn install:install-file -Dfile=additions-5.0.jar -DgroupId=org.dspace.modules -DartifactId=additions -Dversion=5.0 -Dpackaging=jar
+mvn install:install-file -Dfile=dspace-api-5.0.jar -DgroupId=org.dspace -DartifactId=dspace-api -Dversion=5.0 -Dpackaging=jar
+
+
+C:\local\metam-5.0\dspace>
+mvn help:active-profiles -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=ptg_dspace2
+
+------------------------------------- to rebuild EVERYTHING (also from dspace-*) --------------------------------------
+### Pour désactiver le build des modules dspace-* ou modules/* : mv pom.xml pom.xml.d
+
+cd [dspace-source] # NOT the subdir [dspace-source]/dspace
+mvn -U clean package -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=ptg_dspace2
+mvn clean package -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=ptg_dspace2
+mvn package -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=ptg_dspace2
+# if fail on xmlui-mirage2, retry
+mvn -U package -rf :xmlui-mirage2 -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=ptg_dspace2
+# if target does not contain webapps
+mvn package -P assembly -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=ptg_dspace2
+
+===================================== UPGRADE TO DSPACE 5.0 =============================================================
+--------------- upgrade install dir dspace2
+--------------- backup db : expdp
+--------------- backup solr/search/data
+# !!! db migrate when starting jetty
+# Do db migrate manually for large db, script are under source/dspace-api/...
+# or embedded in dspace-api.jar
+cd bin
+./dspace database info # status, which scripts
+./dspace database migrate
+./dspace database info
+# Last lines should have State=success
+
+
+
+# update the install dir : dspace2
+# !!! solr index upgrade
+# check if dspace-installer/solr/...search/conf/schema.xml is up to date with the actual in dspace2
+cd dspace/target/dspace-installer/
+ant update
+# ant help
+# ant update_solr_indexes
+
+--------------- compile source metam-5.0
+# on ptg : To assemble webapps
+cd dspace
+mvn package -P assembly -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=ptg_dspace2
+
+# on ptg : Build success but target/dspace-installer/webapps doesn't exist ???
+
+# on ptg : resume at -rf :xmlui-mirage2
+cd dspace
+mvn package -rf :xmlui-mirage2 -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=ptg_dspace2
+ 
+# on ptg : try again
+cd modules/xmlui-mirage2
+mvn package -Dmirage2.deps.included=false
+
+# on ptg : error happens on modules/xmlui-mirage2 : when opening a lock file in .npm/cache 
+
+cd dspace
+mvn -U clean package -Dmirage2.on=true -Dmirage2.deps.included=false -Ddb.name=oracle -Denv=ptg_dspace2
+
+edit [dspace-source]/pom.xml to adjust ocjdbc driver to version 11.2.0.2.0 already in .m2
+
+# mvn install:install-file -Dfile=ojdbc6-12.1.0.1.0.jar -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=12.1.0.1.0 -Dpackaging=jar -DgeneratePom=true
+===================================== DSPACE 4.2 =============================================================
+------------------------------------  J A V A - M V N - A N T ------------------------------------------------
+mvn install:install-file -Dfile=dspace-api-lang-4.2.2.jar -DgroupId=org.dspace -DartifactId=dspace-api-lang -Dversion=4.2.2 -Dpackaging=jar
+
+
+cd C:\local\metam-4.2\dspace\modules\xmlui-mirage2
+mvn package -Dmirage2.deps.included=false # if node, ruby ... already pre-installed
+mvn package -P mirage2_dev -Dmirage2.deps.included=false # non minified main.css
+
+mvn install:install-file -Dfile=dspace-xmlui-mirage2-4.2.war -DgroupId=org.dspace -DartifactId=dspace-xmlui-mirage2 -Dversion=4.2 -Dpackaging=war
+
+
+# to install dspace-xmlui-lang-4.2.2.war in .m2 local repository
+cd \local\metam-4.2\dspace-xmlui-lang
+mvn install:install-file -Dfile=dspace-xmlui-mirage2-4.2.war -DgroupId=org.dspace -DartifactId=dspace-xmlui-mirage2 -Dversion=4.2 -Dpackaging=war
+
+mvn clean package
+cd target
+mvn install:install-file -Dfile=dspace-xmlui-lang-4.2.2.war -DgroupId=org.dspace -DartifactId=dspace-xmlui-lang -Dversion=4.2.2 -Dpackaging=war
+
+# to install dspace-xmlui in .m2 local repository
+cd \local\metam-4.2\dspace-xmlui\target
+mvn clean package
+cd target
+mvn install:install-file -Dfile=dspace-xmlui-4.2.war -DgroupId=org.dspace -DartifactId=dspace-xmlui -Dversion=4.2 -Dpackaging=war
+
+# to package xmlui
+cd \local\metam-4.2\dspace\modules\xmlui
+# edit pom.xml to specify <version>4.2.2</version> for dspace-xmlui-lang
+mvn -Ddb.name=oracle clean package
+
+## to install jar in .m2 local repository
+mvn install:install-file -Dfile=dspace-api-4.2.jar -DgroupId=org.dspace -DartifactId=dspace-api -Dversion=4.2 -Dpackaging=jar
+
+#-------------------------------------------------------------- to recompile
+### 1. install dspace-xmlui-lang in .m2 local repository
+cd $DSSRC/dspace-xmlui-lang
+mvn clean package
+cd target
+mvn install:install-file -Dfile=dspace-xmlui-lang-4.2.2.war -DgroupId=org.dspace -DartifactId=dspace-xmlui-lang -Dversion=4.2.2 -Dpackaging=war
+
+### 2. install dspace-xmlui in .m2 local repository
+cd $DSSRC/dspace-xmlui
+mvn clean package
+cd target
+mvn install:install-file -Dfile=dspace-xmlui-4.2.war -DgroupId=org.dspace -DartifactId=dspace-xmlui -Dversion=4.2 -Dpackaging=war
+
+### 3. install precompiled dspace-api in .m2 local repository
+mvn install:install-file -Dfile=dspace-api-4.2.jar -DgroupId=org.dspace -DartifactId=dspace-api -Dversion=4.2 -Dpackaging=jar
+
+### 4. package everything
+cd $DSSRC/dspace
+mvn clean
+mvn -Ddb.name=oracle -Denv=myhome2 package
+cd $DSSRC/dspace/target/dspace-4.2-build
+ant update
+
+### 5. remove extra webapp
+cd $DS/webapps
+# rm -rf webapp
+
+### 6. instead of 3.
+cd $DSSRC/dspace-api/target
+cp dspace-api-4.2.jar $DS/lib
+## to recompile:end
+
+-----------------------------------------  S O L R  --------------------------------------------------
+# terms SearchComponent to find DAL code_origine
+http://vm-dev4.inf.rtbf.be:8081/solr/search/terms?q=*%3A*&rows=100&wt=json&indent=true&terms.regex=DAL.*&terms.fl=code_origine_keyword&terms.limit=20
+
+# Orphelins Sonuma
+http://vm-dev4.inf.rtbf.be:8080/solr/search/selectSequence?q=*%3A*&fq=identifier_attributor%3ASonuma%5C+TV&fq=-location%3Dm2&wt=json&indent=true
+
+# Pour trouver les sequences ayant des dup
+http://vm-dev4.inf.rtbf.be:8080/solr/search/selectNoCollapse?q=*%3A*&fq=search.uniqueid%3A2-*-*&fq=%7B!collapse+field%3Didentifier_origin+nullPolicy%3Dexpand%7D&sort=identifier_origin+asc&rows=200000&fl=search.resourceid&wt=csv&indent=true
+
+# pour test selectionner précisément 1 fiche sur 3 en jouant avec raw properties serieTitleQ et dateDiffusionQ
+http://localhost:8070/solr/search/selectSequence?q=football&fq=channel_keyword%3ALa%5C+Une&fq=identifier_origin%3ATV%2F399124&fl=identifier_origin%2Csearch.uniqueid%2Cdate_issued_dt%2Cowning_collection%2Chandle%2Cidentifier_origin%2Cchannel_keyword%2Cispartof_title_keyword&wt=json&indent=true&serieTitleQ=attente&dateDiffusionQ=date_issued_keyword:2012-04-14
+
+# fiches dup TV et liés Sonuma
+http://vm-dev4.inf.rtbf.be:8080/solr/search/selectNoCollapse?q=*%3A*&fq=search.resourcetype%3A2&rows=0&fl=handle%2Csearch.uniqueid%2Cidentifier_attributor&wt=json&indent=true&facet=true&facet.pivot=identifier_origin,identifier_attributor&facet.pivot.mincount=2
+
+#fiches dup within TV
+http://localhost:8070/solr/search/selectNoCollapse?q=*%3A*&fq=identifier_attributor%3ATramontane%5C+TV&fl=handle%2Cidentifier_origin&wt=json&indent=true&facet=true&facet.field=identifier_origin&facet.mincount=2
+
+#fiches liées TV et Sonuma
+http://localhost:8070/solr/search/selectNoCollapse?q=*%3A*&fq=identifier_attributor%3ASonuma%5C+TV&fq=identifier_weight%3A1&fl=identifier_origin&wt=json&indent=true
+
+# get dupplicate sequence resourceid using facet
+http://localhost:8070/solr/search/selectNoCollapse?q=*%3A*&fq=search.resourcetype%3A2&fq=search.uniqueid%3A2-*-*&rows=0&fl=search.resourceid%2Csearch.uniqueid%2Csearch.resourceid&wt=json&indent=true&facet=true&facet.field=search.resourceid&facet.mincount=2
+
+# get first diffusion (oldest date_diffusion) from core diffusion
+http://localhost:8070/solr/diffusion/selectFirstDiffusion?q=*%3A*&fq=%7B!query+v%3D%24serieTitleFQ%7D&fq=%7B!query+v%3D%24seqFQ%7D&fl=diffusion_type%2Ccommunity_id%2Cdate_diffusion_dt&wt=json&indent=true&facet=true&facet.field=community_title&serieTitleQ=*&dateDiffusionQ=date_diffusion_keyword:2012&facet.mincount=1
+
+# search serie of the below sequences search with serieTitleQ and dateDiffusionQ and seqQ
+http://localhost:8070/solr/search/selectSerie?q=*%3A*&fq=%7B!query+v%3D%24serieTitleFQ%7D&fq=%7B!query+v%3D%24seqFQ%7D&fl=dc.title%2Csearch.uniqueid%2C+score%2C+date_diffusion_dt&wt=json&indent=true&seqQ=footballeur&dateDiffusionQ=date_diffusion_keyword:2012-04-14&serieTitleQ=*&facet.mincount=1
+
+# search episode of the below sequences search with serieTitleQ and dateDiffusionQ and seqQ
+http://localhost:8070/solr/search/selectEpisode?q=*%3A*&fq=%7B!query+v%3D%24serieTitleFQ%7D&fq=%7B!query+v%3D%24seqFQ%7D&fl=search.uniqueid%2C+date_diffusion_dt%2C+date_diffusion_keyword&wt=json&indent=true&facet=true&facet.field=location.community&seqQ=footballeur&dateDiffusionQ=date_diffusion_keyword:2012-04-14&serieTitleQ=*&facet.mincount=1
+
+# search sequence with serieTitleQ and dateDiffusionQ
+http://localhost:8070/solr/search/selectSequence?q=footballeur&fq=%7B!query+v%3D%24serieTitleFQ%7D&fl=search.uniqueid%2C+dcterms.isPartOf.title%2C+date_diffusion_dt&wt=json&indent=true&dateDiffusionQ=date_diffusion_keyword=2012-05-14&serieTitleQ=*&facet.mincount=1
+
+# facet pivot
+http://localhost:8070/solr/search/select?q=*%3A*&fq=search.resourcetype%3A3&rows=0&wt=json&indent=true&facet=true&facet.pivot=child.item,date_diffusion_keyword,search.uniqueid&facet.pivot.mincount=1
+http://localhost:8070/solr/search/select?q=*%3A*&fq=search.resourcetype%3A3&rows=0&wt=json&indent=true&facet=true&facet.pivot=child.item,search.uniqueid,date_diffusion_dt&facet.pivot.mincount=1
+
+# join - subquery
+http://localhost:8070/solr/search/selectNew?q=search.resourcetype%3A2&fq=%7B!query+v%3D%24serieTitleQ%7D&fl=dc.title%2C+dc.date.issued&wt=json&indent=true&debugQuery=true&serieTitleV=NIOUZZ&dateEventV=dc.date.issued:2015
+#get sequence fron contraint on serie title and episode date_issued
+http://vm-dev4.inf.rtbf.be:8081/solr/search/selectNoCollapse?q=search.resourcetype%3A2&fq=%7B!join+from%3Dsearch.uniqueid+to%3Dlocation.collection%7D(search.resourcetype%3A3+AND+dc.date.issued%3A2010+AND+_query_%3A%22%7B!join+from%3Dsearch.uniqueid+to%3Dlocation.community%7D(search.resourcetype%3A4+AND+dc.title%3AWALLON)%22)&rows=50&fl=search.uniqueid%2Cdc.title%2C+dcterms.isPartOf.title%2Crtbf.channel_plus_date_diffusion.*&wt=json&indent=true
+# get episode from serie title
+http://vm-dev4.inf.rtbf.be:8081/solr/search/selectNoCollapse?q=search.resourcetype%3A3+AND+dc.date.issued%3A2007&fq=%7B!join+from%3Dsearch.uniqueid+to%3Dlocation.community%7D(search.resourcetype%3A4+AND+dc.title%3AART)&wt=json&indent=true
+
+# advandced search
+dc.date.issued_dt:"2013-07-21T06:52:14.72Z"
+dc.date.issued_dt:[2013-07-21T06:52:14.72Z TO *]
+
+# diffuse sur la Une en decembre de 20??
+channel_keyword:La\ Une/20??/12
+{!q.op=AND}channel_partial:(une "2014")
+{!q.op=AND}channel_partial:(une "2015/01")
+{!q.op=AND}channel_partial:(une "199*/01")
+{!q.op=AND}channel_partial:(une "199?/01")
+
+{!q.op=AND}contributor_partial:(Esmeralda Labye Editeur) # NOOK
+{!q.op=AND}contributor_partial:(Esmeralda Labye/Editeur)
+
+
+http://localhost:8070/rs/search/sequences?q=championnat&facet=true&facet.limit=5
+
+# role facet
+http://localhost:8070/solr/search/select?q=championnat&rows=0&fl=handle%2C+search.uniqueid&wt=json&indent=true&facet=true&facet.field=%7B!key%3DPr%C3%A9sentateur+facet.prefix%3DPr%C3%A9sentateur%2F%7Drole_keyword&facet.field=%7B!key%3DJournaliste+facet.prefix%3DJournaliste%2F%7Drole_keyword&facet.mincount=1&f.role_keyword.facet.limit=2
+
+# selectCollection + full text search + advanced search on dc.title + sort on dc.title_sort
+http://vm-dev4.inf.rtbf.be:8080/solr/search/selectCollection?q=*%3A*&fq=%7B!join+from%3Dlocation.collection+to%3Dsearch.uniqueid%7Ddc.title%3Aall%2Bblacks&sort=dc.title_sort+asc&fl=handle%2Cdc.title%2Csearch.uniqueid%2Cdc.date.issued%2Cscore&wt=json&indent=true&debugQuery=true&seqQ=championnat+gymnastique
+sort=dc.title_sort asc
+
+# selectCollection + full text search + advanced search on dc.title
+http://vm-dev4.inf.rtbf.be:8080/solr/search/selectCollection?q=*&seqQ=championnat+gymnastique&fq=%7B!join+from%3Dlocation.collection+to%3Dsearch.uniqueid%7Ddc.title%3Aall+blacks&fl=handle,search.uniqueid,dc.title,dc.date.issued&wt=json&indent=true&debugQuery=true
+selectCollection
+q=*
+seqQ=full+text+criteria
+fq={!join from=location.collection to=search.uniqueid}dc.title:critere+value  # remarquer le {!join ...} qui précède le critère
+
+
+
+# selectCollection
+http://vm-dev4.inf.rtbf.be:8080/solr/search/selectCollection?q=*&seqQ=championnat+gymnastique&fq=%7B!join+from%3Dlocation.collection+to%3Dsearch.uniqueid%7Dlocation.collection%3A3-2569388&fl=handle,search.uniqueid,dc.date.issued&wt=json&indent=true&debugQuery=true
+http://vm-dev4.inf.rtbf.be:8080/solr/search/selectCollection?q=*&seqQ=belgique+royal+terroriste+vacances+soleil+maroc&fl=handle,search.uniqueid,dc.date.issued&wt=json&indent=true&debugQuery=true
+http://vm-dev4.inf.rtbf.be:8080/solr/search/selectCollection?q=*%3A*&fq=%7B!join+from%3Dlocation.collection+to%3Dsearch.uniqueid%7Dlocation.collection%3A3-1378169&fl=search.uniqueid%2Cdc.date.issued%2Cscore&wt=json&indent=true&seqQ=belgique+royal+terroriste+vacances+soleil+maroc
+
+# join and inner query with edismax (to be able to use mm)
+http://vm-dev4.inf.rtbf.be:8080/solr/search/selectNoCollapse?q=_query_%3A%22%7B!join+from%3Dlocation.community+to%3Dsearch.uniqueid%7D(search.resourcetype%3A2+AND+_query_%3A%5C%22%7B!dismax+mm%3D3%3C-25%25%7Dbelgique+royal+terroriste+vacances+soleil+maroc%5C%22%0A)%22&fl=handle%2Csearch.uniqueid%2C+dc.title%2C+location.collection&wt=json&indent=true&debugQuery=true&mainQuery=belgique%20royal%20terroriste%20%20vacances%20soleil%20%C3%A9tranger%20maroc
+
+http://vm-dev4.inf.rtbf.be:8080/solr/search/select?q=*%3A*+AND+_query_%3A%22%7B!join+from%3Dlocation.community+to%3Dsearch.uniqueid%7D(search.resourcetype%3A2+AND+_query_%3A%5C%22belgique+AND+royal+AND+terroriste%5C%22)%22&fl=handle%2Csearch.uniqueid%2C+dc.title%2C+location.collection&wt=json&indent=true
+http://vm-dev4.inf.rtbf.be:8080/solr/search/select?q=*%3A*+AND+_query_%3A%22%7B!join+from%3Dlocation.community+to%3Dsearch.uniqueid%7Dbelgique+AND+royal+AND+terroriste+AND+search.resourcetype%3A2%22&fl=search.uniqueid%2C+dc.title%2C+location.collection&wt=json&indent=true
+F1:V1 AND _query_:"{!join fromIndex=keyspace.table}(F2:V2 AND _query_:\"{!join fromIndex=keyspace.table}(F3:V3)\")"
+http://vm-dev4.inf.rtbf.be:8080/solr/search/select?q=belgique+royal&fq=%7B!tag%3Dmyjoin%7D%7B!join+from%3Dlocation.collection+to%3Dsearch.uniqueid%7D*&fl=search.uniqueid%2C+dc.title%2C+dc.date.issued&wt=json&indent=true
+
+# facet on role_keyword + pivot to retrieve document uniqueid
+http://localhost:8070/solr/search/select?q=*%3A*&fq=search.resourcetype%3A2&rows=0&wt=json&indent=true&facet=true&facet.pivot=role_keyword,search.uniqueid&f.role_keyword.facet.prefix=Journaliste&facet.mincount=1
+
+# facet on location.collection : get collection id + count of items + order by count
+http://localhost:8070/solr/search/selectOrigin?q=belgique&rows=0&fl=search.uniqueid%2Cdc.title%2Clocation.collection%2Cowning_community%2Cscore&wt=json&indent=true&facet=true&facet.field=location.collection&facet.mincount=1&facet.limit=10&facet.offset=0
+# join on location.collection sort by collection date issued, get 5 first collections
+http://localhost:8070/solr/search/selectOrigin?q=*%3A*&fq=%7B!tag%3Dmyjoin%7D%7B!join+from%3Dlocation.collection+to%3Dsearch.uniqueid%7Dbelgique&sort=dc.title_sort+asc&rows=5&fl=search.uniqueid%2C+dc.title%2C+dc.date.issued&wt=json&indent=true
+# get facet count of those 5 collections
+http://localhost:8070/solr/search/selectOrigin?q=*%3A*&fq=location.collection%3A(3-1692+3-11+3-14+3-31+3-38)&rows=0&wt=json&indent=true&facet=true&facet.query=location.collection%3A3-1692&facet.query=location.collection%3A3-13&facet.query=location.collection%3A3-14&facet.query=location.collection%3A3-38&facet.query=location.collection%3A3-31
+
+# join+order and facet on collection but join collection and facet collection are not following the same order
+http://localhost:8070/solr/search/selectOrigin?q=*%3A*&fq=%7B!tag%3Dmyjoin%7D%7B!join+from%3Dlocation.collection+to%3Dsearch.uniqueid%7Dbelgique&sort=dc.title_sort+asc&rows=5&fl=search.uniqueid%2C+dc.title%2C+dc.date.issued&wt=json&indent=true&facet=true&facet.field=%7B!ex%3Dmyjoin%7Dlocation.collection&facet.mincount=1&facet.limit=10&facet.offset=0
+
+# join+order and facet on community
+http://localhost:8070/solr/search/select?q=*%3A*&fq=%7B!tag%3Dmyjoin%7D%7B!join+from%3Dlocation.community+to%3Dsearch.uniqueid%7D*%3A*&sort=dc.date.issued_dt+asc&fl=search.uniqueid%2C+dc.title%2C+dc.date.issued&wt=json&indent=true&facet=true&facet.field=%7B!ex%3Dmyjoin%7Dlocation.community&facet.mincount=1
+
+# join is not preserving the score, use for sorting on title_sort ...
+#  /selectCommunity + join but there is no expanded, same score
+http://localhost:8070/solr/search/selectCommunity?q=%7B!join+from%3Downing_community+to%3Dsearch.uniqueid%7Dsearch_text%3Abelgique+AND+search.resourcetype%3A2&fl=search.uniqueid%2Cowning_collection%2Cowning_community%2Cscore&wt=json&indent=true
+http://localhost:8070/solr/search/selectCommunity?q=%7B!join+from%3Downing_community+to%3Dsearch.uniqueid%7Dsearch_text%3Abelgique+AND+search.resourcetype%3A2&sort=dc.title_sort+asc&fl=search.uniqueid%2Cdc.title%2Cowning_collection%2Cowning_community%2Cscore&wt=json&indent=true
+
+# collapse on owning_community via /selectCommunity  + rubrique expanded
+http://localhost:8070/solr/search/selectCollection?q=%7B!join+from%3Downing_collection+to%3Dsearch.uniqueid%7Dsearch_text%3Abelgique+AND+search.resourcetype%3A2%0A&sort=dc.title_sort+desc&rows=10&fl=dc.title&wt=json&indent=true
+http://localhost:8070/solr/search/selectCommunity?q=belgique+AND+search.resourcetype%3A2&fl=search.uniqueid%2Cowning_collection%2Cowning_community%2Cscore&wt=json&indent=true# collapse on owning_collection via /selectCollection  + rubrique expanded 
+http://localhost:8070/solr/search/selectCollection?q=search.resourcetype%3A2+AND+search_text%3Abelgique&fl=search.uniqueid%2Cowning_collection%2Cscore&wt=json&indent=true
+
+# collapse sur owning_collection (expand=true ne montre pas la rubrique expanded !)
+http://localhost:8070/solr/search/selectNoCollapse?q=search.resourcetype%3A2+AND+search_text%3Abelgique&fq=%7B!collapse+field%3Downing_collection%7D&rows=20&fl=search.uniqueid%2Cowning_collection%2Cscore&wt=json&indent=true
+# join on owning_collection (scoring is not preserve ! tous = 1)
+http://localhost:8070/solr/search/select?q=%7B!join+from%3Downing_collection+to%3Dsearch.uniqueid%7Dsearch.resourcetype%3A2+AND+search_text%3Abelgique&rows=20&fl=handle%2Csearch.resourcetype%2Cowning_collection&wt=json&indent=true
+
+# collapse sur location.coll
+http://vm-dev4.inf.rtbf.be:8080/solr/search/selectNoCollapse?q=location%3Am1+AND+search.resourcetype%3A2+AND+search_text%3Atoto&fq=%7B!collapse+field%3Dlocation.coll%7D&rows=10&fl=dc.title%2Clocation.*%2Clocation%2Chandle%2Csearch.resourceid&wt=json&indent=true&facet=true&facet.field=dc.title_sort
+
+# reschercher les fiches liées dans Sonuma : 1 fiche TV peut être liée a plusieurs fiches Sonuma
+http://vm-dev4.inf.rtbf.be:8080/solr/search/select?q=location%3Am2+AND+identifier_weight%3A1&rows=0&wt=json&indent=true&facet=true&facet.field=identifier_origin
+
+# rechercher un contributor dans son role, utiliser phrase query : "boever intervenant"
+http://localhost:8070/solr/search/select?q=contributor_partial%3A(%22boever+intervenant%22)&fl=contributor_partial&wt=json&indent=true
+http://localhost:8070/solr/search/select?q=contributor%3A(%22boever+intervenant%22)&fl=contributor&wt=json&indent=true
+
+# Number of doc that dateIssued.year is not 2015 # q=-dateIssued.year:2015 is sum of (#doc not exists date + #doc exists date != 2015)
+http://localhost:8070/solr/search/select?q=-dateIssued.year%3A2015&rows=0&wt=json&indent=true
+# Number of doc that not exists dateIssued.year # q=-dateIssued.year:[* TO *]
+http://localhost:8070/solr/search/select?q=-dateIssued.year%3A%5B*+TO+*%5D&rows=0&wt=json&indent=true
+# Use facet.query to retrieve #doc not exist date : facet.query=-dateIssued.year:[* TO *]
+http://vm-dev4.inf.rtbf.be:8080/solr/search/select?q=search.resourcetype%3A2&rows=0&wt=json&indent=true&facet=true&facet.query=-dateIssued.year%3A%5B*+TO+*%5D&facet.query=dateIssued.year%3A2015&facet.field=dateIssued.year&facet.mincount=1
+
+### hierarchical faceting on typesupport
+# query on "BETA Digit" faceting on typesupport_tax_0_filter with facet_prefix "beta digit"
+http://localhost:8070/solr/search/select?q=typesupport_keyword%3A%22BETA+Digit%22&fl=typesupport%2Ctypesupport_tax_0_filter%2Ctypesupport_tax_0_filter&wt=json&indent=true&facet=true&facet.field=typesupport_tax_0_filter&facet.prefix=beta+digit
+# query on "BETA Digit" faceting on typesupport_tax_1_filter with facet_prefix "beta digit", give children hierarchy of "beta digit"
+http://localhost:8070/solr/search/select?q=typesupport_keyword%3A%22BETA+Digit%22&fl=typesupport%2Ctypesupport_tax_0_filter%2Ctypesupport_tax_0_filter&wt=json&indent=true&facet=true&facet.field=typesupport_tax_1_filter&facet.prefix=beta+digit
+# query on "BETA Digit" faceting on 2 facet fields : typesupport_tax_0_filter and tax_1, 
+# with facet.prefix "beta digit" applies to both facet fields, 
+# with facet.mincount >= 10 applies to 1 field f.<field_name>
+http://localhost:8070/solr/search/select?q=typesupport_keyword%3A%22BETA+Digit%22&fl=typesupport%2Ctypesupport_tax_0_filter%2Ctypesupport_tax_0_filter&wt=json&indent=true&facet=true&facet.field=typesupport_tax_0_filter&facet.field=typesupport_tax_1_filter&facet.prefix=beta+digit&f.typesupport_tax_1_filter.facet.mincount=10### Pivoting on typesupport NOOK
+
+### Pivoting an channel and date diffusion : NOOK but seems OK because in most of time, lower tax_level is from the UNIQUE upper tax_level
+### Not working for item with multiple broadcast dates
+http://localhost:8070/solr/search/select?q=channel_keyword%3A%22La+Une%2F2015%22&fl=channel%2Cchannel_tax_1_filter&wt=json&indent=true&facet=true&facet.pivot=channel_tax_1_filter,channel_tax_2_filter,channel_tax_3_filter
+
+### date_diffusion range
+http://localhost:8070/solr/search/select?q=rtbf.date_diffusion_dt%3A%5B2015-09-06T00%3A00%3A00Z%2FDAY+TO+NOW%5D&fl=rtbf.date_diffusion_dt&wt=json&indent=true
+
+### docs issued since 2 days
+http://vm-dev4.inf.rtbf.be:8080/solr/search/select?q=dc.date.issued_dt%3A%5BNOW-2DAYS+TO+NOW%5D&wt=json&indent=true
+
+### Number of doc of type item of Sonuma TV
+http://vm-dev4.inf.rtbf.be:8080/solr/search/selectNoCollapse?q=location.comm%3A2+AND+search.resourcetype%3A2&rows=0&wt=json&indent=true
+
+### Join
+http://localhost:8070/solr/search/select?q=%7B!join+from%3Didentifier_origin+to%3Didentifier_origin%7Dhandle%3A123456789%2F5965%0A&fl=identifier_origin%2C+handle%2C+dc.title&wt=json&indent=true
+
+http://localhost:8070/solr/search/select?q=%7B!join+from%3Didentifier_origin+to%3Didentifier_origin%7Dhandle%3A123456789%2F5965%0A&fl=identifier_origin%2C+handle&wt=json&indent=true
+
+fq=titlecom:(quai AND belge)
+fq=-titlecom:(quai AND belge)
+fq={!q.op=AND}titlecom:(quai belge)
+fq={!q.op=AND}-titlecom:(quai belge)
+fq={!q.op=AND df=titlecom}(quai belge)
+fq={!q.op=AND df=titlecom}-(quai belge)
+
+
+### filter facet results
+### filter by q=
+http://localhost:8070/solr/search/select?q=bi_3_dis_value_filter%3A*BELGES*&rows=0&wt=json&indent=true&facet=true&facet.field=bi_3_dis_value_filter
+### filter by fq=
+http://localhost:8070/solr/search/select?q=*%3A*&rows=0&wt=json&indent=true&facet=true&facet.field=bi_3_dis_value_filter&fq=bi_3_dis_value_filter:*BELGES*
+http://localhost:8070/solr/search/select?q=*%3A*&fl=bi_3_dis_value_filter&wt=json&indent=true&fq={!field%20f=bi_3_dis_partial}BELGE&facet=true&facet.field=bi_3_dis_value_filter
+http://localhost:8070/solr/search/select?q=*%3A*&fl=bi_3_dis_value_filter&wt=json&indent=true&fq=bi_3_dis_partial%3ABELGE&facet=true&facet.field=bi_3_dis_value_filter
+http://localhost:8070/solr/search/select?q=*%3A*&fl=bi_2_dis_value_filter&wt=json&indent=true&fq=bi_2_dis_partial%3Alaurent&rows=0&facet=true&facet.field=bi_2_dis_value_filter
+http://localhost:8070/solr/search/select?q=*%3A*&fl=bi_3_dis_value_filter&wt=json&indent=true&fq={!q.op=AND%20df=bi_3_dis_partial}h+taxi&rows=0&facet=true&facet.field=bi_3_dis_value_filter
+
+
+### facet on ebucore.identifier[1]@formatLabel
+http://localhost:8070/solr/search/select?q=*%3A*&wt=json&indent=true&facet=true&facet.field=ebucore.identifier%5B1%5D%40formatLabel
+http://localhost:8070/solr/search/select?q=search_text%3A1578&fl=title&wt=json&indent=true&facet=true&facet.field=ebucore.identifier%5B1%5D%40formatLabel
+
+
+### CollapsingQParser is really a post filter in Solr 5
+# use /search/dontcollapse request handler to list of identifier_origin more than 3 times
+http://localhost:8070/solr/search/dontcollapse?q=homme&fl=identifier_origin&wt=xml&indent=true&facet=true&facet.field=identifier_origin&facet.mincount=3
+
+http://localhost:8070/solr/search/dontcollapse?q=%22la+mariee+etait+en+noir%22&fl=identifier_origin%2C+handle&wt=xml&indent=true
+
+# use /search/select request handler to collapse
+http://localhost:8070/solr/search/select?q=%22la+mariee+etait+en+noir%22&fl=identifier_origin%2C+handle&wt=xml&indent=true
+
+# grouping
+http://localhost:8070/solr/search/selectNoCollapse?group=true&sort=dc.date.issued_sort%20asc&q=*&fq=search.resourcetype%3A2&rows=100&fl=dc.date.issued%2Cscore%2Cispartof_title%2Cowning_community%2C+identifier_origin&wt=json&indent=true&group.field=owning_community
+# add group.ngroups=true
+http://localhost:8070/solr/search/selectNoCollapse?group.ngroups=true&group=true&sort=dc.date.issued_sort%20asc&q=*&fq=search.resourcetype%3A2&rows=100&fl=dc.date.issued%2Cscore%2Cispartof_title%2Cowning_community%2C+identifier_origin&wt=json&indent=true&group.field=owning_community
+# add group.main=true ==> group.ngroups has nomore effect 
+http://localhost:8070/solr/search/selectNoCollapse?group.main=true&group.ngroups=true&group=true&sort=dc.date.issued_sort%20asc&q=*&fq=search.resourcetype%3A2&rows=100&fl=dc.date.issued%2Cscore%2Cispartof_title%2Cowning_community%2C+identifier_origin&wt=json&indent=true&group.field=owning_community
+# facet.query and qroup.query and non group.field
+http://localhost:8070/solr/search/selectNoCollapse?group=true&group.format=grouped&group.query=owning_community:4-999&rows=100&facet=true&facet.query=date_issued_dt%3A%5B+NOW%2FDAY-1YEAR+TO+NOW%2FDAY-1MILLI+%5D&sort=dc.date.issued_sort%20asc&q=*&fq=search.resourcetype%3A2&fl=dc.date.issued%2Cscore%2Cispartof_title%2Cowning_community%2C+identifier_origin&wt=json&indent=true
+
+
+### solr grouping or field collapse :
+### group=true&group.field=identifier_origin
+### group=true&group.field=identifier_origin&group.ngroups=true# show number of groups
+### group=true&group.field=identifier_origin&group.main=true ### results in simple list
+http://localhost:8070/solr/search/select?q=search_text%3Avisite&rows=100&fl=title%2C+identifier_origin&wt=json&indent=true&group=true&group.field=identifier_origin&group.main=true
+
+http://localhost:8070/solr/search/select?q=jornalite+reporter&wt=json&indent=true&spellcheck=true&spellcheck.count=3&spellcheck.extendedResults=true&spellcheck.collate=true
+
+# Backup solr index : make a data/snapshot.<timestamp> of data/index
+http://localhost:8070/solr/search/replication?command=backup
+
+http://localhost:8070/solr/search/replication?command=details
+http://localhost:8070/solr/zookeeper
+
+cd C:\local\solr-4.9.0\node1\scripts\cloud-scripts
+zkcli.bat -z localhost:9070 -cmd list
+-----------------------------------------  CURL SOLR ----------------------------------------------
+# to retrieve the sequence search.uniqueid=2-36300
+curl http://vm-dev4.inf.rtbf.be:8080/solr/search/get?id=2-36300
+
+# to make atomic update of a single field : add "B 724438-42" to the multivalued field
+curl -X POST -H 'Content-Type: application/json' http://vm-dev4.inf.rtbf.be:8080/solr/search/update --data-binary '
+[
+{"search.uniqueid":"2-36300",
+"rtbf.code_origine.supportseq":{"add":"B 724438-42"}
+}
+]'
+
+-----------------------------------------  DSPACE  C L I ----------------------------------------------
+cd C:\local\dspace\bin>
+
+REM import community & collection structure
+dspace structure-builder -f \local\sql\out\serie2community.xml -o \local\sql\out\dsout.xml -e lan.nguyen@rtbf.be
+
+REM import item by BTE csv format
+C:\local\dspace\bin>dspace import -b -m \local\dspace_data\import\itemout.txt -e lan.nguyen@rtbf.be -c 123456789/29 -s \local\dspace_data\import\item0101.csv -i csv
+
+REM import item by Batch metadata editing
+C:\local\dspace\bin>dspace metadata-import -f \local\dspace_data\import\item0102_metadata_import.csv -e lan.nguyen@rtbf.be
+
+REM Reindex solr discovery index
+dspace index-discovery -b
+
+REM git clone to mydir
+cd \local
+git clone %DSORIGIN% -b metam-4.2 --single-branch mydir
+
+C:\local\dspace\bin>dspace index-discovery -help
+C:\local\dspace\bin>dspace index-discovery -I 1
+C:\local\dspace\bin>dspace index-discovery -o

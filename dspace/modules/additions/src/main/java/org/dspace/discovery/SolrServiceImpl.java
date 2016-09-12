@@ -909,7 +909,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                     getSolr().deleteByQuery("handle:\"" + handle + "\"");
 
                     handleLog.populateLogDone();
-                    log.info("Sync delete handleid: " + handleLog.getHandleID() + " from Index");
+                    log.info("Sync delete handle: " + handle + " from Index");
                     
                 }
                 System.out.println(numlogs + " DEL");

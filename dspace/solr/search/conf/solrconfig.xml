@@ -951,12 +951,12 @@
        <!-- str name="serieTitleFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str-->
        <!-- str name="notserieTitleFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND NOT {! df=dc.title v=$serieTitleQ})")</str-->
        <!-- Lan 03.05.2016 : Since dup item on diffusion date, join to episode is no more useful -->
+<!--       
        <str name="serieTitleFQ">{!join from=search.uniqueid to=owning_community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})</str>
        <str name="notserieTitleFQ">{!join from=search.uniqueid to=owning_community}(search.resourcetype:4 AND NOT {! df=dc.title v=$serieTitleQ})</str>
+-->       
      </lst>
      <lst name="appends">
-       <!-- Lan 08.09.2016 exclude sequences which only issued on 1/1/1900 -->
-       <str name="fq">discoverable:"true"</str>
        <!-- Lan 08.03.2016 : remove default fq, add programmatically $serieTitleFQ or $notserieTitleFQ -->
        <!-- str name="fq">{!query v=$serieTitleFQ}</str-->
        <!-- the following is useful if none of FQ filter is enabled -->
@@ -966,11 +966,12 @@
             - inside Tramontane when multiple programs share the same sequence;
             - between Tramontane & Sonuma -->
        <!-- str name="fq">{!collapse field=identifier_origin max=identifier_weight nullPolicy=expand}</str-->
-       <!-- Lan 22.03.2016 : since the duplication of sequence by its diffusion, within Tramontane, choose the sequence document the earliest  -->
+       <!-- Lan 22.03.2016 : since the duplication of sequence by its diffusion, choose the sequence document the earliest  -->
+<!--       
        <str name="fq">{!collapse field=identifier_origin max=sum(log(identifier_weight),recip(date_issued_dt,3.16e-11,1,1)) nullPolicy=expand}</str>
        <str name="expand">true</str>
-       <!-- Lan 10.05.2016 : expand.rows default is 5, is not enough -->
        <str name="expand.rows">100</str>
+-->
      </lst>
     </requestHandler>
     
@@ -1001,8 +1002,6 @@
        <str name="notserieTitleFQ">{!join from=search.uniqueid to=owning_community}(search.resourcetype:4 AND NOT {! df=dc.title v=$serieTitleQ})</str>
      </lst>
      <lst name="appends">
-       <!-- exclude sequences with date_issued 1/1/1900 -->
-       <str name="fq">!discoverable:"false"</str>
        <!-- restrict to [2 TO 3] otherwise might appear the group of null value which contains a doc of resourcetype 4 if there is a match on a serie document -->
        <str name="fq">search.resourcetype:[2 TO 3]</str>
        <str name="group">true</str>
@@ -1036,8 +1035,10 @@
        <!-- str name="serieTitleFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str-->
        <!-- str name="notserieTitleFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND NOT {! df=dc.title v=$serieTitleQ})")</str-->
        <!-- Lan 03.05.2016 : Since dup item on diffusion date, join to episode is no more useful -->
+<!--       
        <str name="serieTitleFQ">{!join from=search.uniqueid to=owning_community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})</str>
        <str name="notserieTitleFQ">{!join from=search.uniqueid to=owning_community}(search.resourcetype:4 AND NOT {! df=dc.title v=$serieTitleQ})</str>
+-->       
      </lst>
      <lst name="appends">
        <!-- exclude sequences with date_issued 1/1/1900 -->
@@ -1049,162 +1050,6 @@
        <str name="group.ngroups">true</str>
        <str name="group.field">owning_community</str>
        <str name="group.sort">search.resourcetype desc</str>
-     </lst>
-    </requestHandler>
-
-    
-    <!-- Return documents of resourcetypeid = 2 collapse on owning_collection -->
-    <!-- raw paramaters are :
-            serieTitleQ : search for episode ( and seq of those episodes) that is part of the series of the serieTitle
-            dateDiffusionQ : search for  episode ( and seq of those episodes) that is broadcasted on the date
-        example : serieTitleQ=BULLETIN&dateDiffusionQ=date_diffusion_keyword:2015
-    -->     
-    <requestHandler name="/selectSeqCollapseEp" class="solr.SearchHandler">
-     <lst name="defaults">
-       <str name="echoParams">explicit</str>
-       <int name="rows">10</int>
-       <str name="df">search_text</str>
-       <!-- Lan 09.02.2015 : boosting by dc.date.issued -->
-       <str name="defType">edismax</str>
-       <str name="boost">recip(ms(NOW/HOUR, date_issued_dt),3.16e-11,1,1)</str>
-       <!-- Lan 20.04.2015 : 'minimum should match' when multiple terms in the query -->
-       <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
-        if there are 4-9 clauses all but 25% are required, 
-        and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
-       <str name="pf">search_text^50</str>
-       <str name="ps">5</str>
-       <!-- Lan 08.03.2016 : resolve filter for Serie Title and Date Diffusion using subquery -->
-       <!-- To filter on Serie Title or Date Diffusion : fq={!query v=$serieTitleFQ}; 2 raw query params: serieTitleQ=dc.title:BULLETIN&dateDiffusionQ=date_diffusion_keyword:2015  -->
-       <!-- str name="serieTitleFQ">{!join from=search.uniqueid to=location.collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str-->
-       <str name="serieTitleFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str>
-     </lst>
-     <lst name="appends">
-       <str name="fq">{!query v=$serieTitleFQ}</str>
-       <!-- the following is useful if none of FQ filter is enabled -->
-       <str name="fq">search.resourcetype:2</str>
-       <!-- Lan 09.02.2015 : Impose this default filter query to collapse multiple
-            sequences to one : 
-            - inside Tramontane when multiple programs share the same sequence;
-            - between Tramontane & Sonuma -->
-       <!-- str name="fq">{!collapse field=identifier_origin max=identifier_weight nullPolicy=expand}</str-->
-       <!-- Lan 22.03.2016 : within Tramontane, choose the shortest search.uniqueid  -->
-       <str name="fq">{!collapse field=owning_collection nullPolicy=expand}</str>
-       <str name="expand">true</str>
-     </lst>
-    </requestHandler>
-
-    
-    <!-- Return documents of resourcetypeid = 2 or 3, sortable on their fields -->
-    <!-- 21.03.2016 Lan : return episodes matching their own metadata + sequences collapsed on owning_episode  -->
-    <!-- raw paramaters are :
-            termQ : search for episode/sequence that contains termQ in search_text
-            filterQ : search for episode/sequence that matched the filter
-            serieTitleQ : search for episode ( and seq of those episodes) that is part of the series of the serieTitle
-            dateDiffusionQ : search for  episode ( and seq of those episodes) that is broadcasted on the date
-        example : termQ=footballeur+italien&serieTitleQ=BULLETIN&dateDiffusionQ=date_diffusion_keyword:2012-04-15            
-        Potential problem : the same episode might appear twice as search.uniqueid and as owning_collection
-    -->     
-    <requestHandler name="/selectEpnSeqCollapseEp" class="solr.SearchHandler">
-     <lst name="defaults">
-       <str name="echoParams">explicit</str>
-       <int name="rows">10</int>
-       <str name="df">search_text</str>
-       <!-- Lan 09.02.2015 : boosting by dc.date.issued -->
-       <str name="defType">edismax</str>
-       <str name="boost">recip(ms(NOW/HOUR, date_issued_dt),3.16e-11,1,1)</str>
-       <!-- Lan 20.04.2015 : 'minimum should match' when multiple terms in the query -->
-       <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
-        if there are 4-9 clauses all but 25% are required, 
-        and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
-       <str name="pf">search_text^50</str>
-       <str name="ps">5</str>
-       <!-- Lan 08.03.2016 : resolve filter for Serie Title and Date Diffusion using subquery -->
-       <!-- To filter on Serie Title or Date Diffusion : fq={!query v=$serieTitleFQ}; 2 raw query params: serieTitleQ=dc.title:BULLETIN&dateDiffusionQ=date_diffusion_keyword:2015  -->
-       <str name="serieTitleSeqFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str>
-       <str name="seqFQ">(search.resourcetype:2 AND discoverable:true AND {!edismax mm="3&lt;-25% 9&lt;-3" bf="" qf=search_text v=$termQ} AND {!edismax bf="" v=$filterQ})</str>
-       <str name="serieTitleEpFQ">(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str>
-       <str name="epFQ">(search.resourcetype:3 AND {!edismax mm="3&lt;-25% 9&lt;-3" bf="" qf=search_text v=$termQ} AND {!edismax bf="" v=$filterQ})</str>
-     </lst>
-     <lst name="appends">
-       <str name="fq">(({!query v=$serieTitleEpFQ} AND {!query v=$epFQ}) OR ({!query v=$serieTitleSeqFQ} AND {!query v=$seqFQ}))</str>
-       <str name="fq">search.resourcetype:[2 TO 3]</str>
-       <str name="fq">{!collapse field=owning_collection nullPolicy=expand}</str>
-       <str name="expand">true</str>
-     </lst>
-    </requestHandler>
-
-    <!-- Return documents of resourcetypeid = 3, sortable on episode fields -->
-    <!-- 25.03.2016 Lan : return episodes matching their own metadata + episode of sequences that matched  -->
-    <!-- raw paramaters are :
-            termQ : search for episode/sequence that contains termQ in search_text
-            filterQ : search for episode/sequence that matched the filter
-            serieTitleQ : search for episode ( and seq of those episodes) that is part of the series of the serieTitle
-            dateDiffusionQ : search for  episode ( and seq of those episodes) that is broadcasted on the date
-        example : termQ=footballeur+italien&serieTitleQ=BULLETIN&dateDiffusionQ=date_diffusion_keyword:2012-04-15            
-    -->
-    <requestHandler name="/selectEpnSeq2Ep" class="solr.SearchHandler">
-     <lst name="defaults">
-       <str name="echoParams">explicit</str>
-       <int name="rows">10</int>
-       <str name="df">search_text</str>
-       <!-- Lan 09.02.2015 : boosting by dc.date.issued -->
-       <str name="defType">edismax</str>
-       <str name="boost">recip(ms(NOW/HOUR, date_issued_dt),3.16e-11,1,1)</str>
-       <!-- Lan 20.04.2015 : 'minimum should match' when multiple terms in the query -->
-       <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
-        if there are 4-9 clauses all but 25% are required, 
-        and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
-       <str name="pf">search_text^50</str>
-       <str name="ps">5</str>
-       <!-- Lan 08.03.2016 : resolve filter for Serie Title and Date Diffusion using subquery -->
-       <!-- Lan 23.03.2016 : resolve matching episode own metadata OR episode joined to sequence -->
-       <str name="serieTitleEpFQ">(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str>
-       <str name="seq2EpFQ">{!join from=owning_collection to=search.uniqueid}(search.resourcetype:2 AND discoverable:true AND {!edismax mm="3&lt;-25% 9&lt;-3" bf="" qf=search_text v=$termQ} AND {!edismax bf="" v=$filterQ})</str>
-       <str name="epFQ">(search.resourcetype:3 AND {!edismax mm="3&lt;-25% 9&lt;-3" bf="" qf=search_text v=$termQ} AND {!edismax bf="" v=$filterQ})</str>
-     </lst>
-     <lst name="appends">
-       <str name="fq">({!query v=$epFQ} OR ({!query v=$serieTitleEpFQ} AND {!query v=$seq2EpFQ}))</str>
-       <str name="fq">search.resourcetype:3</str>
-     </lst>
-    </requestHandler>
-
-    <!-- Return documents of resourcetypeid = 3, sortable on their field -->
-    <!-- 25.03.2016 Lan : return episodes of sequences that matched  -->
-    <!-- raw paramaters are :
-            termQ : search for episode/sequence that contains termQ in search_text
-            filterQ : search for episode/sequence that matched the filter
-            serieTitleQ : search for episode ( and seq of those episodes) that is part of the series of the serieTitle
-            dateDiffusionQ : search for  episode ( and seq of those episodes) that is broadcasted on the date
-        example : termQ=footballeur+italien&serieTitleQ=BULLETIN&dateDiffusionQ=date_diffusion_keyword:2012-04-15            
-    -->
-    <requestHandler name="/selectSeq2Ep" class="solr.SearchHandler">
-     <lst name="defaults">
-       <str name="echoParams">explicit</str>
-       <int name="rows">10</int>
-       <str name="df">search_text</str>
-       <!-- Lan 09.02.2015 : boosting by dc.date.issued -->
-       <str name="defType">edismax</str>
-       <str name="boost">recip(ms(NOW/HOUR, date_issued_dt),3.16e-11,1,1)</str>
-       <!-- Lan 20.04.2015 : 'minimum should match' when multiple terms in the query -->
-       <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
-        if there are 4-9 clauses all but 25% are required, 
-        and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
-       <str name="pf">search_text^50</str>
-       <str name="ps">5</str>
-       <!-- Lan 08.03.2016 : resolve filter for Serie Title and Date Diffusion using subquery -->
-       <!-- Lan 23.03.2016 : resolve matching episode own metadata OR episode joined to sequence -->
-       <!-- To filter on Serie Title or Date Diffusion : fq={!query v=$serieTitleFQ}; 2 raw query params: serieTitleQ=dc.title:BULLETIN&dateDiffusionQ=date_diffusion_keyword:2015  -->
-       <str name="serieTitleEpFQ">(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str>
-       <str name="seq2EpFQ">{!join from=owning_collection to=search.uniqueid}(search.resourcetype:2 AND discoverable:true AND {!edismax mm="3&lt;-25% 9&lt;-3" bf="" qf=search_text v=$termQ} AND {!edismax bf="" v=$filterQ})</str>
-     </lst>
-     <lst name="appends">
-       <str name="fq">({!query v=$serieTitleEpFQ} AND {!query v=$seq2EpFQ})</str>
-        <!-- the following is useful if none of FQ filter is enabled -->
-        <str name="fq">search.resourcetype:3</str>
      </lst>
     </requestHandler>
     

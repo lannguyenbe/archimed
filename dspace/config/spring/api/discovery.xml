@@ -92,8 +92,6 @@
                 <entry>
                     <key><util:constant static-field="org.dspace.core.Constants.COMMUNITY"/></key>
                     <list>
-                        <value>search.uniqueid</value>
-                        <value>handle</value>
                         <value>rtbf.identifier.id</value>
                         <value>dc.title</value>
                         <value>rtbf.title.subtitle</value>
@@ -108,8 +106,6 @@
                 <entry>
                     <key><util:constant static-field="org.dspace.core.Constants.COLLECTION"/></key>
                     <list>
-                        <value>search.uniqueid</value>
-                        <value>handle</value>
                         <value>rtbf.identifier.id</value>
                         <value>dc.title</value>
                         <value>rtbf.title.subtitle</value>
@@ -134,8 +130,6 @@
                 <entry>
                     <key><util:constant static-field="org.dspace.core.Constants.ITEM"/></key>
                     <list>
-                        <value>search.uniqueid</value>
-                        <value>handle</value>
                         <value>rtbf.identifier.id</value>
                         <value>dc.title</value>
                         <value>rtbf.title.subtitle</value>

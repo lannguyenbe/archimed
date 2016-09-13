@@ -36,6 +36,9 @@ public class SearchParameters implements Request {
 	private boolean isHighlight = true;
 	@JsonProperty("snippet")
 	private boolean isSnippet = false;
+	@JsonProperty("collapse")
+	private boolean isCollapse = false;
+	private boolean isCollapseSet = false;
 	private String expand;
 	
 	private List<Map<String, String>> filters = new ArrayList<Map<String, String>> ();
@@ -44,7 +47,7 @@ public class SearchParameters implements Request {
 		if (scope != null) {
 			return scope;
 		} else if (scopes != null && scopes.length > 0) {
-			StringBuffer sb = new StringBuffer();;
+			StringBuffer sb = new StringBuffer();
 			for (String str : scopes) {
 				sb.append(str);
 				sb.append(' ');
@@ -149,6 +152,15 @@ public class SearchParameters implements Request {
 		this.isSnippet = isSnippet;
 	}
 
+	public boolean getIsCollapse() {
+		return isCollapse;
+	}
+
+	public void setIsCollapse(boolean isCollapse) {
+		this.isCollapse = isCollapse;
+		this.isCollapseSet = true;
+	}
+
 	public String getExpand() {
 		return expand;
 	}
@@ -166,6 +178,21 @@ public class SearchParameters implements Request {
 	}
 
 	
+	public SearchParameters supersedeBy(MultivaluedMap<String, String> mvm, Map<String, String> defaults) {
+		
+		for (Map.Entry<String, String> e : defaults.entrySet()) {
+			switch (e.getKey()) {
+			case "collapse":
+				if (!this.isCollapseSet) {this.isCollapse = Boolean.parseBoolean(e.getValue());}
+				break;
+			default: 
+				break;
+			}
+		}
+		
+		return this.supersedeBy(mvm);
+	}
+
 	public SearchParameters supersedeBy(MultivaluedMap<String, String> mvm) {
 		
 		String str;
@@ -181,6 +208,7 @@ public class SearchParameters implements Request {
 		if ((str = mvm.getFirst("facet_offset")) != null && str.length() > 0) { this.facetOffset = Integer.parseInt(str);}
 		if ((str = mvm.getFirst("highlight")) != null && str.length() > 0) { this.isHighlight = Boolean.parseBoolean(str);}
 		if ((str = mvm.getFirst("snippet")) != null && str.length() > 0) { this.isSnippet = Boolean.parseBoolean(str);}
+		if ((str = mvm.getFirst("collapse")) != null && str.length() > 0) { this.isCollapse = Boolean.parseBoolean(str);}
 		if ((str = mvm.getFirst("expand")) != null && str.length() > 0) { this.expand = str;}
 		
 
@@ -271,6 +299,11 @@ public class SearchParameters implements Request {
 	@Override
 	public boolean isSnippet() {
 		return getIsSnippet();
+	}
+
+	@Override
+	public boolean isCollapse() {
+		return getIsCollapse();
 	}
 
 	@Override

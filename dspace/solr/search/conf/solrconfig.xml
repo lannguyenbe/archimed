@@ -944,6 +944,7 @@
        <str name="mm">3&lt;-25% 9&lt;-3</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
+       <!-- Lan 13.09.2016 : n'est plus utilisé dans rtbf-rest.xml depuis réindexation avec les fields ispartof_titre et is_partof_program_title pour tous les documents -->
        <!-- Lan 08.03.2016 : resolve filter for Serie Title and Date Diffusion using subquery -->
        <!-- To filter on Serie Title or Date Diffusion : fq={!query v=$serieTitleFQ}; 2 raw query params: serieTitleQ=dc.title:BULLETIN&dateDiffusionQ=date_diffusion_keyword:2015  -->
        <!-- str name="serieTitleFQ">{!join from=search.uniqueid to=location.collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str-->
@@ -951,29 +952,35 @@
        <!-- str name="serieTitleFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str-->
        <!-- str name="notserieTitleFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND NOT {! df=dc.title v=$serieTitleQ})")</str-->
        <!-- Lan 03.05.2016 : Since dup item on diffusion date, join to episode is no more useful -->
-<!--       
+       <!--       
        <str name="serieTitleFQ">{!join from=search.uniqueid to=owning_community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})</str>
        <str name="notserieTitleFQ">{!join from=search.uniqueid to=owning_community}(search.resourcetype:4 AND NOT {! df=dc.title v=$serieTitleQ})</str>
--->       
+       -->
+       <!-- Lan 13.09.2016 : pour rendre collapse optionnel -->
+       <!-- Pour l'activer : ajouter fq={!query v=$collapseFQ}; 1 raw param: expand=true -->
+       <str name="collapseFQ">{!collapse field=identifier_origin max=sum(log(identifier_weight),recip(date_issued_dt,3.16e-11,1,1)) nullPolicy=expand}</str>
+       <!-- str name="expand">true</str-->
+       <str name="expand.rows">100</str>
      </lst>
      <lst name="appends">
-       <!-- Lan 08.03.2016 : remove default fq, add programmatically $serieTitleFQ or $notserieTitleFQ -->
-       <!-- str name="fq">{!query v=$serieTitleFQ}</str-->
-       <!-- the following is useful if none of FQ filter is enabled -->
+       <!-- exclude sequences with date_issued 1/1/1900 -->
+       <!-- str name="fq">!discoverable:"false"</str -->
        <str name="fq">search.resourcetype:2</str>
+       <!-- Lan 13.09.2016 : supprimer collapse de cette section "appends" pour le rendre optionnel -->
        <!-- Lan 09.02.2015 : Impose this default filter query to collapse multiple
             sequences to one : 
             - inside Tramontane when multiple programs share the same sequence;
             - between Tramontane & Sonuma -->
        <!-- str name="fq">{!collapse field=identifier_origin max=identifier_weight nullPolicy=expand}</str-->
        <!-- Lan 22.03.2016 : since the duplication of sequence by its diffusion, choose the sequence document the earliest  -->
-<!--       
+       <!--       
        <str name="fq">{!collapse field=identifier_origin max=sum(log(identifier_weight),recip(date_issued_dt,3.16e-11,1,1)) nullPolicy=expand}</str>
        <str name="expand">true</str>
        <str name="expand.rows">100</str>
--->
+       -->       
      </lst>
     </requestHandler>
+
     
     <!-- Return groups by owning_collection-->
     <requestHandler name="/groupEpisode" class="solr.SearchHandler">
@@ -991,16 +998,7 @@
        <str name="mm">3&lt;-25% 9&lt;-3</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
-       <!-- Lan 08.03.2016 : resolve filter for Serie Title and Date Diffusion using subquery -->
-       <!-- To filter on Serie Title or Date Diffusion : fq={!query v=$serieTitleFQ}; 2 raw query params: serieTitleQ=dc.title:BULLETIN&dateDiffusionQ=date_diffusion_keyword:2015  -->
-       <!-- str name="serieTitleFQ">{!join from=search.uniqueid to=location.collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str-->
-       <!-- For resourcetype=2 use owning_collection instead of location.collection since duplication of sequence document -->
-       <!-- str name="serieTitleFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str-->
-       <!-- str name="notserieTitleFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND NOT {! df=dc.title v=$serieTitleQ})")</str-->
-       <!-- Lan 03.05.2016 : Since dup item on diffusion date, join to episode is no more useful -->
-       <str name="serieTitleFQ">{!join from=search.uniqueid to=owning_community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})</str>
-       <str name="notserieTitleFQ">{!join from=search.uniqueid to=owning_community}(search.resourcetype:4 AND NOT {! df=dc.title v=$serieTitleQ})</str>
-     </lst>
+     </lst>     
      <lst name="appends">
        <!-- restrict to [2 TO 3] otherwise might appear the group of null value which contains a doc of resourcetype 4 if there is a match on a serie document -->
        <str name="fq">search.resourcetype:[2 TO 3]</str>
@@ -1028,21 +1026,8 @@
        <str name="mm">3&lt;-25% 9&lt;-3</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
-       <!-- Lan 08.03.2016 : resolve filter for Serie Title and Date Diffusion using subquery -->
-       <!-- To filter on Serie Title or Date Diffusion : fq={!query v=$serieTitleFQ}; 2 raw query params: serieTitleQ=dc.title:BULLETIN&dateDiffusionQ=date_diffusion_keyword:2015  -->
-       <!-- str name="serieTitleFQ">{!join from=search.uniqueid to=location.collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str-->
-       <!-- For resourcetype=2 use owning_collection instead of location.collection since duplication of sequence document -->
-       <!-- str name="serieTitleFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str-->
-       <!-- str name="notserieTitleFQ">{!join from=search.uniqueid to=owning_collection}(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND NOT {! df=dc.title v=$serieTitleQ})")</str-->
-       <!-- Lan 03.05.2016 : Since dup item on diffusion date, join to episode is no more useful -->
-<!--       
-       <str name="serieTitleFQ">{!join from=search.uniqueid to=owning_community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})</str>
-       <str name="notserieTitleFQ">{!join from=search.uniqueid to=owning_community}(search.resourcetype:4 AND NOT {! df=dc.title v=$serieTitleQ})</str>
--->       
      </lst>
      <lst name="appends">
-       <!-- exclude sequences with date_issued 1/1/1900 -->
-       <str name="fq">!discoverable:"false"</str>
        <!-- restrict to [2 TO 4] otherwise might appear the group of null value which contains a doc of other resourcetype if there is a match on a document -->
        <str name="fq">search.resourcetype:[2 TO 4]</str>
        <str name="group">true</str>
@@ -1056,11 +1041,6 @@
     <!-- same as /selectSequence but "appends" node -->
     <!-- Return documents of resourcetypeid = 3 -->
     <!-- 10.03.2016 Lan : select episode based on its own metadata -->
-    <!-- raw paramaters are :
-            serieTitleQ : search for episode ( and seq of those episodes) that is part of the series of the serieTitle
-            dateDiffusionQ : search for  episode ( and seq of those episodes) that is broadcasted on the date
-        example : serieTitleQ=BULLETIN&dateDiffusionQ=date_diffusion_keyword:2015
-    -->     
     <requestHandler name="/selectEpisode" class="solr.SearchHandler">
      <lst name="defaults">
        <str name="echoParams">explicit</str>
@@ -1076,22 +1056,21 @@
        <str name="mm">3&lt;-25% 9&lt;-3</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
-       <str name="serieTitleFQ">(search.resourcetype:3 AND {!query v=$dateDiffusionQ} AND _query_:"{!join from=search.uniqueid to=location.community}(search.resourcetype:4 AND {! df=dc.title v=$serieTitleQ})")</str>
      </lst>
+     <lst name="invariants">
+       <!-- 14.09.2016 Lan : add to support search option collapse=true|false, even if there no effect -->
+       <!-- NO collapse for episode results but the element collapseFQ should be defined or solr would dump error "Java null pointer exception" -->
+       <str name="collapseFQ">{!collapse field=identifier_origin max=sum(log(identifier_weight),recip(date_issued_dt,3.16e-11,1,1)) nullPolicy=expand}</str>
+       <str name="expand">false</str>
+     </lst>     
      <lst name="appends">
-       <str name="fq">{!query v=$serieTitleFQ}</str>
        <str name="fq">search.resourcetype:3</str>
-       <!-- NO collapse for episode -->
      </lst>
     </requestHandler>
     
     <!-- same as /selectSequence but "appends" node -->
     <!-- Return documents of resourcetypeid = 4 -->
     <!-- 10.03.2016 Lan : select serie based on its own metadata -->
-    <!-- raw paramaters are :
-            serieTitleQ : search for episode ( and seq of those episodes) that is part of the series of the serieTitle
-        example : serieTitleQ=BULLETIN
-    -->     
     <requestHandler name="/selectSerie" class="solr.SearchHandler">
      <lst name="defaults">
        <str name="echoParams">explicit</str>
@@ -1107,13 +1086,15 @@
        <str name="mm">3&lt;-25% 9&lt;-3</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
-       <!-- do not delete *:* AND -->
-       <str name="serieTitleFQ">(*:* AND {! df=dc.title v=$serieTitleQ})</str>
      </lst>
+     <lst name="invariants">
+       <!-- 14.09.2016 Lan : add to support search option collapse=true|false, even if there no effect -->
+       <!-- NO collapse for serie results but the collapseFQ should be defined or solr would dump error "Java null pointer exception" -->
+       <str name="collapseFQ">{!collapse field=identifier_origin max=sum(log(identifier_weight),recip(date_issued_dt,3.16e-11,1,1)) nullPolicy=expand}</str>
+       <str name="expand">false</str>
+     </lst>     
      <lst name="appends">
-       <str name="fq">{!query v=$serieTitleFQ}</str>
        <str name="fq">search.resourcetype:4</str>
-       <!-- NO collapse for episode -->
      </lst>
     </requestHandler>
 

@@ -3378,7 +3378,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 		}
     }
 
-    public DiscoverFilterQuery toFilterQuery_old(Context context, String field, String operator, String value) throws SQLException{
+    public DiscoverFilterQuery TODEL_toFilterQuery(Context context, String field, String operator, String value) throws SQLException{
         DiscoverFilterQuery result = new DiscoverFilterQuery();
 
         StringBuilder filterQuery = new StringBuilder();
@@ -3456,6 +3456,83 @@ public class SolrServiceImpl implements SearchService, IndexingService {
     // isIndexed is true when the field is configured as a searchFilterin discovery.xml e.g. exists solr fields <field>_keyword, <field>_contain
     // then append field with _keyword or _contain in the filter query
     private DiscoverFilterQuery toFilterQuery(boolean isIndexed, Context context, String field, String operator, String value) throws SQLException{
+        DiscoverFilterQuery result = new DiscoverFilterQuery();
+
+        StringBuilder filterQuery = new StringBuilder();
+        if(StringUtils.isNotBlank(field))
+        {
+            filterQuery.append(field);
+            
+            switch(operator) {
+            case "notequals":
+            	filterQuery.insert(0, "-");
+            case "equals":
+                //Query the keyword indexed field !
+            	if (isIndexed) { filterQuery.append("_keyword"); }
+            	break;
+            case "notcontains":
+            	filterQuery.insert(0, "-");
+            case "contains":
+                //Query the partial n-gram field !
+            	if (isIndexed) { filterQuery.append("_contain"); }
+            	break;
+            case "notauthority":
+            	filterQuery.insert(0, "-");
+            case "authority":
+	            //Query the authority indexed field !
+	            if (isIndexed) { filterQuery.append("_authority"); }
+            default:
+            	break;
+            }
+            
+            filterQuery.append(":");
+            if("equals".equals(operator) || "notequals".equals(operator))
+            {
+                //DO NOT ESCAPE RANGE QUERIES !
+                if(!value.matches("\\[.*TO.*\\]"))
+                {
+                    value = ClientUtils.escapeQueryChars(value);
+                    filterQuery.append(value);
+                }
+                else
+                {
+                	if (value.matches("\\[\\d{1,4} TO \\d{1,4}\\]"))
+                	{
+                		int minRange = Integer.parseInt(value.substring(1, value.length()-1).split(" TO ")[0]);
+                		int maxRange = Integer.parseInt(value.substring(1, value.length()-1).split(" TO ")[1]);
+                		value = "["+String.format("%04d", minRange) + " TO "+ String.format("%04d", maxRange) + "]";
+                	}
+                	filterQuery.append(value);
+                }
+            }
+            else
+            {
+                //DO NOT ESCAPE RANGE QUERIES !
+                if(!value.matches("\\[.*TO.*\\]"))
+                {
+                	String[] tokens = value.split("\\W+");
+                	value = ClientUtils.escapeQueryChars(value);
+                	if (tokens.length > 1) {
+                        filterQuery.append("\"").append(value).append("\"~9");                		
+                	} else {
+                        filterQuery.append(value);                		
+                		
+                	}
+                }
+                else
+                {
+                    filterQuery.append(value);
+                }
+            }
+            
+        }
+
+        result.setDisplayedValue(transformDisplayedValue(context, field, value));
+        result.setFilterQuery(filterQuery.toString());
+        return result;
+    }
+
+    private DiscoverFilterQuery TODEL2_toFilterQuery(boolean isIndexed, Context context, String field, String operator, String value) throws SQLException{
         DiscoverFilterQuery result = new DiscoverFilterQuery();
 
         StringBuilder filterQuery = new StringBuilder();

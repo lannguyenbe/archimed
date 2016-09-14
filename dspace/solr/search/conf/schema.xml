@@ -275,7 +275,6 @@
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_fr.txt" format="snowball" enablePositionIncrements="true" />
         <filter class="solr.ICUFoldingFilterFactory"/>
         <filter class="solr.SnowballPorterFilterFactory" language="French" protected="lang/protwords_fr.txt"/>
-        <!-- filter class="solr.RemoveDuplicatesTokenFilterFactory"/--> <!-- Lan 23.02.2016 : uncomment, why is it comment ? -->
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
       <analyzer type="query">
@@ -803,6 +802,8 @@
 
    <!-- copyField source="*" dest="search_text"/ -->
    <copyField source="catched_*" dest="search_text"/>
+   <copyField source="handle" dest="search_text"/>
+   <copyField source="search.uniqueid" dest="search_text"/>
 
    <!-- Above, multiple source fields are copied to the [text] field.
 	  Another way to map multiple source fields to the same

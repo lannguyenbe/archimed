@@ -52,4 +52,8 @@ public interface Request {
 	public boolean isHighlight();
 	public void setIsHighlight(boolean bool);
 
+	public boolean isCollapse();
+	public void setIsCollapse(boolean bool);
+
+
 }

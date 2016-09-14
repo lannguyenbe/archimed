@@ -455,7 +455,6 @@ public abstract class Resource
         return (new ArrayList<SimpleNode>());
     }
 
-    // actually get sequences results
     protected DiscoverResult getQueryResult(int resourceType, Context context, Request searchRequest) throws SearchServiceException {
 		// 1. Prepare the query
         DiscoverQuery query = new DiscoverQuery();
@@ -528,6 +527,13 @@ public abstract class Resource
     		}
 		}
 
+    	// Collapse and expand
+    	if (searchRequest.isCollapse()) {
+    		query.addFilterQueries("{!query v=$collapseFQ}");
+    		query.addProperty("expand", "true");
+    	}
+
+    	
     	// Facetting and facet pagination
     	if (searchRequest.isFacet()) {
 	        query.setFacetMinCount(1);

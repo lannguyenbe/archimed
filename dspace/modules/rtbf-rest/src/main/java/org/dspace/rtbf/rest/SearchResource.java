@@ -1,5 +1,8 @@
 package org.dspace.rtbf.rest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.dspace.discovery.DiscoverResult;
 import org.dspace.rtbf.rest.search.EpisodesSearchResponse;
@@ -32,11 +35,17 @@ public class SearchResource extends Resource {
     		, @QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor
             , @Context HttpHeaders headers, @Context HttpServletRequest request) throws WebApplicationException
     {
+    	// Default args
+    	Map<String, String> defaults = new HashMap<String, String>() {
+    		{
+    			put("collapse", "true");
+    		}
+    	};
     	
     	MultivaluedMap<String, String> uriParameters = info.getQueryParameters(); // uriParameters may be empty but is not null
     	    	
     	if (params == null) { params = new SearchParameters(); }
-		params.supersedeBy(uriParameters);
+		params.supersedeBy(uriParameters, defaults);
 		
     	return getItemsSearchResponse(params);
     	
@@ -60,10 +69,16 @@ public class SearchResource extends Resource {
     		, @QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor
             , @Context HttpHeaders headers, @Context HttpServletRequest request) throws WebApplicationException
     {
+    	// Default args
+    	Map<String, String> defaults = new HashMap<String, String>() {
+    		{
+    			put("collapse", "true");
+    		}
+    	};
 
     	MultivaluedMap<String, String> uriParameters = info.getQueryParameters(); // uriParameters may be empty but is not null
-    	    	
-    	SearchParameters params = new SearchParameters().supersedeBy(uriParameters);
+    	    	    	
+    	SearchParameters params = new SearchParameters().supersedeBy(uriParameters, defaults);
 		
     	return getItemsSearchResponse(params);
     }

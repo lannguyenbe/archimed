@@ -163,4 +163,16 @@ public class LOVParameters implements org.dspace.rtbf.rest.search.Request{
 		
 	}
 
+	@Override
+	public boolean isCollapse() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setIsCollapse(boolean bool) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

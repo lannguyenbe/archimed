@@ -3321,7 +3321,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                 
             	SolrDocument doc = group.getResult().get(0);
                 long numFound = group.getResult().getNumFound();
-                if (groupValue.equals(doc.getFieldValue(groupName))) {
+                if (groupValue.equals(doc.getFieldValue("search.uniqueid"))) {
                 	numFound--;
                 }
                 result.addGroupFilter(dso, new GroupFilter(groupName, groupValue, numFound));

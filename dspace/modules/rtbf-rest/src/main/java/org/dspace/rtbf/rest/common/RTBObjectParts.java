@@ -253,7 +253,6 @@ public class RTBObjectParts {
 			}
 			
 			private long count;
-
 			private Filter fq;
 
 	 		public GroupCount(GroupFilter f) {
@@ -269,6 +268,7 @@ public class RTBObjectParts {
 				this.count = count;
 			}
 
+			// 19.09.2016 Lan : this adapter is mandatory for jaxb to work but I still donot understand why */
 			@XmlJavaTypeAdapter(RTBObjectParts.GroupFilterAdapter.class)
 			public GroupCount.Filter getFq() {
 				return fq;
@@ -283,6 +283,7 @@ public class RTBObjectParts {
 		/*
 		 * Jaxb Adapters
 		 */
+		// 19.09.2016 Lan : this adapter is mandatory for jaxb to work but I still donot understand why */
 		public static class GroupFilterAdapter extends XmlAdapter<GroupFilterAdapter.AdapteFilter, RTBObjectParts.GroupCount.Filter> {
 			public static class AdapteFilter {
 				public String filtertype;

@@ -120,6 +120,26 @@ public class SearchResource extends Resource {
     	return getCollectionsSearchResponse(params);
     }
 
+    @GET
+    @Path("/group/episodes")
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResponse getCollectionsGroupByGet(
+    		@QueryParam("scope") String scope
+    		, @QueryParam("q") String qterms
+    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset
+    		, @QueryParam("sort_by") String orderBy, @QueryParam("order") String order
+    		, @QueryParam("expand") String expand
+    		, @Context UriInfo info
+    		, @QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor
+            , @Context HttpHeaders headers, @Context HttpServletRequest request) throws WebApplicationException
+    {
+    	MultivaluedMap<String, String> uriParameters = info.getQueryParameters(); // uriParameters may be empty but is not null
+    	
+    	SearchParameters params = new SearchParameters().supersedeBy(uriParameters);
+		
+    	return getCollectionsGroupResponse(params);
+    }
+
     @POST
     @Path("/searchp/series")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -230,6 +250,46 @@ public class SearchResource extends Resource {
 
         } catch (Exception e) {
            processException("Could not process search episodes. Message:"+e.getMessage(), context);
+        } finally {
+           processFinally(context);            
+        }
+
+        return response;
+    }
+
+
+    protected SearchResponse getCollectionsGroupResponse(SearchParameters params)
+    {
+        Request searchRequest = (Request) params;
+        
+        String qterms = searchRequest.getQuery();
+    	Boolean isFacet = searchRequest.isFacet();
+    	Integer limit = searchRequest.getLimit();
+    	Integer offset = searchRequest.getOffset();
+
+    	String expand = params.getExpand();
+
+        org.dspace.core.Context context = null;
+        log.info("Searching episodes(q=" + qterms + ").");
+        SearchResponse response = null;
+        DiscoverResult queryResults = null;
+
+        try {
+            context = new org.dspace.core.Context();
+            context.getDBConnection();
+            
+            // expand the results if there is a query
+            if (qterms != null && qterms.length() > 0) {
+            	expand += ",results";
+            	if (isFacet) { expand += ",facets"; }
+            }
+            queryResults = getGroupResult(org.dspace.core.Constants.COLLECTION, context, searchRequest);
+            response = new EpisodesSearchResponse(queryResults, expand, context, limit, offset);
+            
+            context.complete();
+
+        } catch (Exception e) {
+           processException("Could not process group episodes. Message:"+e.getMessage(), context);
         } finally {
            processFinally(context);            
         }

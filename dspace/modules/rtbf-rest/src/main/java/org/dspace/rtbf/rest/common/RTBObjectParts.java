@@ -2,12 +2,17 @@ package org.dspace.rtbf.rest.common;
 
 import java.util.List;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.log4j.Logger;
-import org.dspace.content.Support;
+import org.dspace.discovery.DiscoverResult.GroupFilter;
 import org.dspace.rtbf.rest.common.RTBObject;
+import org.dspace.rtbf.rest.search.SearchResponseParts;
 
 public class RTBObjectParts {
     private static Logger log = Logger.getLogger(RTBObjectParts.class);
@@ -231,8 +236,80 @@ public class RTBObjectParts {
 
 		}
 	
-	
+		// 19.09.2016 Lan
+		public static class GroupCount {
+			
+			public static class Filter {
+				public String filtertype;
+				public String filter_relational_operator;
+				public String filter;
+				
+				public Filter() {}
+				public Filter(String ft, String fo, String fv) {
+					this.filtertype = ft;
+					this.filter_relational_operator = fo;
+					this.filter = fv;				
+				}
+			}
+			
+			private long count;
+
+			private Filter fq;
+
+	 		public GroupCount(GroupFilter f) {
+	 			this.count = f.getCount();
+	 			this.fq = new Filter(f.getFilterType(), f.getFilterOper(), f.getFilterValue());
+	 		}
+
+			public long getCount() {
+				return count;
+			}
+
+			public void setCount(long count) {
+				this.count = count;
+			}
+
+			@XmlJavaTypeAdapter(RTBObjectParts.GroupFilterAdapter.class)
+			public GroupCount.Filter getFq() {
+				return fq;
+			}
+
+			public void setFq(Filter fq) {
+				this.fq = fq;
+			}
+
+		}
 		
-		
-		
+		/*
+		 * Jaxb Adapters
+		 */
+		public static class GroupFilterAdapter extends XmlAdapter<GroupFilterAdapter.AdapteFilter, RTBObjectParts.GroupCount.Filter> {
+			public static class AdapteFilter {
+				public String filtertype;
+				public String filter_relational_operator;
+				public String filter;
+			}
+
+			@Override
+			public RTBObjectParts.GroupCount.Filter unmarshal(
+					GroupFilterAdapter.AdapteFilter v) throws Exception {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public GroupFilterAdapter.AdapteFilter marshal(
+					RTBObjectParts.GroupCount.Filter v) throws Exception {
+				if (v == null) { return null; }
+				
+				AdapteFilter adapte = new AdapteFilter();
+				adapte.filter = v.filter;
+				adapte.filtertype = v.filtertype;
+				adapte.filter_relational_operator = v.filter_relational_operator;
+				return adapte;	
+				
+			}
+		}
+				
+				
 }

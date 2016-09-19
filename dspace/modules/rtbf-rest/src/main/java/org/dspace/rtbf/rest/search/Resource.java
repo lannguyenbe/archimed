@@ -455,32 +455,31 @@ public abstract class Resource
         return (new ArrayList<SimpleNode>());
     }
 
-    protected DiscoverResult getQueryResult(int resourceType, Context context, Request searchRequest) throws SearchServiceException {
-		// 1. Prepare the query
+    protected DiscoverResult getGroupResult(int resourceType, Context context, Request searchRequest) throws SearchServiceException {
         DiscoverQuery query = new DiscoverQuery();
 
-        // 1.1 Use specific request handler instead of the default /select
-        // 18.04.2016 Lan : new /selectSequence request handle to support the binding of 2 search criteria : serie title & date diffusion
+        // Choose specific request handler instead of the default /select defined in solrconfig.xml
         switch (resourceType) {
 			case Constants.COMMUNITY:
-		        query.addProperty("qt", "/selectSerie");
+		        query.addProperty("qt", "/groupSerie");
 				break;
 			case Constants.COLLECTION:
-		        query.addProperty("qt", "/selectEpisode");
+		        query.addProperty("qt", "/groupEpisode");
 				break;
 			case Constants.ITEM:
-		        query.addProperty("qt", "/selectSequence");
-				break;
 			default :
-				break;
+				return null;
         }
-        
+
+        return(getQueryResult(query, resourceType, context, searchRequest));
+
+    }
+
+	protected DiscoverResult getQueryResult(DiscoverQuery query, int resourceType, Context context, Request searchRequest) throws SearchServiceException {
+		// 1. Prepare query
         // q terms
         query.setQuery(searchRequest.getQuery());
 
-        // return which resourcetype document (community/collection/item)
-        query.setDSpaceObjectFilter(resourceType);
-    	
         // limit the search within community/collection
         String scope = searchRequest.getScope();
     	if (scope != null) { // scope contains logical expression of handles
@@ -594,6 +593,31 @@ public abstract class Resource
     	
         // 2. Perform query
 		return (getSearchService().search(context, query));
+	}
+
+    protected DiscoverResult getQueryResult(int resourceType, Context context, Request searchRequest) throws SearchServiceException {
+        DiscoverQuery query = new DiscoverQuery();
+
+        // Choose specific request handler instead of the default /select defined in solrconfig.xml
+        switch (resourceType) {
+			case Constants.COMMUNITY:
+		        query.addProperty("qt", "/selectSerie");
+				break;
+			case Constants.COLLECTION:
+		        query.addProperty("qt", "/selectEpisode");
+				break;
+			case Constants.ITEM:
+		        query.addProperty("qt", "/selectSequence");
+				break;
+			default :
+				break;
+        }
+        
+        // Choose resourcetype document (community/collection/item)
+        query.setDSpaceObjectFilter(resourceType);
+        
+        return(getQueryResult(query, resourceType, context, searchRequest));
+    	
 	}
 	
 	

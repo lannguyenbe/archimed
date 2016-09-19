@@ -112,6 +112,9 @@ public class SearchResponseParts {
 							break;
 						case Constants.COLLECTION:
 							Episode episode = new Episode(Constants.SEARCH_RESULT_VIEW, (Collection) result, Constants.SEARCH_SEQUENCE_EXPAND_OPTIONS, null);
+							
+							// Lan 19.09.2016 : setFilter
+							episode.setGroupCount(queryResults.getGroupFilter(result));
 
 							// Set highlighted snippets
 		                    highlightedResults = queryResults.getHighlightedResults(result);

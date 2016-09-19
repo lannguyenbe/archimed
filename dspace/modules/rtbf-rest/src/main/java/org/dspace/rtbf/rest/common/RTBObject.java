@@ -93,6 +93,7 @@ public class RTBObject {
     protected List<RTBObject> linkedDocuments;
     protected List<RTBObjectParts.Diffusion> diffusions;
     protected List<RTBObjectParts.Support> supports;
+    protected RTBObjectParts.GroupCount groupCount;
     
     // highlight
     @JsonProperty("highlight")
@@ -510,5 +511,16 @@ public class RTBObject {
 	public void setSupports(List<RTBObjectParts.Support> supports) {
 		this.supports = supports;
 	}
+
+	public RTBObjectParts.GroupCount getGroupCount() {
+		return groupCount;
+	}
+
+	public void setGroupCount(RTBObjectParts.GroupCount groupCount) {
+		this.groupCount = groupCount;
+	}
+
+
+
 	
 }

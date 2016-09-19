@@ -15,6 +15,8 @@ import java.util.*;
  * This class represents the result that the discovery search impl returns
  *
  * @author Kevin Van de Velde (kevin at atmire dot com)
+ * 
+ * heavily patched by Lan
  */
 public class DiscoverResult {
 
@@ -28,7 +30,8 @@ public class DiscoverResult {
     private int searchTime;
     private Map<String, DSpaceObjectHighlightResult> highlightedResults;
     private Map<String, List<SearchDocument>> expandDocuments;
-        private String spellCheckQuery;
+    private Map<String, GroupFilter> groupFilters;
+    private String spellCheckQuery;
 
 
     public DiscoverResult() {
@@ -37,6 +40,7 @@ public class DiscoverResult {
         searchDocuments = new LinkedHashMap<String, List<SearchDocument>>();
         highlightedResults = new HashMap<String, DSpaceObjectHighlightResult>();
         expandDocuments = new LinkedHashMap<String, List<SearchDocument>>();
+        groupFilters = new HashMap<String, GroupFilter>();
     }
 
 
@@ -105,9 +109,19 @@ public class DiscoverResult {
         return highlightedResults.get(dso.getHandle());
     }
 
+    public GroupFilter getGroupFilter(DSpaceObject dso)
+    {
+        return groupFilters.get(dso.getHandle());
+    }
+
     public void addHighlightedResult(DSpaceObject dso, DSpaceObjectHighlightResult highlightedResult)
     {
         this.highlightedResults.put(dso.getHandle(), highlightedResult);
+    }
+
+    public void addGroupFilter(DSpaceObject dso, GroupFilter groupFilter)
+    {
+        this.groupFilters.put(dso.getHandle(), groupFilter);
     }
 
     public static final class FacetResult{
@@ -152,7 +166,35 @@ public class DiscoverResult {
             return authorityKey != null?"authority":"equals";
         }
     }
+    
+    public static final class GroupFilter{
+        private String filterType;
+        private String filterValue;
+        private long count;
+        
+        public GroupFilter(String filterType, String filterValue, long count) {
+        	this.filterType = filterType;
+        	this.filterValue = filterValue;
+        	this.count = count;
+        }
 
+		public String getFilterType() {
+			return filterType;
+		}
+
+		public String getFilterValue() {
+			return filterValue;
+		}
+
+		public String getFilterOper() {
+			return "equals";
+		}
+
+		public long getCount() {
+			return count;
+		}
+    }
+    
     public String getSpellCheckQuery() {
         return spellCheckQuery;
     }

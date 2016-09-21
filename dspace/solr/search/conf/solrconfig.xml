@@ -1007,6 +1007,9 @@
        <str name="group.ngroups">true</str>
        <str name="group.field">owning_collection</str>
        <str name="group.sort">search.resourcetype desc</str>
+       <str name="fl">search.resourcetype,owning_collection,handle,search.uniqueid,search.resourceid</str>
+       <!-- group.main donot show the number of matchs per group -->
+       <!--str name="group.main">true</str-->
      </lst>
     </requestHandler>
 
@@ -1035,6 +1038,7 @@
        <str name="group.ngroups">true</str>
        <str name="group.field">owning_community</str>
        <str name="group.sort">search.resourcetype desc</str>
+       <str name="fl">search.resourcetype,owning_collection,handle,search.uniqueid,search.resourceid</str>
      </lst>
     </requestHandler>
     

@@ -202,8 +202,13 @@ public class Episode extends RTBObject {
     		}
     	}
     }
-    
-    		                    
+
+    // 19.09.2016 Lan
+    public void setGroupCount(DiscoverResult.GroupFilter filter) {
+	List<RTBObjectParts.GroupCount> list = new ArrayList<RTBObjectParts.GroupCount>();
+	RTBObjectParts.GroupCount g = new RTBObjectParts.GroupCount(filter);
+	list.add(g);
+	this.setGroupCount(g);}
     
 
 }

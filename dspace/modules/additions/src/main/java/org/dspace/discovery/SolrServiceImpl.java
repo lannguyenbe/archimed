@@ -56,6 +56,8 @@ import org.apache.solr.client.solrj.request.AbstractUpdateRequest;
 import org.apache.solr.client.solrj.request.ContentStreamUpdateRequest;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.Group;
+import org.apache.solr.client.solrj.response.GroupCommand;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
@@ -90,6 +92,7 @@ import org.dspace.core.Context;
 import org.dspace.core.Email;
 import org.dspace.core.I18nUtil;
 import org.dspace.core.LogManager;
+import org.dspace.discovery.DiscoverResult.GroupFilter;
 import org.dspace.discovery.configuration.DiscoveryConfiguration;
 import org.dspace.discovery.configuration.DiscoveryConfigurationParameters;
 import org.dspace.discovery.configuration.DiscoveryHitHighlightFieldConfiguration;
@@ -3112,6 +3115,8 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 
         if(solrQueryResponse != null)
         {
+            if (solrQueryResponse.getResults() == null) { return retrieveGroup(context, query, solrQueryResponse); }
+
             result.setSearchTime(solrQueryResponse.getQTime());
             result.setStart(query.getStart());
             result.setMaxResults(query.getMaxResults());
@@ -3282,6 +3287,164 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         }
 
         return result;
+    }
+
+    protected DiscoverResult retrieveGroup(Context context, DiscoverQuery query, QueryResponse solrQueryResponse) throws SQLException {
+        DiscoverResult result = new DiscoverResult();
+
+        if(solrQueryResponse != null)
+        {
+            if (solrQueryResponse.getGroupResponse() == null) { return null; }
+
+            result.setSearchTime(solrQueryResponse.getQTime());
+            result.setStart(query.getStart());
+            result.setMaxResults(query.getMaxResults());
+
+            GroupCommand group1 = solrQueryResponse.getGroupResponse().getValues().get(0);
+            String groupName = group1.getName();
+            
+            result.setTotalSearchResults(group1.getNGroups());
+            
+            for (Group group : group1.getValues())
+            {
+            	String groupValue = group.getGroupValue();
+            	
+            	DSpaceObject dso = findDSpaceObject(context, groupValue);
+
+                if(dso != null)
+                {
+                    result.addDSpaceObject(dso);
+                } else {
+                    log.error(LogManager.getHeader(context, "Error while retrieving DSpace object from discovery index", "uniqueid: " + groupValue));
+                    continue;
+                }
+                
+            	SolrDocument doc = group.getResult().get(0);
+                long numFound = group.getResult().getNumFound();
+                if (groupValue.equals(doc.getFieldValue("search.uniqueid"))) {
+                	numFound--;
+                }
+                result.addGroupFilter(dso, new GroupFilter(groupName, groupValue, numFound));
+
+                if(solrQueryResponse.getHighlighting() != null)
+                {
+                    Map<String, List<String>> highlightedFields = solrQueryResponse.getHighlighting().get(dso.getType() + "-" + dso.getID());
+                    if(MapUtils.isNotEmpty(highlightedFields))
+                    {
+                        //We need to remove all the "_hl" appendix strings from our keys
+                        Map<String, List<String>> resultMap = new HashMap<String, List<String>>();
+                        for(String key : highlightedFields.keySet())
+                        {
+                        	/* Lan 08.01.2015 - suffix _hl may or may not exists */
+                        	int ihl = key.lastIndexOf("_hl");
+                        	if (ihl < 0) { /* no _hl suffix */
+                        		resultMap.put(key, highlightedFields.get(key));
+                        	} else { /* remove _hl suffix */
+                        		resultMap.put(key.substring(0, ihl), highlightedFields.get(key));
+                        	}
+                        }
+
+                        result.addHighlightedResult(dso, new DiscoverResult.DSpaceObjectHighlightResult(dso, resultMap));
+                    }
+                }
+                                
+            }
+
+            //Resolve our facet field values
+            List<FacetField> facetFields = solrQueryResponse.getFacetFields();
+            if(facetFields != null)
+            {
+                for (int i = 0; i <  facetFields.size(); i++)
+                {
+                    FacetField facetField = facetFields.get(i);
+                    DiscoverFacetField facetFieldConfig = query.getFacetFields().get(i);
+                    List<FacetField.Count> facetValues = facetField.getValues();
+                    if (facetValues != null)
+                    {
+                        if(facetFieldConfig.getType().equals(DiscoveryConfigurationParameters.TYPE_DATE) && facetFieldConfig.getSortOrder().equals(DiscoveryConfigurationParameters.SORT.VALUE))
+                        {
+                            //If we have a date & are sorting by value, ensure that the results are flipped for a proper result
+                           Collections.reverse(facetValues);
+                        }
+
+                        for (FacetField.Count facetValue : facetValues)
+                        {
+                            String displayedValue = transformDisplayedValue(context, facetField.getName(), facetValue.getName());
+                            String field = transformFacetField(facetFieldConfig, facetField.getName(), true);
+                            String authorityValue = transformAuthorityValue(context, facetField.getName(), facetValue.getName());
+                            String sortValue = transformSortValue(context, facetField.getName(), facetValue.getName());
+                            String filterValue = displayedValue;
+                            if (StringUtils.isNotBlank(authorityValue))
+                            {
+                                filterValue = authorityValue;
+                            }
+                            result.addFacetResult(
+                                    field,
+                                    new DiscoverResult.FacetResult(filterValue,
+                                            displayedValue, authorityValue,
+                                            sortValue, facetValue.getCount()));
+                        }
+                    }
+                }
+            }
+
+            if(solrQueryResponse.getFacetQuery() != null)
+            {
+				// just retrieve the facets in the order they where requested!
+				// also for the date we ask it in proper (reverse) order
+				// At the moment facet queries are only used for dates
+                LinkedHashMap<String, Integer> sortedFacetQueries = new LinkedHashMap<String, Integer>(solrQueryResponse.getFacetQuery());
+                for(String facetQuery : sortedFacetQueries.keySet())
+                {
+                    //TODO: do not assume this, people may want to use it for other ends, use a regex to make sure
+                    //We have a facet query, the values looks something like: dateissued.year:[1990 TO 2000] AND -2000
+                    //Prepare the string from {facet.field.name}:[startyear TO endyear] to startyear - endyear
+                    String facetField = facetQuery.substring(0, facetQuery.indexOf(":"));
+                    String name = "";
+                    String filter = "";
+                    if (facetQuery.indexOf('[') > -1 && facetQuery.lastIndexOf(']') > -1)
+                    {
+                        name = facetQuery.substring(facetQuery.indexOf('[') + 1);
+                        name = name.substring(0, name.lastIndexOf(']')).replaceAll("TO", "-");
+                        filter = facetQuery.substring(facetQuery.indexOf('['));
+                        filter = filter.substring(0, filter.lastIndexOf(']') + 1);
+                    }
+
+                    Integer count = sortedFacetQueries.get(facetQuery);
+
+                    //No need to show empty years
+                    if(0 < count)
+                    {
+                        result.addFacetResult(facetField, new DiscoverResult.FacetResult(filter, name, null, name, count));
+                    }
+                }
+            }
+
+            if(solrQueryResponse.getSpellCheckResponse() != null)
+            {
+                String recommendedQuery = solrQueryResponse.getSpellCheckResponse().getCollatedResult();
+                if(StringUtils.isNotBlank(recommendedQuery))
+                {
+                    result.setSpellCheckQuery(recommendedQuery);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    protected static DSpaceObject findDSpaceObject(Context context, String uniqueId) throws SQLException {
+
+        String[] idParts = uniqueId.split("-");
+        Integer type = Integer.valueOf(idParts[0]);
+        Integer id = Integer.valueOf(idParts[1]);
+
+        if (type != null && id != null)
+        {
+            return DSpaceObject.find(context, type, id);
+        } 
+
+        return null;
     }
 
     protected static DSpaceObject findDSpaceObject(Context context, SolrDocument doc) throws SQLException {

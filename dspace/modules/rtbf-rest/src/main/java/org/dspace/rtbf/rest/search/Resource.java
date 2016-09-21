@@ -138,126 +138,6 @@ public abstract class Resource
     }
     
 
-    public List<SimpleNode> TODEL_getAllSimpleNodes(
-            String facetField, SimpleNode.Attribute name,
-            Integer limit, Integer offset
-           ) throws WebApplicationException
-    {
-    	if (limit == null) { limit = org.dspace.rtbf.rest.common.Constants.DEFAULT_LOV_RPP;}
-    	if (offset == null) { offset = 0;}
-
-		ArrayList<SimpleNode> results = null;
-        org.dspace.core.Context context = null;
-        DiscoverResult queryResults = null;
-                
-        DiscoverQuery query = new DiscoverQuery();
-
-	    DiscoverFacetField dff = new DiscoverFacetField("{!key="+facetField+"}"+facetField+"_keyword",
-                DiscoveryConfigurationParameters.TYPE_STANDARD,
-                org.dspace.rtbf.rest.common.Constants.LIMITMAX,
-                DiscoveryConfigurationParameters.SORT.VALUE);
-
-        query.addFacetField(dff);
-        query.setFacetMinCount(1);
-        query.setMaxResults(0);
-                       
-        try {
-           context = new org.dspace.core.Context();
-
-           queryResults = getSearchService().search(context, query);
-
-           context.complete();
-        } catch (Exception e) {
-          processException("Could not process getSimpleNodes. Message:"+e.getMessage(), context);
-        } finally {
-          processFinally(context);            
-        }
-        
-        if (queryResults != null) {
-            List<FacetResult> facets = queryResults.getFacetResult(facetField);
-            
-            results = new ArrayList<SimpleNode>();
-            for (int i=0, len=facets.size(), iOffset=offset*limit; i < iOffset+limit && i < len; i++) {
-            	if (i < iOffset) { continue; }
-                results.add(new SimpleNode().setAttribute(name, facets.get(i).getDisplayedValue()));
-            	
-            }
-
-            return results;
-            
-        }
-
-        return (new ArrayList<SimpleNode>());
-    }
-    
-
-    public List<SimpleNode> TODEL_getSimpleNodes(
-            String facetField, SimpleNode.Attribute name,
-            String pTerms, Integer limit
-           ) throws WebApplicationException
-    {
-    	
-    	if (limit == null) { limit = org.dspace.rtbf.rest.common.Constants.DEFAULT_LOV_RPP;}
-
-        ArrayList<SimpleNode> results = null;
-        org.dspace.core.Context context = null;
-        DiscoverResult queryResults = null;
-                
-        DiscoverQuery query = new DiscoverQuery();
-
-	    DiscoverFacetField dff = new DiscoverFacetField("{!key="+facetField+"}"+facetField+"_keyword",
-                DiscoveryConfigurationParameters.TYPE_STANDARD,
-                org.dspace.rtbf.rest.common.Constants.LIMITMAX,
-                DiscoveryConfigurationParameters.SORT.VALUE);
-
-        query.addFacetField(dff);
-        query.setFacetMinCount(1);
-        query.setMaxResults(0);
-               
-        String qterms = null;
-        String partialTerms = pTerms.trim();
-        if (partialTerms != null && !partialTerms.isEmpty()) {
-            // Remove diacritic + escape all but alphanum
-            qterms = OrderFormat.makeSortString(partialTerms, null, OrderFormat.TEXT)
-                        .replaceAll("([^\\p{Alnum}\\s])", "\\\\$1");
-            query.addFilterQueries("{!q.op=AND}" + facetField + "_partial:(" + qterms + ")");
-
-            log.debug("Solr filter query terms.(qterms=" + qterms + ").");
-        }
-        
-        try {
-           context = new org.dspace.core.Context();
-
-           queryResults = getSearchService().search(context, query);
-
-           context.complete();
-        } catch (Exception e) {
-          processException("Could not process getSimpleNodes. Message:"+e.getMessage(), context);
-        } finally {
-          processFinally(context);            
-        }
-        
-        if (queryResults != null) {
-            List<FacetResult> facets = queryResults.getFacetResult(facetField);
-            
-            // Filter results is mandatory when facet.field is multivalue
-            if (qterms != null && !qterms.isEmpty()) {
-                filterFacetResults(facets, qterms);
-            }
-
-            results = new ArrayList<SimpleNode>();          
-            for (FacetResult facet : facets) {
-                results.add(new SimpleNode().setAttribute(name, facet.getDisplayedValue()));
-                if (results.size() >= limit)
-                    break;
-            }
-            return results;
-            
-        }
-
-        return (new ArrayList<SimpleNode>());
-    }
-
     public List<SimpleNode> getAllACNodes(
             String facetField, SimpleNode.Attribute attr
             , Request params
@@ -376,111 +256,31 @@ public abstract class Resource
         return results;
     }
     
-    public List<SimpleNode> TODEL2_getSimpleNodes(
-            String facetField, SimpleNode.Attribute attr
-            , String pTerms
-            , Request params
-           ) throws WebApplicationException
-    {
-    	
-    	int limit = params.getLimit();
-    	if (limit < 0) {limit = org.dspace.rtbf.rest.common.Constants.DEFAULT_LOV_RPP;}
-    	if (org.dspace.rtbf.rest.common.Constants.LIMITMAX < limit ) {
-    		limit = org.dspace.rtbf.rest.common.Constants.LIMITMAX;
-    	}
-    	int offset = params.getOffset();
-
-        ArrayList<SimpleNode> results = null;
-        org.dspace.core.Context context = null;
-        DiscoverResult queryResults = null;
-                
+    protected DiscoverResult getGroupResult(int resourceType, Context context, Request searchRequest) throws SearchServiceException {
         DiscoverQuery query = new DiscoverQuery();
 
-	    DiscoverFacetField dff = new DiscoverFacetField("{!key="+facetField+"}"+facetField+"_keyword",
-                DiscoveryConfigurationParameters.TYPE_STANDARD,
-                //org.dspace.rtbf.rest.common.Constants.LIMITMAX,
-                100,
-                DiscoveryConfigurationParameters.SORT.VALUE);
-
-        query.addFacetField(dff);
-        query.setFacetMinCount(1);
-        query.setMaxResults(0);
-               
-        // limit the search to partial terms
-        String qterms = null;
-        String partialTerms = (pTerms == null) ? null : pTerms.trim();
-        if (partialTerms != null && !partialTerms.isEmpty()) {
-            // Remove diacritic + escape all but alphanum
-            qterms = OrderFormat.makeSortString(partialTerms, null, OrderFormat.TEXT)
-                        .replaceAll("([^\\p{Alnum}\\s])", "\\\\$1");
-            query.addFilterQueries("{!q.op=AND}" + facetField + "_partial:(" + qterms + ")");
-
-            log.debug("Solr filter query terms.(qterms=" + qterms + ").");
-        }
-        
-    	try {
-           context = new org.dspace.core.Context();
-           
-           // limit the search within community/collection
-           String scope = params.getScope();
-           if (scope != null) {
-        	   addScope(scope, query, context);
-           }
-           queryResults = getSearchService().search(context, query);
-
-           context.complete();
-        } catch (Exception e) {
-          processException("Could not process getSimpleNodes. Message:"+e.getMessage(), context);
-        } finally {
-          processFinally(context);            
-        }
-        
-        if (queryResults != null) {
-            List<FacetResult> facets = queryResults.getFacetResult(facetField);
-            
-            // Filter results is mandatory when facet.field is multivalue
-            if (qterms != null && !qterms.isEmpty()) {
-                filterFacetResults(facets, qterms);
-            }
-
-            results = new ArrayList<SimpleNode>();          
-            for (int i=0, len=facets.size(), iOffset=offset*limit; i < iOffset+limit && i < len; i++) {
-            	if (i < iOffset) { continue; }
-                results.add(new SimpleNode().setAttribute(attr, facets.get(i).getDisplayedValue()));
-            }
-            return results;
-            
-        }
-
-        return (new ArrayList<SimpleNode>());
-    }
-
-    protected DiscoverResult getQueryResult(int resourceType, Context context, Request searchRequest) throws SearchServiceException {
-		// 1. Prepare the query
-        DiscoverQuery query = new DiscoverQuery();
-
-        // 1.1 Use specific request handler instead of the default /select
-        // 18.04.2016 Lan : new /selectSequence request handle to support the binding of 2 search criteria : serie title & date diffusion
+        // Choose specific request handler instead of the default /select defined in solrconfig.xml
         switch (resourceType) {
 			case Constants.COMMUNITY:
-		        query.addProperty("qt", "/selectSerie");
+		        query.addProperty("qt", "/groupSerie");
 				break;
 			case Constants.COLLECTION:
-		        query.addProperty("qt", "/selectEpisode");
+		        query.addProperty("qt", "/groupEpisode");
 				break;
 			case Constants.ITEM:
-		        query.addProperty("qt", "/selectSequence");
-				break;
 			default :
-				break;
+				return null;
         }
-        
+
+        return(getQueryResult(query, resourceType, context, searchRequest));
+
+    }
+
+	protected DiscoverResult getQueryResult(DiscoverQuery query, int resourceType, Context context, Request searchRequest) throws SearchServiceException {
+		// 1. Prepare query
         // q terms
         query.setQuery(searchRequest.getQuery());
 
-        // return which resourcetype document (community/collection/item)
-        query.setDSpaceObjectFilter(resourceType);
-    	
         // limit the search within community/collection
         String scope = searchRequest.getScope();
     	if (scope != null) { // scope contains logical expression of handles
@@ -500,7 +300,14 @@ public abstract class Resource
         
         // Order
         if (searchRequest.getSortField() != null) {
-        	query.setSortField(searchRequest.getSortField(), searchRequest.getSortOrder());
+        	// 19.09.2016 Lan : get request Handler
+        	String qt = null;
+        	if (!query.getProperties().isEmpty()) {
+        		if (query.getProperties().get("qt").size() > 0) {
+        			qt = query.getProperties().get("qt").get(0);
+        		}
+        	}
+        	query.setSortField(searchRequest.getSortField(qt), searchRequest.getSortOrder());
         }
         
         // Search Fields : handle is included by default
@@ -594,6 +401,31 @@ public abstract class Resource
     	
         // 2. Perform query
 		return (getSearchService().search(context, query));
+	}
+
+    protected DiscoverResult getQueryResult(int resourceType, Context context, Request searchRequest) throws SearchServiceException {
+        DiscoverQuery query = new DiscoverQuery();
+
+        // Choose specific request handler instead of the default /select defined in solrconfig.xml
+        switch (resourceType) {
+			case Constants.COMMUNITY:
+		        query.addProperty("qt", "/selectSerie");
+				break;
+			case Constants.COLLECTION:
+		        query.addProperty("qt", "/selectEpisode");
+				break;
+			case Constants.ITEM:
+		        query.addProperty("qt", "/selectSequence");
+				break;
+			default :
+				break;
+        }
+        
+        // Choose resourcetype document (community/collection/item)
+        query.setDSpaceObjectFilter(resourceType);
+        
+        return(getQueryResult(query, resourceType, context, searchRequest));
+    	
 	}
 	
 	
@@ -964,313 +796,6 @@ public abstract class Resource
 			query.addFilterQueries("{!q.op=OR}" + "owning_collection:(" + StringUtils.join(owning_collections, ' ') + ")");			
 		}
 		
-	}
-	
-
-	/*
-	 * The results of the query are about sequences, use facet to access the collections of those results
-	 */
-	protected DiscoverResult TODEL_getCollectionResultFromFacet(int resourceType, Context context, Request searchRequest) throws SearchServiceException {
-
-        // 1. Prepare the query
-        DiscoverQuery query = new DiscoverQuery();
-
-        // Use request handler /selectNoCollapse instead of the default /select
-        // to be compatible with the method getCollectionResultAsJoin() that uses the request handle /selectCollection which is also NO collapsing
-        query.addProperty("qt", "/selectNoCollapse");
-        
-        // Prepare facetting and facet pagination : use facet to get the parent collections of the results
-        DiscoverFacetField dff = new DiscoverFacetField("location.coll"
-                , DiscoveryConfigurationParameters.TYPE_STANDARD
-                , searchRequest.getLimit() /* facet limit */
-                , DiscoveryConfigurationParameters.SORT.COUNT
-                , searchRequest.getOffset() * searchRequest.getLimit() /* facet offset */);
-        query.addFacetField(dff);
-        query.setFacetMinCount(1);
-        query.setMaxResults(0); // count of results only
-                
-        // q terms
-        query.setQuery(searchRequest.getQuery());
-
-        // return which resourcetype document (community/collection/item) - should be item
-        query.setDSpaceObjectFilter(resourceType);
-    	
-        // limit the search within community/collection
-        String scope = searchRequest.getScope();
-    	if (scope != null) { // scope contains logical expression of handles
-    		// a. Replace handle by m{community_id} or l{collection_id}
-    		StringBuffer sb = new StringBuffer();    		
-    		Pattern pattern = Pattern.compile("\\d+/\\d+");
-    		Matcher matcher = pattern.matcher(scope);
-
-    		while (matcher.find()) {
-    			String handle = matcher.group();
-    			String replacement;
-
-    			org.dspace.content.DSpaceObject dso = null;
-    			try {
-    				dso = HandleManager.resolveToObject(context, handle);
-    			} catch (Exception e) {
-    				processException("Could not process getCollectionResultFromFacet. Message:"+e.getMessage(), context);
-    			};
-
-    			if(dso == null) {
-    				replacement = handle;
-    			} else {
-    				switch (dso.getType()) {
-    				case Constants.COMMUNITY:
-    					replacement = "m" + dso.getID();
-    					break;
-    				case Constants.COLLECTION:
-    					replacement = "l" + dso.getID();
-    					break;
-    				default :
-    					replacement = handle;
-    				}
-    			}
-    			matcher.appendReplacement(sb, replacement);
-    		}
-
-    		// b. Add filter query
-    		query.addFilterQueries("{!q.op=OR}" + "location:(" + sb.toString() + ")");
-    	}
-
-        
-    	// Filter queries
-    	String[] fqs = getFilterQueries(context, searchRequest);
-    	for (String fq : fqs) {
-    		query.addFilterQueries(fq);
-    		
-    	}
-
-    	// 2. Perform query
-        DiscoverResult queryResults = getSearchService().search(context, query);
-        
-        // 3. Make facet results as main results 
-        if (queryResults != null) {
-            List<FacetResult> facets = queryResults.getFacetResult("location.coll");
-            int facetIndex = 0;
-            
-            for (FacetResult facet : facets) {
-                DSpaceObject o = null;
-				try {
-					o = DSpaceObject.find(context, (Integer) org.dspace.core.Constants.COLLECTION, (Integer) Integer.parseInt(facet.getAsFilterQuery()));
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				queryResults.addDSpaceObject(o);
-				facetIndex++;
-            }
-            
-            // setTotalSearchResults to count of collections
-            if (searchRequest.getOffset() == 0 && facetIndex < searchRequest.getLimit()) {
-            	// set count of collections to facet count
-                queryResults.setTotalSearchResults(facetIndex);
-            } else { 
-            	// do another search to get count of collections
-            	DiscoverResult collections = TODEL_getCollectionResultAsJoin(org.dspace.core.Constants.COLLECTION, context, searchRequest);
-            	searchRequest.setLimit(0); // Do not get results detail only their count
-            	queryResults.setTotalSearchResults(collections.getTotalSearchResults());
-            }
-        }
-
-        return queryResults;
-
-	}
-
-	
-	protected DiscoverResult TODEL_getCollectionResultAsJoin(int resourceType, Context context, Request searchRequest) throws SearchServiceException {
-		// 1. Prepare the query
-        DiscoverQuery query = new DiscoverQuery();
-        
-        // use request handler /selectCollection instead of the default /select
-        query.addProperty("qt", "/selectCollection");
-        
-        // seqQuery terms instead of q terms
-        // query.setQuery(searchRequest.getQuery());
-        query.addProperty("seqQ", searchRequest.getQuery());
-
-        // return which resourcetype document (community/collection/item) - should be collection
-        query.setDSpaceObjectFilter(resourceType);
-    	
-        /*
-         *  TODO test ALL the following features
-         */
-
-        // limit the search within community/collection
-        String scope = searchRequest.getScope();
-    	if (scope != null) { // scope contains logical expression of handles
-    		// a. Replace handle by m{community_id} or l{collection_id}
-    		StringBuffer sb = new StringBuffer();    		
-    		Pattern pattern = Pattern.compile("\\d+/\\d+");
-    		Matcher matcher = pattern.matcher(scope);
-
-    		while (matcher.find()) {
-    			String handle = matcher.group();
-    			String replacement;
-
-    			org.dspace.content.DSpaceObject dso = null;
-    			try {
-    				dso = HandleManager.resolveToObject(context, handle);
-    			} catch (Exception e) {
-    				processException("Could not process getCollectionResultAsJoin. Message:"+e.getMessage(), context);
-    			};
-
-    			if(dso == null) {
-    				replacement = handle;
-    			} else {
-    				switch (dso.getType()) {
-    				case Constants.COMMUNITY:
-    					replacement = "m" + dso.getID();
-    					break;
-    				case Constants.COLLECTION:
-    					replacement = "l" + dso.getID();
-    					break;
-    				default :
-    					replacement = handle;
-    				}
-    			}
-    			matcher.appendReplacement(sb, replacement);
-    		}
-
-    		// b. Add filter query at SEQUENCE level, e.g with {!join ...
-    		// query.addFilterQueries("{!q.op=OR}" + "location:(" + sb.toString() + ")");  // fq at parent level
-    		query.addFilterQueries("{!join from=location.collection to=search.uniqueid}(_query_:\"{!q.op=OR v=$locQ}\")" ); // fq at sequence level
-            query.addProperty("locQ", "location:(" + sb.toString() + ")");
-    	}
-
-    	// Filter queries
-    	String[] fqs = getFilterQueries(context, searchRequest);
-    	StringBuilder filterQ = new StringBuilder();
-    	for (int i = 0, len = fqs.length; i < len; i++ ) {
-    		filterQ.append(" AND ");
-    		filterQ.append(fqs[i]);
-    	}
-    	if (filterQ.length() > 0) {
-            query.addProperty("filterQ", filterQ.substring(5));    		
-    	}
-
-    	// Pagination
-    	query.setMaxResults(searchRequest.getLimit());
-        if (searchRequest.getOffset() > 0) {
-            query.setStart(searchRequest.getOffset());
-        }
-        
-        // Order
-        if (searchRequest.getSortField() != null) {
-        	query.setSortField(searchRequest.getSortField(), searchRequest.getSortOrder());
-        }
-        
-        // Search Fields : handle is included by default
-        String[] searchFields = {
-                // Those are needed in expanded items
-        		"search.resourceid", "search.resourcetype", "dc.title", "rtbf.identifier.attributor"
-        };
-        for (String sf : searchFields) {
-        	query.addSearchField(sf);			
-		}
-        
-        // 2. Perform query
-		return (getSearchService().search(context, query));
-	}
-
-	
-	protected DiscoverResult TODEL_getSerieResultAsJoin(int resourceType, Context context, Request searchRequest) throws SearchServiceException {
-		// 1. Prepare the query
-        DiscoverQuery query = new DiscoverQuery();
-        
-        // use request handler /selectCommunity instead of the default /select
-        query.addProperty("qt", "/selectCommunity");
-        
-        // seqQuery terms instead of q terms
-        // query.setQuery(searchRequest.getQuery());
-        query.addProperty("seqQ", searchRequest.getQuery());
-
-        // return which resourcetype document (community/collection/item) - should be community
-        query.setDSpaceObjectFilter(resourceType);
-    	
-        /*
-         *  TODO test ALL the following features
-         */
-
-        // limit the search within community/collection
-        String scope = searchRequest.getScope();
-    	if (scope != null) { // scope contains logical expression of handles
-    		// a. Replace handle by m{community_id} or l{collection_id}
-    		StringBuffer sb = new StringBuffer();    		
-    		Pattern pattern = Pattern.compile("\\d+/\\d+");
-    		Matcher matcher = pattern.matcher(scope);
-
-    		while (matcher.find()) {
-    			String handle = matcher.group();
-    			String replacement;
-
-    			org.dspace.content.DSpaceObject dso = null;
-    			try {
-    				dso = HandleManager.resolveToObject(context, handle);
-    			} catch (Exception e) {
-    				processException("Could not process getSerieResultAsJoin. Message:"+e.getMessage(), context);
-    			};
-
-    			if(dso == null) {
-    				replacement = handle;
-    			} else {
-    				switch (dso.getType()) {
-    				case Constants.COMMUNITY:
-    					replacement = "m" + dso.getID();
-    					break;
-    				case Constants.COLLECTION:
-    					replacement = "l" + dso.getID();
-    					break;
-    				default :
-    					replacement = handle;
-    				}
-    			}
-    			matcher.appendReplacement(sb, replacement);
-    		}
-
-    		// b. Add filter query at SEQUENCE level, e.g with {!join ...
-    		query.addFilterQueries("{!join from=location.community to=search.uniqueid}(_query_:\"{!q.op=OR v=$locQ}\")" ); // fq at sequence level
-            query.addProperty("locQ", "location:(" + sb.toString() + ")");
-    	}
-
-    	// Filter queries
-    	String[] fqs = getFilterQueries(context, searchRequest);
-    	StringBuilder filterQ = new StringBuilder();
-    	for (int i = 0, len = fqs.length; i < len; i++ ) {
-    		filterQ.append(" AND ");
-    		filterQ.append(fqs[i]);
-    	}
-    	if (filterQ.length() > 0) {
-            query.addProperty("filterQ", filterQ.substring(5));    		
-    	}
-
-    	// Pagination
-    	query.setMaxResults(searchRequest.getLimit());
-        if (searchRequest.getOffset() > 0) {
-            query.setStart(searchRequest.getOffset());
-        }
-        
-        // Order
-        if (searchRequest.getSortField() != null) {
-        	query.setSortField(searchRequest.getSortField(), searchRequest.getSortOrder());
-        }
-        
-        // Search Fields : handle is included by default
-        String[] searchFields = {
-                // Those are needed in expanded items
-        		"search.resourceid", "search.resourcetype", "dc.title", "rtbf.identifier.attributor"
-        };
-        for (String sf : searchFields) {
-        	query.addSearchField(sf);			
-		}
-        
-        // 2. Perform query
-		return (getSearchService().search(context, query));
 	}
 	
 	

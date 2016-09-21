@@ -195,6 +195,24 @@ public class SearchResource extends Resource {
     }
 
 
+    @POST
+    @Path("/groupp/series")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResponse getSeriesGroupByPost(SearchParameters params
+    		, @Context UriInfo info
+    		, @QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor
+            , @Context HttpHeaders headers, @Context HttpServletRequest request) throws WebApplicationException
+    {
+    	MultivaluedMap<String, String> uriParameters = info.getQueryParameters(); // uriParameters may be empty but is not null
+    	
+    	if (params == null) { params = new SearchParameters(); }
+		params.supersedeBy(uriParameters);
+		
+    	return getSeriesGroupResponse(params);
+    }
+
+
     @GET
     @Path("/group/series")
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

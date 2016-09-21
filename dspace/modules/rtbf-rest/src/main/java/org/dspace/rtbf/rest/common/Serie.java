@@ -12,6 +12,8 @@ import org.dspace.content.CollectionIterator;
 import org.dspace.content.CommunityIterator;
 import org.dspace.content.Metadatum;
 import org.dspace.core.Context;
+import org.dspace.discovery.DiscoverResult;
+
 import javax.ws.rs.WebApplicationException;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -127,4 +129,10 @@ public class Serie extends RTBObject{
         }
     }
     
+    // 20.09.2016 Lan
+    public void setGroupCount(DiscoverResult.GroupFilter filter) {
+	List<RTBObjectParts.GroupCount> list = new ArrayList<RTBObjectParts.GroupCount>();
+	RTBObjectParts.GroupCount g = new RTBObjectParts.GroupCount(filter);
+	list.add(g);
+	this.setGroupCount(g);}
 }

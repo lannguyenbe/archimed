@@ -120,26 +120,6 @@ public class SearchResource extends Resource {
     	return getCollectionsSearchResponse(params);
     }
 
-    @GET
-    @Path("/group/episodes")
-    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResponse getCollectionsGroupByGet(
-    		@QueryParam("scope") String scope
-    		, @QueryParam("q") String qterms
-    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset
-    		, @QueryParam("sort_by") String orderBy, @QueryParam("order") String order
-    		, @QueryParam("expand") String expand
-    		, @Context UriInfo info
-    		, @QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor
-            , @Context HttpHeaders headers, @Context HttpServletRequest request) throws WebApplicationException
-    {
-    	MultivaluedMap<String, String> uriParameters = info.getQueryParameters(); // uriParameters may be empty but is not null
-    	
-    	SearchParameters params = new SearchParameters().supersedeBy(uriParameters);
-		
-    	return getCollectionsGroupResponse(params);
-    }
-
     @POST
     @Path("/searchp/series")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -177,6 +157,63 @@ public class SearchResource extends Resource {
     	return getSeriesSearchResponse(params);
     }
     
+    @POST
+    @Path("/groupp/episodes")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResponse getCollectionsGroupByPost(SearchParameters params
+    		, @Context UriInfo info
+    		, @QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor
+            , @Context HttpHeaders headers, @Context HttpServletRequest request) throws WebApplicationException
+    {
+    	MultivaluedMap<String, String> uriParameters = info.getQueryParameters(); // uriParameters may be empty but is not null
+    	
+    	if (params == null) { params = new SearchParameters(); }
+		params.supersedeBy(uriParameters);
+		
+    	return getCollectionsGroupResponse(params);
+    }
+
+    @GET
+    @Path("/group/episodes")
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResponse getCollectionsGroupByGet(
+    		@QueryParam("scope") String scope
+    		, @QueryParam("q") String qterms
+    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset
+    		, @QueryParam("sort_by") String orderBy, @QueryParam("order") String order
+    		, @QueryParam("expand") String expand
+    		, @Context UriInfo info
+    		, @QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor
+            , @Context HttpHeaders headers, @Context HttpServletRequest request) throws WebApplicationException
+    {
+    	MultivaluedMap<String, String> uriParameters = info.getQueryParameters(); // uriParameters may be empty but is not null
+    	
+    	SearchParameters params = new SearchParameters().supersedeBy(uriParameters);
+		
+    	return getCollectionsGroupResponse(params);
+    }
+
+
+    @GET
+    @Path("/group/series")
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResponse getSeriesGroupByGet(
+    		@QueryParam("scope") String scope
+    		, @QueryParam("q") String qterms
+    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset
+    		, @QueryParam("sort_by") String orderBy, @QueryParam("order") String order
+    		, @QueryParam("expand") String expand
+    		, @Context UriInfo info
+    		, @QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor
+            , @Context HttpHeaders headers, @Context HttpServletRequest request) throws WebApplicationException
+    {
+    	MultivaluedMap<String, String> uriParameters = info.getQueryParameters(); // uriParameters may be empty but is not null
+    	
+    	SearchParameters params = new SearchParameters().supersedeBy(uriParameters);
+		
+    	return getSeriesGroupResponse(params);
+    }
 
     protected SearchResponse getItemsSearchResponse(SearchParameters params) {
 
@@ -270,7 +307,7 @@ public class SearchResource extends Resource {
     	String expand = params.getExpand();
 
         org.dspace.core.Context context = null;
-        log.info("Searching episodes(q=" + qterms + ").");
+        log.info("Searching episodes groups(q=" + qterms + ").");
         SearchResponse response = null;
         DiscoverResult queryResults = null;
 
@@ -289,7 +326,7 @@ public class SearchResource extends Resource {
             context.complete();
 
         } catch (Exception e) {
-           processException("Could not process group episodes. Message:"+e.getMessage(), context);
+           processException("Could not process search episodes groups. Message:"+e.getMessage(), context);
         } finally {
            processFinally(context);            
         }
@@ -336,23 +373,20 @@ public class SearchResource extends Resource {
 
         return response;
     }
-    
 
-    // TODO: TODEL 
-
-    protected SearchResponse TODEL_getCollectionsSearchResponse_old(SearchParameters params)
+    protected SearchResponse getSeriesGroupResponse(SearchParameters params)
     {
         Request searchRequest = (Request) params;
         
         String qterms = searchRequest.getQuery();
+    	Boolean isFacet = searchRequest.isFacet();
     	Integer limit = searchRequest.getLimit();
     	Integer offset = searchRequest.getOffset();
-    	String orderBy = searchRequest.getSortField();
 
     	String expand = params.getExpand();
 
         org.dspace.core.Context context = null;
-        log.info("Searching episodes(q=" + qterms + ").");
+        log.info("Searching series groups(q=" + qterms + ").");
         SearchResponse response = null;
         DiscoverResult queryResults = null;
 
@@ -361,56 +395,17 @@ public class SearchResource extends Resource {
             context.getDBConnection();
             
             // expand the results if there is a query
-            if (qterms != null && qterms.length() > 0) { expand += ",results"; }
-            
-            if (orderBy != null && orderBy.length() > 0) {
-	            queryResults = TODEL_getCollectionResultAsJoin(org.dspace.core.Constants.COLLECTION, context, searchRequest);
-	            response = new EpisodesSearchResponse(queryResults, expand, context, limit, offset);
-            } else { /* default order is count of sequences that matched the query */
-	            queryResults = TODEL_getCollectionResultFromFacet(org.dspace.core.Constants.ITEM, context, searchRequest);
-	            response = new EpisodesSearchResponse(queryResults, expand, context, limit, offset);
+            if (qterms != null && qterms.length() > 0) {
+            	expand += ",results";
+            	if (isFacet) { expand += ",facets"; }
             }
-
-            context.complete();
-
-        } catch (Exception e) {
-           processException("Could not process search episodes. Message:"+e.getMessage(), context);
-        } finally {
-           processFinally(context);            
-        }
-
-        return response;
-    }
-    
-    protected SearchResponse TODEL_getSeriesSearchResponse_old(SearchParameters params)
-    {
-        Request searchRequest = (Request) params;
-        
-        String qterms = searchRequest.getQuery();
-    	Integer limit = searchRequest.getLimit();
-    	Integer offset = searchRequest.getOffset();
-
-    	String expand = params.getExpand();
-
-    	org.dspace.core.Context context = null;
-        log.info("Searching series(q=" + qterms + ").");
-        SearchResponse response = null;
-        DiscoverResult queryResults = null;
-
-        try {
-            context = new org.dspace.core.Context();
-            context.getDBConnection();
-            
-            // expand the results if there is a query
-            if (qterms != null && qterms.length() > 0) { expand += ",results"; }
-            
-	        queryResults = TODEL_getSerieResultAsJoin(org.dspace.core.Constants.COMMUNITY, context, searchRequest);
+            queryResults = getGroupResult(org.dspace.core.Constants.COMMUNITY, context, searchRequest);
 	        response = new SeriesSearchResponse(queryResults, expand, context, limit, offset);
-
+            
             context.complete();
 
         } catch (Exception e) {
-           processException("Could not process search series. Message:"+e.getMessage(), context);
+            processException("Could not process search series groups. Message:"+e.getMessage(), context);
         } finally {
            processFinally(context);            
         }

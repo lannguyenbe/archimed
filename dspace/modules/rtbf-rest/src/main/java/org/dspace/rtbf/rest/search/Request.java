@@ -28,6 +28,7 @@ public interface Request {
 
 
 	public String getSortField();
+	public String getSortField(String requestHandler);
 
 
 	public SORT_ORDER getSortOrder();

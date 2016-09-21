@@ -113,7 +113,7 @@ public class SearchResponseParts {
 						case Constants.COLLECTION:
 							Episode episode = new Episode(Constants.SEARCH_RESULT_VIEW, (Collection) result, Constants.SEARCH_SEQUENCE_EXPAND_OPTIONS, null);
 							
-							// Lan 19.09.2016 : setFilter
+							// Lan 19.09.2016 : setGroupCount
 							episode.setGroupCount(queryResults.getGroupFilter(result));
 
 							// Set highlighted snippets
@@ -125,7 +125,12 @@ public class SearchResponseParts {
 							lst.add(episode);
 							break;
 						case Constants.COMMUNITY:
-							lst.add(new Serie(Constants.SEARCH_RESULT_VIEW, (Community) result, null, null));
+							Serie serie = new Serie(Constants.SEARCH_RESULT_VIEW, (Community) result, null, null);
+
+							// Lan 19.09.2016 : setGroupCount
+							serie.setGroupCount(queryResults.getGroupFilter(result));
+							
+							lst.add(serie);
 							break;
 						}
 					} catch (WebApplicationException e) {

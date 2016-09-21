@@ -98,6 +98,12 @@ public class LOVParameters implements org.dspace.rtbf.rest.search.Request{
 	}
 
 	@Override
+	public String getSortField(String requestParameter) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public SORT_ORDER getSortOrder() {
 		// TODO Auto-generated method stub
 		return null;

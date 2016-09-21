@@ -287,6 +287,24 @@ public class SearchParameters implements Request {
 	}
 
 	@Override
+	public String getSortField(String requestHandler) {
+		String sortField = getSortBy();
+		String sf = null;
+		
+		if (sortField != null) {
+			if (requestHandler != null && !requestHandler.isEmpty()) {
+				sf = MetadataEntry.getSortLabel(requestHandler+"/"+sortField);
+				if (sf.equals(requestHandler+"/"+sortField)) { // not found for requestHandler
+					sf = MetadataEntry.getSortLabel(sortField); 
+				}
+			}
+			if (sf != null) { sortField = sf; }
+		}
+
+		return sortField;
+	}
+	
+	@Override
 	public SORT_ORDER getSortOrder() {
 		return SORT_ORDER.valueOf(getOrder());
 	}

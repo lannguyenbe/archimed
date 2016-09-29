@@ -198,6 +198,7 @@ public class Sequence extends RTBObject{
     	int innerViewType = 0;
     	
     	switch(viewType) {
+    	case Constants.PLAYLIST_VIEW:
     	case Constants.SEARCH_RESULT_VIEW:
         	this.setDateIssued(new MetadataEntry(Constants.DATE_ISSUED, doc.getSearchFieldValues("dup_date_issued").get(0), null));
         	List<MetadataEntry> entries = new ArrayList<MetadataEntry>();

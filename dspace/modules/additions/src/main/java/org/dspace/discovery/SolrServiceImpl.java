@@ -2969,8 +2969,16 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         {
             List<String> values = discoveryQuery.getProperties().get(property);
             
+            // Lan 23.09.2016 : process "collapse.field" property especially 
+            // use "collapse_field" to choose another RequestHandler than /select which is the default
+            if (property.equals("collapse.field")) {
+            	solrQuery.setRequestHandler(values.get(0));
+            } else {
+                solrQuery.add(property, values.toArray(new String[values.size()]));
+            }
+
             // Lan 15.12.2015 : process "qt" property especially 
-            // use "qt" to choose another RequestHandler than the default /request
+            // use "qt" to choose another RequestHandler than /select
             if (property.equals("qt")) {
             	solrQuery.setRequestHandler(values.get(0));
             } else {

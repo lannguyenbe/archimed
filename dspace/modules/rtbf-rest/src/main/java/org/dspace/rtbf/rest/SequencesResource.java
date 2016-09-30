@@ -85,48 +85,6 @@ public class SequencesResource extends Resource
         return sequence;
     }
 
-    @GET
-    @Path("/{item_id}/{dupid}")
-    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public Sequence getSequenceByDupid(@PathParam("item_id") Integer itemId
-			, @PathParam("dupid") String dupid
-			, @QueryParam("expand") String expand
-    		, @QueryParam("omitExpand") @DefaultValue("true") boolean omitExpand
-            , @QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent
-            , @QueryParam("xforwardedfor") String xforwardedfor, @Context HttpHeaders headers, @Context HttpServletRequest request)
-            throws WebApplicationException
-    {
-        org.dspace.core.Context context = null;
-    	int viewType = Constants.MIN_VIEW;
-    	
-    	if (!omitExpand) { viewType = Constants.EXPANDELEM_VIEW; }
-
-    	log.info("Reading item(id=" + itemId+"/"+dupid + ") metadata.");
-        Sequence sequence = null;
-
-        try
-        {
-            context = new org.dspace.core.Context();
-            context.getDBConnection();
-
-            org.dspace.content.Item dspaceItem = findItem(context, itemId, org.dspace.core.Constants.READ);
-
-            sequence = new org.dspace.rtbf.rest.common.Sequence(viewType, dspaceItem, expand+","+Constants.SEQUENCE_EXPAND_OPTIONS, context, Constants.COLLECTION+"-"+dupid);
-            context.complete();
-        }
-        catch (SQLException e)
-        {
-            processException("Could not read item(id=" + itemId + "), SQLException. Message: " + e, context);
-        }
-        finally
-        {
-            processFinally(context);
-        }
-
-        log.trace("Item(id=" + itemId+"/"+dupid + ") was successfully read.");
-        return sequence;
-    }
-
 
     /**
      * Returns item metadata 
@@ -169,8 +127,7 @@ public class SequencesResource extends Resource
     }
 
 
-
-
+    
     /**
      * Find item from DSpace database. It is encapsulation of method
      * org.dspace.content.Item.find with checking if item exist and if user

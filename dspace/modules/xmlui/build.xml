@@ -3,6 +3,24 @@
   
   <property environment="env"/>
   
+  <!-- Get version from pom -->
+  <artifact:pom id="mypom" file="pom.xml" />
+  <property name="dspace.version" value="${mypom.version}"/>
+  
+  <!--property name="dspace.dir" value="${env.DS}"/-->
+  <target name="ask_dspace_dir">
+    <input
+        message="Enter intall directory :"
+        addproperty="dspace.dir"
+        defaultvalue="${env.DS}"
+    />
+  </target>
+
+  <!-- Timestamp date used when creating backup directories -->
+  <tstamp>
+    <format property="build.date" pattern="yyyyMMdd-HHmmss" />
+  </tstamp>
+
   <condition property="os.unix">
     <os family="unix"/>
   </condition>
@@ -41,4 +59,40 @@
     <touch file="${env.DS}/webapps/xmlui.xml"/>
   </target>
 
+  <target name="update" depends="ask_dspace_dir" description="Update Web Applications">
+
+      <move todir="${dspace.dir}/webapps/xmlui.bak-${build.date}" failonerror="no">
+          <fileset dir="${dspace.dir}/webapps/xmlui">
+              <include name="**/*" />
+          </fileset>
+      </move>
+
+      <echo>
+====================================================================
+ ${dspace.dir}/webapps/xmlui was backed up to ${dspace.dir}/webapps/xmlui.bak-${build.date}
+      </echo>
+
+      <copy todir="${dspace.dir}/webapps/xmlui" preservelastmodified="true" failonerror="no">
+          <fileset dir="target/xmlui-${dspace.version}">
+              <exclude name="**/web.xml" />
+              <exclude name="**/robots.txt" />
+          </fileset>
+      </copy>
+
+      <copy todir="${dspace.dir}/webapps/xmlui" preservelastmodified="true" failonerror="no">
+          <fileset dir="target/xmlui-${dspace.version}">
+              <include name="**/web.xml" />
+              <include name="**/robots.txt" />
+          </fileset>
+          <filterchain>
+              <expandproperties />
+          </filterchain>
+      </copy>
+
+      <echo>
+ Updated ${dspace.dir}/webapps/xmlui
+====================================================================
+      </echo>
+
+  </target>
 </project>

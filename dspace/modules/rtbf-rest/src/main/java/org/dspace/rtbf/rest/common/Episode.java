@@ -70,7 +70,7 @@ public class Episode extends RTBObject {
             expandFields = Arrays.asList(expand.split(","));
         }
         
-        if(expandFields.contains("owningSerie") | expandFields.contains("all")) {
+        if(expandFields.contains("owningSerie") || expandFields.contains("all")) {
             org.dspace.content.Community parentCommunity = (org.dspace.content.Community) collection.getParentObject();
             /* 
              * Lan 22.06.2016 : use Constants.OWNING_SERIE_EXPAND_OPTIONS to return more metadata of the owningSerie

@@ -57,10 +57,20 @@ public class SearchResponseParts {
 	    private List<org.dspace.rtbf.rest.common.RTBObject> lst;
 
  		public Result(DiscoverResult queryResults, Context context) {
- 			this(Constants.SEARCH_RESULT_VIEW, queryResults, context);
+ 			this(Constants.SEARCH_RESULT_VIEW, queryResults, Constants.SEARCH_RESULT_EXPAND_OPTIONS, context);
  		}
 
+ 		public Result(DiscoverResult queryResults, String expand, Context context) {
+ 			this(Constants.SEARCH_RESULT_VIEW, queryResults, Constants.SEARCH_RESULT_EXPAND_OPTIONS+','+expand, context);
+ 		}
+ 		
  		public Result(int viewType, DiscoverResult queryResults, Context context) {
+ 			this(viewType, queryResults
+ 					, (viewType == Constants.SEARCH_RESULT_VIEW) ? Constants.SEARCH_RESULT_EXPAND_OPTIONS : null
+ 					, context);
+ 		}
+
+ 		public Result(int viewType, DiscoverResult queryResults, String expand, Context context) {
 			int resultType = 0;
 					
 			if (queryResults != null && queryResults.getDspaceObjects().size() > 0) {
@@ -72,7 +82,11 @@ public class SearchResponseParts {
 					resultType = dsoList.get(0).getType();
 				}
 				
-				String viewExpandOptions = (viewType == Constants.SEARCH_RESULT_VIEW) ? Constants.SEARCH_SEQUENCE_EXPAND_OPTIONS : "";
+		        List<String> expandFields = new ArrayList<String>();
+		        if(expand != null) {
+		            expandFields = Arrays.asList(expand.split(","));
+		        }
+
 				
 	            for (org.dspace.content.DSpaceObject result : dsoList) {
 	            	DiscoverResult.DSpaceObjectHighlightResult highlightedResults;
@@ -80,36 +94,37 @@ public class SearchResponseParts {
 					try {
 						switch (resultType) {
 						case Constants.ITEM:
-		                    Sequence sequence = new Sequence(viewType, (Item) result, viewExpandOptions, context);
+		                    Sequence sequence = new Sequence(viewType, (Item) result, expand, context);
 		                    
 		                    // 18.04.2016 Lan : if queryResults from Solr return an dup item, then replace some metadata in the default sequence
 		                    SearchDocument doc = queryResults.getSearchDocument(result).get(0);
 		                    String dupid = doc.getSearchFieldValues("dup_uniqueid").get(0);
 		                    if (!(dupid.equals( result.getType() +"-"+ result.getID()))) { // is dup item
-		                    	sequence.setupFromSearchDocument(viewType, doc, viewExpandOptions, context);
+		                    	sequence.setupFromSearchDocument(viewType, doc, expand, context);
 	                    	}
 		                    
-/*
- * 29.09.2016 Lan : expand section from query result is not used any more; for each item we use a solr subquery to retrieve linkedDocuments		                    
-		                    // Add linked Documents 
-		                    // the linked documents to this dso were already retrieved by the same search - in the expanded section of solr response - 
-		                    // only their handle are available
-		                    List<RTBObject> linkedDocuments = new ArrayList<RTBObject>();	                    
-		                    List<DiscoverResult.SearchDocument> entries = queryResults.getExpandDocuments(result);
-		            		for (SearchDocument entry : entries) {
-		            			Set<String> uniques = new HashSet<String>();
-		            			// 19.04.2016 Lan : eliminate dup item in expanded items
-		            			String entryHandle = entry.getSearchFieldValues("handle").get(0);
-		            			if (!(result.getHandle().equals(entryHandle))) { // is not dup item
-		            				if (uniques.add(entryHandle)) { // is unique among expanded item     		            				
-		            					linkedDocuments.add(new RTBObject(new DiscoverExpandedItems.ExpandedItem(entry)));
-		            				}
-		            			}
-		            		}
-		            		if (linkedDocuments.size() > 0) {
-		            			sequence.setLinkedDocuments(linkedDocuments);
-		            		}
-*/		            		
+		                    if(!expandFields.contains("linkedDocuments")) { // each result has not retrieved the linkedDocuments by subquery
+			                    // Add linked Documents 
+			                    // the linked documents to this dso were already retrieved by the same search - in the expanded section of solr response - 
+			                    // only their handle are available
+			                    List<RTBObject> linkedDocuments = new ArrayList<RTBObject>();	                    
+			                    List<DiscoverResult.SearchDocument> entries = queryResults.getExpandDocuments(result);
+			            		for (SearchDocument entry : entries) {
+			            			Set<String> uniques = new HashSet<String>();
+			            			// 19.04.2016 Lan : eliminate dup item in expanded items
+			            			String entryHandle = entry.getSearchFieldValues("handle").get(0);
+			            			if (!(result.getHandle().equals(entryHandle))) { // is not dup item
+			            				if (uniques.add(entryHandle)) { // is unique among expanded item     		            				
+			            					linkedDocuments.add(new RTBObject(new DiscoverExpandedItems.ExpandedItem(entry)));
+			            				}
+			            			}
+			            		}
+			            		if (linkedDocuments.size() > 0) {
+			            			sequence.setLinkedDocuments(linkedDocuments);
+			            		}		                    	
+		                    }
+		                    
+
 		            		// Set highlighted snippets
 		                    highlightedResults = queryResults.getHighlightedResults(result);
 		                    if (highlightedResults != null) {
@@ -119,7 +134,7 @@ public class SearchResponseParts {
 							lst.add(sequence);
 							break;
 						case Constants.COLLECTION:
-							Episode episode = new Episode(viewType, (Collection) result, viewExpandOptions, null);
+							Episode episode = new Episode(viewType, (Collection) result, expand, null);
 							
 							// Lan 19.09.2016 : setGroupCount
 							episode.setGroupCount(queryResults.getGroupFilter(result));

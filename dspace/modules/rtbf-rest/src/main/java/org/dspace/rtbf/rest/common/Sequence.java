@@ -213,28 +213,30 @@ public class Sequence extends RTBObject{
     	}
     	
         Integer collectionId = Integer.parseInt(doc.getSearchFieldValues("dup_owning_collection").get(0).replaceFirst(String.valueOf(Constants.COLLECTION) + '-', ""));
-
-        if(expand.contains("owningParentList")) {
-            org.dspace.content.Collection owningCollection = Collection.find(context, collectionId);
-            this.setOwningParentList(findOwningParentList(context, owningCollection));
-        }
-    	
-        if(expand.contains("owningEpisode")) {
-            /* 
-             * Lan 22.06.2016 : return more metadata of the owningEpisode - see Constants.OWNING_EPISODE_EXPAND_OPTIONS
-        	 * this.setOwningEpisode(new Episode(innerViewType, Collection.find(context, collectionId), null, context));
-        	 */
-        	this.setOwningEpisode(new Episode(innerViewType, Collection.find(context, collectionId), Constants.OWNING_EPISODE_EXPAND_OPTIONS, context));
-        }
         
-    	if(expand.contains("owningSerie")) {
-            org.dspace.content.Collection owningCollection = Collection.find(context, collectionId);
-            org.dspace.content.Community parentCommunity = (org.dspace.content.Community) owningCollection.getParentObject();
-            /* 
-             * Lan 22.06.2016 : return more metadata of the owningSerie - see Constants.OWNING_SERIE_EXPAND_OPTIONS
-             * this.setOwningSerie(new Serie(innerViewType, parentCommunity, null, context));
-        	 */
-            this.setOwningSerie(new Serie(innerViewType, parentCommunity, Constants.OWNING_SERIE_EXPAND_OPTIONS, context));
+        if (expand != null) {
+        	if(expand.contains("owningParentList")) {
+        		org.dspace.content.Collection owningCollection = Collection.find(context, collectionId);
+        		this.setOwningParentList(findOwningParentList(context, owningCollection));
+        	}
+
+        	if(expand.contains("owningEpisode")) {
+        		/* 
+        		 * Lan 22.06.2016 : return more metadata of the owningEpisode - see Constants.OWNING_EPISODE_EXPAND_OPTIONS
+        		 * this.setOwningEpisode(new Episode(innerViewType, Collection.find(context, collectionId), null, context));
+        		 */
+        		this.setOwningEpisode(new Episode(innerViewType, Collection.find(context, collectionId), Constants.OWNING_EPISODE_EXPAND_OPTIONS, context));
+        	}
+
+        	if(expand.contains("owningSerie")) {
+        		org.dspace.content.Collection owningCollection = Collection.find(context, collectionId);
+        		org.dspace.content.Community parentCommunity = (org.dspace.content.Community) owningCollection.getParentObject();
+        		/* 
+        		 * Lan 22.06.2016 : return more metadata of the owningSerie - see Constants.OWNING_SERIE_EXPAND_OPTIONS
+        		 * this.setOwningSerie(new Serie(innerViewType, parentCommunity, null, context));
+        		 */
+        		this.setOwningSerie(new Serie(innerViewType, parentCommunity, Constants.OWNING_SERIE_EXPAND_OPTIONS, context));
+        	}
         }
     }
         

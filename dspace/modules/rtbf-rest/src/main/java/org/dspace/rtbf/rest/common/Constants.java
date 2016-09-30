@@ -35,8 +35,10 @@ public class Constants extends org.dspace.core.Constants {
      * public static final String SEQUENCE_EXPAND_OPTIONS = "owningSerie,owningEpisode,parentEpisodeList,metadata,diffusions,supports";
      */
     public static final String SEQUENCE_EXPAND_OPTIONS = "owningSerie,owningEpisode,metadata,diffusions,supports,linkedDocuments";
-    public static final String SEARCH_SEQUENCE_EXPAND_OPTIONS = "owningParentList,linkedDocuments";
-    public static final String SEARCH_EPISODE_EXPAND_OPTIONS = "owningParentList";
+    /* 30.09.2016 Lan : comment below because too slow as linkedDocuments expand to a subquery for each result.
+     * public static final String SEARCH_RESULT_EXPAND_OPTIONS = "owningParentList,linkedDocuments";
+     */ 
+    public static final String SEARCH_RESULT_EXPAND_OPTIONS = "owningParentList";
 
     // Default values
     public static final String[] TYPETEXT = { "none", "none", "SEQUENCE", "EPISODE", "SERIE", "none", "none", "none" };

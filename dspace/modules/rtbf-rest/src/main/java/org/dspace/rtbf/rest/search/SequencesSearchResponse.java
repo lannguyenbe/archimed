@@ -33,8 +33,13 @@ public class SequencesSearchResponse extends SearchResponse {
 		}
 
         if(expandFields.contains("results") || expandFields.contains("all")) {
-        	SearchResponseParts.Result resultsWrapper = new SearchResponseParts.Result(queryResults, context);
-        	setResults(resultsWrapper.getLst());
+            if(expandFields.contains("linkedDocuments")) {
+            	SearchResponseParts.Result resultsWrapper = new SearchResponseParts.Result(queryResults, "linkedDocuments", context);
+            	setResults(resultsWrapper.getLst());
+            } else {
+            	SearchResponseParts.Result resultsWrapper = new SearchResponseParts.Result(queryResults, context);
+            	setResults(resultsWrapper.getLst());            	
+            }
         } else {
             this.addExpand("results");
         }

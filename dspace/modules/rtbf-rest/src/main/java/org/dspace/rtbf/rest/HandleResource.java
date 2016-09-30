@@ -74,7 +74,7 @@ public class HandleResource {
             case Constants.COLLECTION:
             	return new Episode(viewType, (org.dspace.content.Collection) dso, expand+","+Constants.EPISODE_EXPAND_OPTIONS, context);
             case Constants.ITEM:
-        		return new Sequence(viewType, (org.dspace.content.Item) dso, expand+",linkedDocuments"+","+Constants.SEQUENCE_EXPAND_OPTIONS, context);
+        		return new Sequence(viewType, (org.dspace.content.Item) dso, expand+","+Constants.SEQUENCE_EXPAND_OPTIONS, context);
             default:
             	return new RTBObject(dso);
             }
@@ -121,7 +121,7 @@ public class HandleResource {
             	return new Episode(viewType, (org.dspace.content.Collection) dso, expand+","+Constants.EPISODE_EXPAND_OPTIONS, context);
             case Constants.ITEM:
             	if (owning_dso == null) {
-            		return new Sequence(viewType, (org.dspace.content.Item) dso, expand+",linkedDocuments"+","+Constants.SEQUENCE_EXPAND_OPTIONS, context);
+            		return new Sequence(viewType, (org.dspace.content.Item) dso, expand+","+Constants.SEQUENCE_EXPAND_OPTIONS, context);
             	}
             	return new Sequence(viewType, (org.dspace.content.Item) dso, expand+",linkedDocuments"+","+Constants.SEQUENCE_EXPAND_OPTIONS, context, owning_dso.getType()+"-"+owning_dso.getID());
             default:
@@ -190,7 +190,7 @@ public class HandleResource {
     			case Constants.COLLECTION:
     				return new Episode(viewType, (org.dspace.content.Collection) dso, expand+","+Constants.EPISODE_EXPAND_OPTIONS, context);
     			case Constants.ITEM:
-            		return new Sequence(viewType, (org.dspace.content.Item) dso, expand+",linkedDocuments"+","+Constants.SEQUENCE_EXPAND_OPTIONS, context);
+            		return new Sequence(viewType, (org.dspace.content.Item) dso, expand+","+Constants.SEQUENCE_EXPAND_OPTIONS, context);
     			default:
     				return new RTBObject(dso);
     			}

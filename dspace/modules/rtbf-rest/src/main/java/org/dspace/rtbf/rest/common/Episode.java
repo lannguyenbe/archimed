@@ -8,15 +8,14 @@
 package org.dspace.rtbf.rest.common;
 
 import org.apache.log4j.Logger;
-import org.dspace.content.Collection;
 import org.dspace.content.CollectionAdd;
-import org.dspace.content.Community;
-import org.dspace.content.ItemAdd;
 import org.dspace.content.ItemIterator;
 import org.dspace.content.Metadatum;
 import org.dspace.core.Context;
 import org.dspace.discovery.DiscoverResult;
+import org.dspace.discovery.DiscoverSubItems;
 import org.dspace.discovery.configuration.DiscoveryHitHighlightFieldConfiguration;
+import org.dspace.rtbf.rest.search.SearchResponseParts;
 import org.dspace.rtbf.rest.util.RsDiscoveryConfiguration;
 
 import javax.ws.rs.WebApplicationException;
@@ -90,24 +89,7 @@ public class Episode extends RTBObject {
 
         // Item paging : limit, offset/page
         if(expandFields.contains("sequences") || expandFields.contains("all")) {
-            ItemIterator childItems;
-            
-            if (!((limit != null) && (limit >= 0) && (offset != null) && (offset >= 0))) {
-                log.warn("Paging was badly set, using default values.");
-                limit = Constants.LIMITMAX;
-                offset = 0;
-            }
-            
-            // Lan 02.05.2016 : order by date diffusion
-            childItems = collection.getItemsOrderByDateDiffusion(limit, offset);
-        	List<Sequence> entries = new ArrayList<Sequence>();
-            while(childItems.hasNext()) {
-                org.dspace.content.Item item = childItems.next();
-                	// entries.add(new Sequence(innerViewType, item, null, context));
-                	// Lan 02.05.2016 = with Constants.PLAYLIST_VIEW to get date diffusion and channel
-                	entries.add(new Sequence(Constants.PLAYLIST_VIEW, item, null, context));
-            }
-            this.setSequences(entries);
+        	addSequences(context, collection);
         } else {
             this.addExpand("sequences");
         }
@@ -205,11 +187,20 @@ public class Episode extends RTBObject {
 
     // 19.09.2016 Lan
     public void setGroupCount(DiscoverResult.GroupFilter filter) {
-	List<RTBObjectParts.GroupCount> list = new ArrayList<RTBObjectParts.GroupCount>();
-	RTBObjectParts.GroupCount g = new RTBObjectParts.GroupCount(filter);
-	list.add(g);
-	this.setGroupCount(g);}
+    	List<RTBObjectParts.GroupCount> list = new ArrayList<RTBObjectParts.GroupCount>();
+    	RTBObjectParts.GroupCount g = new RTBObjectParts.GroupCount(filter);
+    	list.add(g);
+    	this.setGroupCount(g);
+	}
     
+    // 29.09.2016 Lan : sub sequences of the collection must shown the same date and channel of diffusion as of the collection
+    protected void addSequences(Context context, org.dspace.content.Collection collection) {
+    	
+    	DiscoverResult queryResults = new DiscoverSubItems(context, collection).getqueryResults();
+    	SearchResponseParts.Result resultsWrapper = new SearchResponseParts.Result(Constants.PLAYLIST_VIEW, queryResults, context);
+    	this.setSequences(resultsWrapper.getLst());
+    	
+    }
 
 }
 

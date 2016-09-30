@@ -34,12 +34,13 @@ public class DiscoverExpandedItems {
     }
     
     // TODO : externalize searchFields in config
-    private static String[] searchFields = {"search.resourceid", "search.resourcetype", "dc.title", "rtbf.identifier.attributor", "dcterms.isPartOf.title"};
+//    private static String[] searchFields = {"search.resourceid", "search.resourcetype", "dc.title", "rtbf.identifier.attributor", "dcterms.isPartOf.title"};
+    private static String[] searchFields = {"search.resourceid", "search.resourcetype", "dc.title", "rtbf.identifier.attributor"};
     public void performSearch() throws SearchServiceException, SQLException {
 
         DiscoverQuery query = new DiscoverQuery();
         String handle = dso.getHandle();
-        
+
         for (String sf : searchFields) {
         	query.addSearchField(sf);			
 		}

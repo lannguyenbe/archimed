@@ -27,11 +27,15 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 import org.dspace.content.ItemIterator;
+import org.dspace.discovery.DiscoverResult;
+import org.dspace.discovery.DiscoverSubItems;
 import org.dspace.rtbf.rest.common.Constants;
 import org.dspace.rtbf.rest.common.Episode;
 import org.dspace.rtbf.rest.common.MetadataEntry;
+import org.dspace.rtbf.rest.common.RTBObject;
 import org.dspace.rtbf.rest.common.Sequence;
 import org.dspace.rtbf.rest.search.Resource;
+import org.dspace.rtbf.rest.search.SearchResponseParts;
 
 /**
  * This class provides all CRUD operation over collections.
@@ -110,25 +114,18 @@ public class EpisodesResource extends Resource
     	int viewType = Constants.PLAYLIST_VIEW;
 
         log.info("Reading collection(id=" + collectionId + ") items.");
-        List<Sequence> sequences = null;
+        List<RTBObject> sequences = null;
 
         try
         {
             context = new org.dspace.core.Context();
             context.getDBConnection();
             
-            org.dspace.content.Collection dspaceCollection = findCollection(context, collectionId, org.dspace.core.Constants.READ);
+            org.dspace.content.Collection collection = findCollection(context, collectionId, org.dspace.core.Constants.READ);
 
-            ItemIterator childItems;
-            
-            // 02.05.2016 Lan : order by data diffusion
-            childItems = dspaceCollection.getItemsOrderByDateDiffusion(limit, offset);
-            
-            sequences = new ArrayList<Sequence>();
-            while(childItems.hasNext()) {
-                org.dspace.content.Item item = childItems.next();
-                	sequences.add(new Sequence(viewType, item, null, context));
-            }
+        	DiscoverResult queryResults = new DiscoverSubItems(context, collection).getqueryResults();
+        	SearchResponseParts.Result resultsWrapper = new SearchResponseParts.Result(viewType, queryResults, context);
+            sequences = resultsWrapper.getLst();
 
             context.complete();
         }
@@ -145,60 +142,6 @@ public class EpisodesResource extends Resource
         return sequences.toArray(new Sequence[0]);
     }
 
-    /**
-     * Return the playlist : array of items in collection on a broadcast date YYYY-MM-DD
-     * 02.05.2016 Lan : get items broadcasted within the date
-     * 
-     */
-    @GET
-    @Path("/{collection_id}/{date_diffusion}")
-    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public Sequence[] getEpisodePlaylist(@PathParam("collection_id") Integer collectionId,
-    		@PathParam("date_diffusion") String sdateDiffusion, // date format is 'YYYY-MM-DD'
-            @QueryParam("expand") String expand, @QueryParam("limit") @DefaultValue(Constants.DEFAULT_LIMIT) Integer limit,
-            @QueryParam("offset") @DefaultValue("0") Integer offset, @QueryParam("userIP") String user_ip,
-            @QueryParam("userAgent") String user_agent, @QueryParam("xforwardedfor") String xforwardedfor,
-            @Context HttpHeaders headers, @Context HttpServletRequest request) throws WebApplicationException
-    {
-        org.dspace.core.Context context = null;
-        // 02.05.2016 Lan : Constants.PLAYLIST_VIEW to get date diffusion and channel
-    	int viewType = Constants.PLAYLIST_VIEW;
-
-        log.info("Reading collection(id=" + collectionId + ") playlist on " + sdateDiffusion);
-        List<Sequence> sequences = null;
-
-        try
-        {
-            context = new org.dspace.core.Context();
-            context.getDBConnection();
-            
-            org.dspace.content.Collection dspaceCollection = findCollection(context, collectionId, org.dspace.core.Constants.READ);
-
-            ItemIterator childItems;
-            
-            // 02.05.2016 Lan : order by data diffusion
-            childItems = dspaceCollection.getItemsByDateDiffusion(sdateDiffusion, limit, offset);
-            
-            sequences = new ArrayList<Sequence>();
-            while(childItems.hasNext()) {
-                org.dspace.content.Item item = childItems.next();
-                	sequences.add(new Sequence(viewType, item, null, context));
-            }
-
-            context.complete();
-        }
-        catch (SQLException e)
-        {
-            processException("Could not read collection items, SQLException. Message: " + e, context);
-        }
-        finally
-        {
-            processFinally(context);
-        }
-
-        log.trace("All items in collection(id=" + collectionId + ") were successfully read.");
-        return sequences.toArray(new Sequence[0]);
-    }
     
     /**
      * Returns episode metadata 

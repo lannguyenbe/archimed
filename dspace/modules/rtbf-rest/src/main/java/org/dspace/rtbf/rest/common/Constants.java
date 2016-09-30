@@ -34,8 +34,8 @@ public class Constants extends org.dspace.core.Constants {
      * Lan 29.07.2016 : remove parentEpisodeList
      * public static final String SEQUENCE_EXPAND_OPTIONS = "owningSerie,owningEpisode,parentEpisodeList,metadata,diffusions,supports";
      */
-    public static final String SEQUENCE_EXPAND_OPTIONS = "owningSerie,owningEpisode,metadata,diffusions,supports";
-    public static final String SEARCH_SEQUENCE_EXPAND_OPTIONS = "owningParentList";
+    public static final String SEQUENCE_EXPAND_OPTIONS = "owningSerie,owningEpisode,metadata,diffusions,supports,linkedDocuments";
+    public static final String SEARCH_SEQUENCE_EXPAND_OPTIONS = "owningParentList,linkedDocuments";
     public static final String SEARCH_EPISODE_EXPAND_OPTIONS = "owningParentList";
 
     // Default values

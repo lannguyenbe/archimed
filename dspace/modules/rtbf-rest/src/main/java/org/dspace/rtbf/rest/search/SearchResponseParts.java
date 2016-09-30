@@ -55,8 +55,12 @@ public class SearchResponseParts {
 	public static class Result {
 		
 	    private List<org.dspace.rtbf.rest.common.RTBObject> lst;
-	    
+
  		public Result(DiscoverResult queryResults, Context context) {
+ 			this(Constants.SEARCH_RESULT_VIEW, queryResults, context);
+ 		}
+
+ 		public Result(int viewType, DiscoverResult queryResults, Context context) {
 			int resultType = 0;
 					
 			if (queryResults != null && queryResults.getDspaceObjects().size() > 0) {
@@ -68,23 +72,27 @@ public class SearchResponseParts {
 					resultType = dsoList.get(0).getType();
 				}
 				
+				String viewExpandOptions = (viewType == Constants.SEARCH_RESULT_VIEW) ? Constants.SEARCH_SEQUENCE_EXPAND_OPTIONS : "";
+				
 	            for (org.dspace.content.DSpaceObject result : dsoList) {
 	            	DiscoverResult.DSpaceObjectHighlightResult highlightedResults;
 	            	
 					try {
 						switch (resultType) {
 						case Constants.ITEM:
-		                    Sequence sequence = new Sequence(Constants.SEARCH_RESULT_VIEW, (Item) result, Constants.SEARCH_SEQUENCE_EXPAND_OPTIONS, null);
+		                    Sequence sequence = new Sequence(viewType, (Item) result, viewExpandOptions, context);
 		                    
-		                    // 18.04.2016 Lan : if queryResults from Solr return an dup item, then replace somme metadata in the default sequence
+		                    // 18.04.2016 Lan : if queryResults from Solr return an dup item, then replace some metadata in the default sequence
 		                    SearchDocument doc = queryResults.getSearchDocument(result).get(0);
 		                    String dupid = doc.getSearchFieldValues("dup_uniqueid").get(0);
 		                    if (!(dupid.equals( result.getType() +"-"+ result.getID()))) { // is dup item
-		                    	sequence.setupFromSearchDocument(Constants.SEARCH_RESULT_VIEW, doc, Constants.SEARCH_SEQUENCE_EXPAND_OPTIONS, context);
+		                    	sequence.setupFromSearchDocument(viewType, doc, viewExpandOptions, context);
 	                    	}
 		                    
+/*
+ * 29.09.2016 Lan : expand section from query result is not used any more; for each item we use a solr subquery to retrieve linkedDocuments		                    
 		                    // Add linked Documents 
-		                    // the linked documents to this dso were already retrieved by the same search - in the expanded section ot solr response - 
+		                    // the linked documents to this dso were already retrieved by the same search - in the expanded section of solr response - 
 		                    // only their handle are available
 		                    List<RTBObject> linkedDocuments = new ArrayList<RTBObject>();	                    
 		                    List<DiscoverResult.SearchDocument> entries = queryResults.getExpandDocuments(result);
@@ -101,7 +109,7 @@ public class SearchResponseParts {
 		            		if (linkedDocuments.size() > 0) {
 		            			sequence.setLinkedDocuments(linkedDocuments);
 		            		}
-		            		
+*/		            		
 		            		// Set highlighted snippets
 		                    highlightedResults = queryResults.getHighlightedResults(result);
 		                    if (highlightedResults != null) {
@@ -111,7 +119,7 @@ public class SearchResponseParts {
 							lst.add(sequence);
 							break;
 						case Constants.COLLECTION:
-							Episode episode = new Episode(Constants.SEARCH_RESULT_VIEW, (Collection) result, Constants.SEARCH_SEQUENCE_EXPAND_OPTIONS, null);
+							Episode episode = new Episode(viewType, (Collection) result, viewExpandOptions, null);
 							
 							// Lan 19.09.2016 : setGroupCount
 							episode.setGroupCount(queryResults.getGroupFilter(result));
@@ -125,7 +133,7 @@ public class SearchResponseParts {
 							lst.add(episode);
 							break;
 						case Constants.COMMUNITY:
-							Serie serie = new Serie(Constants.SEARCH_RESULT_VIEW, (Community) result, null, null);
+							Serie serie = new Serie(viewType, (Community) result, null, null);
 
 							// Lan 19.09.2016 : setGroupCount
 							serie.setGroupCount(queryResults.getGroupFilter(result));

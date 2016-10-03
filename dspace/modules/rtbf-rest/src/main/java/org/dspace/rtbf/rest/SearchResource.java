@@ -58,10 +58,10 @@ public class SearchResource extends Resource {
     public SearchResponse getItemsSearchResponseByGet(
     		@QueryParam("scope") String scope
     		, @QueryParam("q") String qterms
-    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset
+    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset, @QueryParam("page") Integer page
     		, @QueryParam("sort_by") String orderBy, @QueryParam("order") String order
     		, @QueryParam("facet") Boolean isFacet
-    		, @QueryParam("facet_limit") Integer facetLimit, @QueryParam("facet_offset") Integer facetOffset
+    		, @QueryParam("facet_limit") Integer facetLimit, @QueryParam("facet_offset") Integer facetOffset, @QueryParam("facet_page") Integer facetPage
     		, @QueryParam("highlight") Boolean isHighlight 
     		, @QueryParam("snippet") Boolean isSnippet
     		, @QueryParam("expand") String expand
@@ -106,7 +106,7 @@ public class SearchResource extends Resource {
     public SearchResponse getCollectionsSearchResponseByGet(
     		@QueryParam("scope") String scope
     		, @QueryParam("q") String qterms
-    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset
+    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset, @QueryParam("page") Integer page
     		, @QueryParam("sort_by") String orderBy, @QueryParam("order") String order
     		, @QueryParam("expand") String expand
     		, @Context UriInfo info
@@ -143,7 +143,7 @@ public class SearchResource extends Resource {
     public SearchResponse getSeriesSearchResponseByGet(
     		@QueryParam("scope") String scope
     		, @QueryParam("q") String qterms
-    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset
+    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset, @QueryParam("page") Integer page
     		, @QueryParam("sort_by") String orderBy, @QueryParam("order") String order
     		, @QueryParam("expand") String expand
     		, @Context UriInfo info
@@ -180,7 +180,7 @@ public class SearchResource extends Resource {
     public SearchResponse getCollectionsGroupByGet(
     		@QueryParam("scope") String scope
     		, @QueryParam("q") String qterms
-    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset
+    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset, @QueryParam("page") Integer page
     		, @QueryParam("sort_by") String orderBy, @QueryParam("order") String order
     		, @QueryParam("expand") String expand
     		, @Context UriInfo info
@@ -219,7 +219,7 @@ public class SearchResource extends Resource {
     public SearchResponse getSeriesGroupByGet(
     		@QueryParam("scope") String scope
     		, @QueryParam("q") String qterms
-    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset
+    		, @QueryParam("limit") Integer limit, @QueryParam("offset") Integer offset, @QueryParam("page") Integer page
     		, @QueryParam("sort_by") String orderBy, @QueryParam("order") String order
     		, @QueryParam("expand") String expand
     		, @Context UriInfo info
@@ -239,8 +239,6 @@ public class SearchResource extends Resource {
 
         String qterms = searchRequest.getQuery();
     	Boolean isFacet = searchRequest.isFacet();
-    	Integer limit = searchRequest.getLimit();
-    	Integer offset = searchRequest.getOffset();
 
     	String expand = params.getExpand();
 
@@ -259,7 +257,7 @@ public class SearchResource extends Resource {
             	if (isFacet) { expand += ",facets"; }
             }
             queryResults = getQueryResult(org.dspace.core.Constants.ITEM, context, searchRequest);
-            response = new SequencesSearchResponse(queryResults, expand, context, limit, offset);
+            response = new SequencesSearchResponse(queryResults, expand, context);
 
             context.complete();
 
@@ -279,8 +277,6 @@ public class SearchResource extends Resource {
         
         String qterms = searchRequest.getQuery();
     	Boolean isFacet = searchRequest.isFacet();
-    	Integer limit = searchRequest.getLimit();
-    	Integer offset = searchRequest.getOffset();
 
     	String expand = params.getExpand();
 
@@ -299,7 +295,7 @@ public class SearchResource extends Resource {
             	if (isFacet) { expand += ",facets"; }
             }
             queryResults = getQueryResult(org.dspace.core.Constants.COLLECTION, context, searchRequest);
-            response = new EpisodesSearchResponse(queryResults, expand, context, limit, offset);
+            response = new EpisodesSearchResponse(queryResults, expand, context);
             
             context.complete();
 
@@ -319,8 +315,6 @@ public class SearchResource extends Resource {
         
         String qterms = searchRequest.getQuery();
     	Boolean isFacet = searchRequest.isFacet();
-    	Integer limit = searchRequest.getLimit();
-    	Integer offset = searchRequest.getOffset();
 
     	String expand = params.getExpand();
 
@@ -339,7 +333,7 @@ public class SearchResource extends Resource {
             	if (isFacet) { expand += ",facets"; }
             }
             queryResults = getGroupResult(org.dspace.core.Constants.COLLECTION, context, searchRequest);
-            response = new EpisodesSearchResponse(queryResults, expand, context, limit, offset);
+            response = new EpisodesSearchResponse(queryResults, expand, context);
             
             context.complete();
 
@@ -359,8 +353,6 @@ public class SearchResource extends Resource {
         
         String qterms = searchRequest.getQuery();
     	Boolean isFacet = searchRequest.isFacet();
-    	Integer limit = searchRequest.getLimit();
-    	Integer offset = searchRequest.getOffset();
 
     	String expand = params.getExpand();
 
@@ -379,7 +371,7 @@ public class SearchResource extends Resource {
             	if (isFacet) { expand += ",facets"; }
             }
 	        queryResults = getQueryResult(org.dspace.core.Constants.COMMUNITY, context, searchRequest);
-	        response = new SeriesSearchResponse(queryResults, expand, context, limit, offset);
+	        response = new SeriesSearchResponse(queryResults, expand, context);
 
             context.complete();
 
@@ -398,8 +390,6 @@ public class SearchResource extends Resource {
         
         String qterms = searchRequest.getQuery();
     	Boolean isFacet = searchRequest.isFacet();
-    	Integer limit = searchRequest.getLimit();
-    	Integer offset = searchRequest.getOffset();
 
     	String expand = params.getExpand();
 
@@ -418,7 +408,7 @@ public class SearchResource extends Resource {
             	if (isFacet) { expand += ",facets"; }
             }
             queryResults = getGroupResult(org.dspace.core.Constants.COMMUNITY, context, searchRequest);
-	        response = new SeriesSearchResponse(queryResults, expand, context, limit, offset);
+	        response = new SeriesSearchResponse(queryResults, expand, context);
             
             context.complete();
 

@@ -43,12 +43,18 @@ public class Constants extends org.dspace.core.Constants {
     // Default values
     public static final String[] TYPETEXT = { "none", "none", "SEQUENCE", "EPISODE", "SERIE", "none", "none", "none" };
     public static final int      LIMITMAX = 5000;
-    public static final String   DEFAULT_LIMIT = "100";
+    /* 30.09.2016 Lan : scale down DEFAULT_LIMIT because 100 is too slow
+     * public static final String   DEFAULT_LIMIT = "100";
+     */
+    public static final String   DEFAULT_LIMIT = "20";
     public static final int      DEFAULT_RPP = Integer.valueOf(DEFAULT_LIMIT);
     public static final String   DEFAULT_ORDER = "asc";
     public static final int      DEFAULT_FACET_RPP = 10;
     public static final int      DEFAULT_FACET_OFFSET = 0;
-    public static final int      DEFAULT_LOV_RPP = 100;
+    /* 30.09.2016 Lan : scale down 
+     * public static final int      DEFAULT_LOV_RPP = 100;
+     */
+    public static final int      DEFAULT_LOV_RPP = 10;
     public static final String   LOV_ALL = "\\n"; // the literal \n not the LF
     
     // Keys for accessing metadata

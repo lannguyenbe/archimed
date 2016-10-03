@@ -18,14 +18,13 @@ public class SequencesSearchResponse extends SearchResponse {
 	
 	public SequencesSearchResponse() {}
 
-	public SequencesSearchResponse(DiscoverResult queryResults, String expand, Context context, Integer limit, Integer offset) {
+	public SequencesSearchResponse(DiscoverResult queryResults, String expand, Context context) {
 		super(queryResults, expand);
-		setup(queryResults, expand, context, limit, offset);
+		setup(queryResults, expand, context);
 		
 	}
 	
-	private void setup(DiscoverResult queryResults, String expand,
-			Context context, Integer limit, Integer offset) 
+	private void setup(DiscoverResult queryResults, String expand, Context context) 
 	{
         List<String> expandFields = new ArrayList<String>();
 		if (expand != null) {

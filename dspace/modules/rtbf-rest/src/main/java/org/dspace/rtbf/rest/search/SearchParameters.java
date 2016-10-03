@@ -23,6 +23,7 @@ public class SearchParameters implements Request {
 	private String q;
 	private int limit = Constants.DEFAULT_RPP;
 	private int offset = 0;
+	private int page = 1;
 	@JsonProperty("sort_by")
 	private String sortBy;
 	private String order = Constants.DEFAULT_ORDER;
@@ -32,6 +33,8 @@ public class SearchParameters implements Request {
 	private int facetLimit = Constants.DEFAULT_FACET_RPP;
 	@JsonProperty("facet_offset")
 	private int facetOffset = Constants.DEFAULT_FACET_OFFSET;
+	@JsonProperty("facet_page")
+	private int facetPage = 1;
 	@JsonProperty("highlight")
 	private boolean isHighlight = true;
 	@JsonProperty("snippet")
@@ -201,11 +204,13 @@ public class SearchParameters implements Request {
 		if ((str = mvm.getFirst("q")) != null && str.length() > 0) { this.q = str;}
 		if ((str = mvm.getFirst("limit")) != null && str.length() > 0) { this.limit = Integer.parseInt(str);}
 		if ((str = mvm.getFirst("offset")) != null && str.length() > 0) { this.offset = Integer.parseInt(str);}
+		if ((str = mvm.getFirst("page")) != null && str.length() > 0) { this.page = Integer.parseInt(str);}
 		if ((str = mvm.getFirst("sort_by")) != null && str.length() > 0) { this.sortBy = str;}
 		if ((str = mvm.getFirst("order")) != null && str.length() > 0) { this.order = str;}
 		if ((str = mvm.getFirst("facet")) != null && str.length() > 0) { this.isFacet = Boolean.parseBoolean(str);}
 		if ((str = mvm.getFirst("facet_limit")) != null && str.length() > 0) { this.facetLimit = Integer.parseInt(str);}
 		if ((str = mvm.getFirst("facet_offset")) != null && str.length() > 0) { this.facetOffset = Integer.parseInt(str);}
+		if ((str = mvm.getFirst("facet_page")) != null && str.length() > 0) { this.facetPage = Integer.parseInt(str);}
 		if ((str = mvm.getFirst("highlight")) != null && str.length() > 0) { this.isHighlight = Boolean.parseBoolean(str);}
 		if ((str = mvm.getFirst("snippet")) != null && str.length() > 0) { this.isSnippet = Boolean.parseBoolean(str);}
 		if ((str = mvm.getFirst("collapse")) != null && str.length() > 0) { this.isCollapse = Boolean.parseBoolean(str);}
@@ -327,5 +332,25 @@ public class SearchParameters implements Request {
 	@Override
 	public boolean isHighlight() {
 		return getIsHighlight();
+	}
+
+	@Override
+	public int getPage() {
+		return page;
+	}
+
+	@Override
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	@Override
+	public int getFacetPage() {
+		return facetPage;
+	}
+
+	@Override
+	public void setFacetPage(int facetPage) {
+		this.facetPage = facetPage;
 	}
 }

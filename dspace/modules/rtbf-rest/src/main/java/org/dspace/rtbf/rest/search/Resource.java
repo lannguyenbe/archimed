@@ -182,6 +182,7 @@ public abstract class Resource
     		limit = org.dspace.rtbf.rest.common.Constants.LIMITMAX;
     	}
     	int offset = params.getOffset();
+    	int page = params.getPage();
 
         List<SimpleNode> results = new ArrayList<SimpleNode>();
         org.dspace.core.Context context = null;
@@ -224,7 +225,7 @@ public abstract class Resource
            }
 
            
-           for (int iR=0, iO=0, iBegin=offset*limit; iR < iBegin+limit; iO++ ) {
+           for (int iR=0, iO=0, iBegin=offset+(page-1)*limit; iR < iBegin+limit; iO++ ) {
 
         	   query.setFacetOffset(iO*org.dspace.rtbf.rest.common.Constants.LIMITMAX); // get next chunk of facets
 	           queryResults = getSearchService().search(context, query);
@@ -294,8 +295,9 @@ public abstract class Resource
 
     	// Pagination
     	query.setMaxResults(searchRequest.getLimit());
-        if (searchRequest.getOffset() > 0) {
-            query.setStart(searchRequest.getOffset());
+    	int offset = searchRequest.getOffset() + (searchRequest.getPage()-1) * searchRequest.getLimit();
+        if (offset > 0) {
+            query.setStart(offset);
         }
         
         // Order
@@ -346,7 +348,7 @@ public abstract class Resource
 	        query.setFacetMinCount(1);
 
 	        int facetLimit = searchRequest.getFacetLimit();
-    		int facetOffset = searchRequest.getFacetOffset() * facetLimit;
+    		int facetOffset = searchRequest.getFacetOffset() + (searchRequest.getFacetPage()-1) * facetLimit;
     		
     		// Facets on <f>_keyword
             String[][] facetFields = {

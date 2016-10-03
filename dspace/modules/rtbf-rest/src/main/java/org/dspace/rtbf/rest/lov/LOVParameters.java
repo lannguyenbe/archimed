@@ -13,6 +13,7 @@ public class LOVParameters implements org.dspace.rtbf.rest.search.Request{
 	private String scope = null;
 	private int limit = -1;
 	private int offset = 0;
+	private int page = 1;	
 	
 	public LOVParameters() {}
 	
@@ -23,6 +24,7 @@ public class LOVParameters implements org.dspace.rtbf.rest.search.Request{
 		if ((str = mvm.getFirst("scope")) != null && str.length() > 0) { this.scope = str;}
 		if ((str = mvm.getFirst("limit")) != null && str.length() > 0) { this.limit = Integer.parseInt(str);}
 		if ((str = mvm.getFirst("offset")) != null && str.length() > 0) { this.offset = Integer.parseInt(str);}
+		if ((str = mvm.getFirst("page")) != null && str.length() > 0) { this.page = Integer.parseInt(str);}
 	}
 
 	@Override
@@ -89,6 +91,29 @@ public class LOVParameters implements org.dspace.rtbf.rest.search.Request{
 	@Override
 	public void setOffset(int offset) {
 		this.offset = offset;
+	}
+	
+
+	@Override
+	public int getPage() {
+		return page;
+	}
+
+	@Override
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	@Override
+	public int getFacetPage() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setFacetPage(int facetOffset) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

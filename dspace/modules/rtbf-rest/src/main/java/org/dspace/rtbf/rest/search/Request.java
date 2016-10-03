@@ -26,6 +26,9 @@ public interface Request {
 	public int getOffset();
 	public void setOffset(int offset);
 
+	public int getPage();
+	public void setPage(int offset);
+
 
 	public String getSortField();
 	public String getSortField(String requestHandler);
@@ -45,6 +48,8 @@ public interface Request {
 	public int getFacetOffset();
 	public void setFacetOffset(int facetOffset);
 
+	public int getFacetPage();
+	public void setFacetPage(int facetOffset);
 
 	public boolean isSnippet();
 	public void setIsSnippet(boolean bool);

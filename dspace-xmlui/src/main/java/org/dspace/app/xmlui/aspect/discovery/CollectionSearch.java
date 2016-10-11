@@ -236,8 +236,8 @@ public class CollectionSearch extends AbstractDSpaceTransformer implements Cache
             //query.addPara().addXref(contextPath + "/handle/" + collection.getHandle()+ "/advanced-search", T_advanced_search_link);
 
             // Browse by list
-            //Division browseDiv = search.addDivision("collection-browse","secondary browse");
-            //List browse = browseDiv.addList("collection-browse", List.TYPE_SIMPLE,
+            // Division browseDiv = search.addDivision("collection-browse","secondary browse");
+            // List browse = browseDiv.addList("collection-browse", List.TYPE_SIMPLE,
             //        "collection-browse");
             //browse.setHead(T_head_browse);
             //String url = contextPath + "/handle/" + collection.getHandle();

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     The contents of this file are subject to the license and copyright
@@ -65,6 +65,7 @@
             <item>
                 <xsl:copy-of select="dri:item/dri:field[@id='aspect.discovery.SimpleSearch.field.scope']"/>
                 <xsl:copy-of select="dri:item/dri:field[@id='aspect.discovery.SimpleSearch.field.query']"/>
+                <xsl:copy-of select="dri:item/dri:field[@id='aspect.discovery.SimpleSearch.field.group_by']"/>
                 <!-- Lan 10.09.2015 did-you-mean -->
                 <xsl:copy-of select="dri:item[@id='aspect.discovery.SimpleSearch.item.did-you-mean']"/>
                 <!-- Lan 10.09.2015 - did-you-mean - end-->

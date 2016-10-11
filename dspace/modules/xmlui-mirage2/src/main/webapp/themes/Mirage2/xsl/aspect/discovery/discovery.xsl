@@ -123,12 +123,76 @@
                 </xsl:if>
             </a>
             <div class="artifact-info">
+               <xsl:if test="dri:list[@n=(concat($handle, ':dc.description.abstract'))]/dri:item">
+                   <p>
+                       <xsl:apply-templates select="dri:list[@n=(concat($handle, ':dc.description.abstract'))]/dri:item[1]"/>
+                   </p>
+               </xsl:if>
+            </div>
+        </div>
+    </xsl:template>
+
+   <!-- Lan 03.10.2016 -->
+   <xsl:template name="collectionGroupSummaryList">
+        <xsl:param name="handle"/>
+        <xsl:param name="externalMetadataUrl"/>
+
+        <xsl:variable name="metsDoc" select="document($externalMetadataUrl)"/>
+
+        <div class="community-browser-row">
+            <a href="{$metsDoc/mets:METS/@OBJID}">
+                <xsl:choose>
+                    <xsl:when test="dri:list[@n=(concat($handle, ':dc.title')) and descendant::text()]">
+                        <xsl:apply-templates select="dri:list[@n=(concat($handle, ':dc.title'))]/dri:item"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <i18n:text>xmlui.dri2xhtml.METS-1.0.no-title</i18n:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <!--Display source and date_issued of the collection -->
+                    <xsl:if test="dri:list[@n=(concat($handle, ':dc.date.issued'))] or dri:list[starts-with(@n,concat($handle, concat(':',$ns.identifier.source)))]">
+                        <span class="source-date h4">   <small>
+                            <xsl:text> (</xsl:text>
+                            <xsl:if test="dri:list[starts-with(@n,concat($handle,concat(':',$ns.identifier.source)))]">
+                                <span class="source">
+                                    <i18n:text catalogue="default">
+                                       <xsl:value-of select="dri:list[starts-with(@n,concat($handle, concat(':',$ns.identifier.source)))]/dri:item"/>
+                                    </i18n:text>
+                                </span>
+                                <xsl:if test="dri:list[@n=(concat($handle, ':dc.date.issued'))]">
+                                	<xsl:text>, </xsl:text>
+                                </xsl:if>
+                            </xsl:if>
+                            <span class="date">
+                                <xsl:value-of
+                                        select="substring(dri:list[@n=(concat($handle, ':dc.date.issued'))]/dri:item,1,10)"/>
+                            </span>
+                            <xsl:text>)</xsl:text>
+                            </small></span>
+                    </xsl:if>
+            </a>
+            <!--Display count od matched item in the collection group if they exist-->
+            <!-- Lan 04.10.2016 - number of grouped items -->
+            <xsl:if test="dri:list[@n='group-query']">
+                             <xsl:variable name="nbr" select="dri:list[@n='group-query']/dri:item/dri:xref"/>
+                             <xsl:variable name="url" select="dri:list[@n='group-query']/dri:item/dri:xref/@target"/>
+                             <xsl:if test="number($nbr)">
+                                <span class="h5">
+                                      <xsl:text> [</xsl:text>
+                                      <a href="{$url}">
+                                          <xsl:value-of select="$nbr"/>
+                                      </a>
+                                      <xsl:text>]</xsl:text>
+                               </span>
+                             </xsl:if>
+            </xsl:if>
+            <div class="artifact-info">
             <xsl:if test="dri:list[@n=(concat($handle, ':dc.description.abstract'))]/dri:item">
                 <p>
                     <xsl:apply-templates select="dri:list[@n=(concat($handle, ':dc.description.abstract'))]/dri:item[1]"/>
                 </p>
             </xsl:if>
-        </div>
+            </div>
 
         </div>
     </xsl:template>
@@ -137,7 +201,9 @@
         <xsl:param name="handle"/>
         <xsl:param name="externalMetadataUrl"/>
 
-        <xsl:call-template name="communitySummaryList">
+        <!-- xsl:call-template name="communitySummaryList"-->
+        <!-- Lan 03.10.2016 -->
+        <xsl:call-template name="collectionGroupSummaryList">
             <xsl:with-param name="handle">
                 <xsl:value-of select="$handle"/>
             </xsl:with-param>
@@ -259,13 +325,12 @@
                         </small></span>
                     <xsl:text> </xsl:text>
                     <!-- Lan : add ns.identifier.source -->
-                    <xsl:if test="dri:list[@n=(concat($handle, ':dc.date.issued'))] or dri:list[@n=(concat($handle, ':dc.publisher')) or starts-with(@n,concat($handle, concat(':',$ns.identifier.source)))]">
+                    <xsl:if test="dri:list[@n=(concat($handle, ':dc.date.issued'))] or dri:list[starts-with(@n,concat($handle, concat(':',$ns.identifier.source)))]">
                         <span class="publisher-date h4">   <small>
                             <xsl:text>(</xsl:text>
-                            <xsl:if test="dri:list[@n=(concat($handle, ':dc.publisher')) or starts-with(@n,concat($handle,concat(':',$ns.identifier.source)))]">
+                            <xsl:if test="dri:list[starts-with(@n,concat($handle,concat(':',$ns.identifier.source)))]">
                                 <span class="publisher">
-                                    <xsl:apply-templates select="dri:list[@n=(concat($handle, ':dc.publisher'))]/dri:item"/>
-                                    <i18n:text catalogue="default">
+                                     <i18n:text catalogue="default">
                                        <xsl:value-of select="dri:list[starts-with(@n,concat($handle, concat(':',$ns.identifier.source)))]/dri:item"/>
                                     </i18n:text>
                                 </span>
@@ -372,6 +437,18 @@
                              </xsl:choose>
                          <xsl:text>'
                       });</xsl:text></xsl:for-each><xsl:text>
+                      if (!window.DSpace.i18n.discovery.group_by) {
+                          window.DSpace.i18n.discovery.group_by = [];
+                      }
+                      window.DSpace.i18n.discovery.group_by.push({
+                          id: '',
+                          label: 'sequence'
+                      });
+                      window.DSpace.i18n.discovery.group_by.push({
+                          id: '\/groupEpisode',
+                          label: 'episode'
+                      });
+                 </xsl:text><xsl:text>
                       if (!window.DSpace.discovery) {
                           window.DSpace.discovery = {};
                       }
@@ -380,7 +457,8 @@
                       }
                       window.DSpace.discovery.query.push({
                           scope: '</xsl:text><xsl:value-of select="stringescapeutils:escapeEcmaScript(../dri:item[dri:field[@id='aspect.discovery.SimpleSearch.field.scope']]/dri:field/dri:value/@option)"/><xsl:text>',
-                          query: '</xsl:text><xsl:value-of select="stringescapeutils:escapeEcmaScript(dri:field[@id='aspect.discovery.SimpleSearch.field.query']/dri:value)"/><xsl:text>'
+                          query: '</xsl:text><xsl:value-of select="stringescapeutils:escapeEcmaScript(dri:field[@id='aspect.discovery.SimpleSearch.field.query']/dri:value)"/><xsl:text>',
+                          group_by: '</xsl:text><xsl:value-of select="stringescapeutils:escapeEcmaScript(dri:field[@id='aspect.discovery.SimpleSearch.field.group_by']/dri:value)"/><xsl:text>'
                       });
                  </xsl:text>
            </script>

@@ -214,6 +214,7 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
 
         //We set our action to context path, since the eventual action will depend on which url we click on
         Division mainForm = searchDiv.addInteractiveDivision("main-form", getBasicUrl(), Division.METHOD_POST, "");
+//        Division mainForm = searchDiv.addInteractiveDivision("main-form", getBasicUrl(), Division.METHOD_GET, "");
 
         String query = getQuery();
         //Indicate that the form we are submitting lists search results
@@ -376,8 +377,18 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
                     {
                         //Render our collection !
                         org.dspace.app.xmlui.wing.element.List collectionMetadata = commCollWingList.addList(dso.getHandle() + ":collection");
-
+                        
                         renderCollection((Collection) dso, highlightedResults, collectionMetadata);
+
+                        // Lan 04.10.2016
+                        DiscoverResult.GroupFilter groupFilter = queryResults.getGroupFilter(dso);
+
+                        if (groupFilter != null) {
+	                        org.dspace.app.xmlui.wing.element.List groupQuery = collectionMetadata.addList("group-query");
+	                    	groupQuery.addItemXref(contextPath+ "/handle/" + dso.getHandle() + "/discover?query=" + encodeForURL(queryArgs.getQuery())
+	                    			, String.valueOf(groupFilter.getCount()));
+                        }
+                        
                     }
                 }
             }
@@ -514,8 +525,11 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
      * @param highlightedResults the highlighted results
      * @throws WingException
      */
-    protected void renderCollection(Collection collection, DiscoverResult.DSpaceObjectHighlightResult highlightedResults, org.dspace.app.xmlui.wing.element.List collectionMetadata) throws WingException {
+    protected void renderCollection(Collection collection, DiscoverResult.DSpaceObjectHighlightResult highlightedResults, org.dspace.app.xmlui.wing.element.List collectionMetadata) throws WingException, SQLException {
 
+/*
+ * Lan 03.10.2016
+ *
         String description = collection.getMetadata("introductory_text");
         String description_abstract = collection.getMetadata("short_description");
         String description_table = collection.getMetadata("side_bar_text");
@@ -557,6 +571,45 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
         {
             addMetadataField(highlightedResults, "dc.title", collectionMetadata.addList(collection.getHandle() + ":dc.title"), title);
         }
+*/      
+        
+        // Lan 03.10.2016
+        String identifier_uri = "http://hdl.handle.net/" + collection.getHandle();
+        if(StringUtils.isNotBlank(identifier_uri))
+        {
+            addMetadataField(highlightedResults, "dc.identifier.uri", collectionMetadata.addList(collection.getHandle() + ":dc.identifier.uri"), identifier_uri);
+        }
+
+        MetadataField[] metadataFields = MetadataField.findAll(context);
+        for (MetadataField metadataField : metadataFields)
+        {
+            //Retrieve the schema for this field
+            String schema = MetadataSchema.find(context, metadataField.getSchemaID()).getName();
+            
+            //Check if our metadata field is highlighted
+            StringBuilder metadataKey = new StringBuilder();
+            metadataKey.append(schema).append(".").append(metadataField.getElement());
+            if (metadataField.getQualifier() != null)
+            {
+            	metadataKey.append(".").append(metadataField.getQualifier());
+            }
+
+            StringBuilder collName = new StringBuilder();
+            collName.append(collection.getHandle()).append(":").append(metadataKey.toString());
+            
+            Metadatum[] itemMetadata = collection.getMetadata(schema, metadataField.getElement(), metadataField.getQualifier(), Item.ANY);
+            if(!ArrayUtils.isEmpty(itemMetadata))
+            {
+            	org.dspace.app.xmlui.wing.element.List metadataFieldList = collectionMetadata.addList(collName.toString());
+            	for (Metadatum metadataValue : itemMetadata)
+            	{
+            		String value = metadataValue.value;
+            		addMetadataField(highlightedResults, metadataKey.toString(), metadataFieldList, value);
+            		break; // get first value only
+            	}
+            }
+        }
+        
     }
 
     /**
@@ -819,7 +872,8 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
             // TODO: This is a hack to get Publications (Articles) to always be at the top of Groups.
             // TODO: I think that can be more transparently done in the solr solrconfig.xml with DISMAX and boosting
             /** sort in groups to get publications to top */
-            queryArgs.setSortField("dc.type", DiscoverQuery.SORT_ORDER.asc);
+            // Lan 04.10.2016 : comment this
+            // queryArgs.setSortField("dc.type", DiscoverQuery.SORT_ORDER.asc);
 
         }
 

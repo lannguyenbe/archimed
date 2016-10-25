@@ -42,6 +42,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
@@ -366,30 +367,38 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
                 for (DSpaceObject dso : commCollList)
                 {
                     DiscoverResult.DSpaceObjectHighlightResult highlightedResults = queryResults.getHighlightedResults(dso);
-                    if(dso.getType() == Constants.COMMUNITY)
-                    {
+                    org.dspace.app.xmlui.wing.element.List commCollMetadata = null;
+                    
+                    if(dso.getType() == Constants.COMMUNITY) {
                         //Render our community !
                         org.dspace.app.xmlui.wing.element.List communityMetadata = commCollWingList.addList(dso.getHandle() + ":community");
 
                         renderCommunity((Community) dso, highlightedResults, communityMetadata);
-                    }else
-                    if(dso.getType() == Constants.COLLECTION)
-                    {
+                        
+                        commCollMetadata = communityMetadata;
+                        
+                    } else if(dso.getType() == Constants.COLLECTION) {
                         //Render our collection !
                         org.dspace.app.xmlui.wing.element.List collectionMetadata = commCollWingList.addList(dso.getHandle() + ":collection");
                         
                         renderCollection((Collection) dso, highlightedResults, collectionMetadata);
-
-                        // Lan 04.10.2016
-                        DiscoverResult.GroupFilter groupFilter = queryResults.getGroupFilter(dso);
-
-                        if (groupFilter != null) {
-	                        org.dspace.app.xmlui.wing.element.List groupQuery = collectionMetadata.addList("group-query");
-	                    	groupQuery.addItemXref(contextPath+ "/handle/" + dso.getHandle() + "/discover?query=" + encodeForURL(queryArgs.getQuery())
-	                    			, String.valueOf(groupFilter.getCount()));
-                        }
                         
+                        commCollMetadata = collectionMetadata;
+
                     }
+                    
+                    // Lan 04.10.2016 : common  to community or collection
+                    DiscoverResult.GroupFilter groupFilter = queryResults.getGroupFilter(dso);
+
+                    if (groupFilter != null) {
+                        String paramsQuery = retrieveParameters();                        	
+                        org.dspace.app.xmlui.wing.element.List groupQuery = commCollMetadata.addList("group-query");
+                    	groupQuery.addItemXref(contextPath+ "/handle/" + dso.getHandle() 
+                                + "/discover?" + paramsQuery
+//                    			+ "query=" + encodeForURL(queryArgs.getQuery())
+                    			, String.valueOf(groupFilter.getCount()));
+                    }
+                    
                 }
             }
 
@@ -1165,4 +1174,58 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
                 + (queryArgs == null ? "" : queryArgs.getQuery()) + "\",results=(" + countCommunities + ","
                 + countCollections + "," + countItems + ")"));
     }
+    
+    /*
+     * Lan 24.10.2016 : copy from SidebarFacetsTransformer.java, remove group_by
+     */
+    private String retrieveParameters() throws UnsupportedEncodingException, UIException {
+        
+        Request request = ObjectModelHelper.getRequest(objectModel);
+    	
+        java.util.List<String> parameters = new ArrayList<String>();
+        if(StringUtils.isNotBlank(request.getParameter("query"))){
+            parameters.add("query=" + encodeForURL(request.getParameter("query")));
+        }
+
+
+        /*
+        if(StringUtils.isNotBlank(request.getParameter("scope"))){
+            parameters.add("scope=" + request.getParameter("scope"));
+        }
+        */
+        
+        if(StringUtils.isNotBlank(request.getParameter("sort_by"))){
+            parameters.add("sort_by=" + request.getParameter("sort_by"));
+        }
+        if(StringUtils.isNotBlank(request.getParameter("order"))){
+            parameters.add("order=" + request.getParameter("order"));
+        }
+        if(StringUtils.isNotBlank(request.getParameter("rpp"))){
+            parameters.add("rpp=" + request.getParameter("rpp"));
+        }
+
+        // Lan 04.10.2016
+        /*
+        if(StringUtils.isNotBlank(request.getParameter("group_by"))){
+            parameters.add("group_by=" + request.getParameter("group_by"));
+        }
+        */
+
+        Map<String, String[]> parameterFilterQueries = DiscoveryUIUtils.getParameterFilterQueries(request);
+        for(String parameter : parameterFilterQueries.keySet()){
+            for (int i = 0; i < parameterFilterQueries.get(parameter).length; i++) {
+                String value = parameterFilterQueries.get(parameter)[i];
+                parameters.add(parameter + "=" + encodeForURL(value));
+            }
+
+        }
+        //Join all our parameters using an "&" sign
+        String parametersString = StringUtils.join(parameters.toArray(new String[parameters.size()]), "&");
+        if(StringUtils.isNotEmpty(parametersString)){
+            parametersString += "&";
+        }
+        return parametersString;
+    }
+
+    
 }

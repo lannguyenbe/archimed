@@ -151,9 +151,7 @@ public class SimpleSearch extends AbstractSearch implements CacheableProcessingC
     	searchBoxItem.addText("group_by").setValue(getGroupBy());
         
         searchBoxItem.addButton("submit", "search-icon").setValue(T_go);
-        
-        // Lan 05.10.2016 add group_by
-        
+               
         if(queryResults != null && StringUtils.isNotBlank(queryResults.getSpellCheckQuery()))
         {
             Item didYouMeanItem = searchList.addItem("did-you-mean", "didYouMean");

@@ -67,7 +67,7 @@
         <xsl:choose>
             <xsl:when test="$type='community'">
                 <xsl:call-template name="communitySummaryList">
-                    <xsl:with-param name="handle">
+                   <xsl:with-param name="handle">
                         <xsl:value-of select="$handle"/>
                     </xsl:with-param>
                     <xsl:with-param name="externalMetadataUrl">
@@ -122,6 +122,23 @@
                     <xsl:text>]</xsl:text>
                 </xsl:if>
             </a>
+            <!-- Lan 25.10.2016 -->
+            <!--Display count of matched item in the community group if they exist-->
+            <!-- Lan 04.10.2016 - number of grouped items -->
+            <xsl:if test="dri:list[@n='group-query']">
+                             <xsl:variable name="nbr" select="dri:list[@n='group-query']/dri:item/dri:xref"/>
+                             <xsl:variable name="url" select="dri:list[@n='group-query']/dri:item/dri:xref/@target"/>
+                             <xsl:if test="number($nbr)">
+                                <span class="h5">
+                                      <xsl:text> [</xsl:text>
+                                      <a href="{$url}">
+                                          <xsl:value-of select="$nbr"/>
+                                      </a>
+                                      <xsl:text>]</xsl:text>
+                               </span>
+                             </xsl:if>
+            </xsl:if>
+            <!-- End - Lan 25.10.2016 -->
             <div class="artifact-info">
                <xsl:if test="dri:list[@n=(concat($handle, ':dc.description.abstract'))]/dri:item">
                    <p>
@@ -166,6 +183,9 @@
                             <span class="date">
                                 <xsl:value-of
                                         select="substring(dri:list[@n=(concat($handle, ':dc.date.issued'))]/dri:item,1,10)"/>
+                                <xsl:text> </xsl:text>
+                                <xsl:value-of
+                                        select="substring(dri:list[@n=(concat($handle, ':dc.date.issued'))]/dri:item,12,8)"/>
                             </span>
                             <xsl:text>)</xsl:text>
                             </small></span>
@@ -341,6 +361,9 @@
                             <span class="date">
                                 <xsl:value-of
                                         select="substring(dri:list[@n=(concat($handle, ':dc.date.issued'))]/dri:item,1,10)"/>
+                                <xsl:text> </xsl:text>
+                                <xsl:value-of
+                                        select="substring(dri:list[@n=(concat($handle, ':dc.date.issued'))]/dri:item,12,8)"/>
                             </span>
                             <xsl:text>)</xsl:text>
                             </small></span>
@@ -442,11 +465,15 @@
                       }
                       window.DSpace.i18n.discovery.group_by.push({
                           id: '',
-                          label: 'sequence'
+                          label: 'all'
                       });
                       window.DSpace.i18n.discovery.group_by.push({
                           id: '\/groupEpisode',
                           label: 'episode'
+                      });
+                      window.DSpace.i18n.discovery.group_by.push({
+                          id: '\/groupSerie',
+                          label: 'serie'
                       });
                  </xsl:text><xsl:text>
                       if (!window.DSpace.discovery) {

@@ -36,11 +36,13 @@ function($scope, $rootScope, $window, focus, Authors, Series) {
       if ($scope.primaryQuery.length == 0) {
          $scope.primaryQuery.push({
             scope: '',
-            query: ''
+            query: '',
+            group_by: ''
          });
       }
     }
     $scope.scopeList = $window.DSpace.i18n.discovery.scope;
+    $scope.groupByList = $window.DSpace.i18n.discovery.group_by;
 
    /* Filters */
     $scope.filters = $window.DSpace.discovery.filters;
@@ -139,6 +141,30 @@ function($scope, $rootScope, $window, focus, Authors, Series) {
         ,{"name":"Tramontane Radio"}
         ,{"name":"Tramontane TV"}
     ];
+    
+    /* GroupBy */
+    $scope.addGroupBy = function() {
+        switch ($scope.primaryQuery[0].group_by) {
+            case "episode" :
+                $scope.primaryQuery[0].group_by = "/groupEpisode";
+                break;
+            case "serie" :
+                $scope.primaryQuery[0].group_by = "/groupSerie";
+                break;
+            default :
+                $scope.primaryQuery[0].group_by = "";
+                break;                
+        }
+        /*
+        if ($scope.primaryQuery[0].group_by) {
+            $scope.primaryQuery[0].group_by = "";
+        } else if ($scope.primaryQuery[0].group_by == "episode") {
+            $scope.primaryQuery[0].group_by = "/groupEpisode";
+        } else if ($scope.primaryQuery[0].group_by == "serie") {
+            $scope.primaryQuery[0].group_by = "/groupSerie";
+        }
+        */
+    }
 
 
 }]);
@@ -284,12 +310,13 @@ angular.module('template/handlebars/hidden_primary_query.html',[])
        '<p class="ds-paragraph">'
       +'    <input id="aspect_discovery_SimpleSearch_field_query" class="ds-hidden-field form-control" type="hidden" name="query" value="{{primaryQuery[0].query}}">'
       +'    <input id="aspect_discovery_SimpleSearch_field_scope" class="ds-hidden-field form-control" type="hidden" name="scope" value="{{primaryQuery[0].scope}}">'
+      +'    <input id="aspect_discovery_SimpleSearch_field_group_by" class="ds-hidden-field form-control" type="hidden" name="group_by" value="{{primaryQuery[0].group_by}}">'
       +'</p>'
       +'');
 }]);
 
 
-angular.module('template/handlebars/primary_query.html', [])
+angular.module('template/handlebars/old_primary_query.html', [])
 .run(['$templateCache', function ($templateCache) {
    $templateCache.put('template/handlebars/primary_query.html',
        '<div class="col-sm-3">'
@@ -306,6 +333,59 @@ angular.module('template/handlebars/primary_query.html', [])
       +'</div>'
       +'');
 }]);
+
+angular.module('template/handlebars/old2_primary_query.html', [])
+.run(['$templateCache', function ($templateCache) {
+   $templateCache.put('template/handlebars/primary_query.html',
+       '<div class="col-sm-3">'
+      +' <p>'
+      +'    <select id="aspect_discovery_SimpleSearch_field_scope" class="ds-select-field form-control" name="scope" ng-model="primaryQuery[0].scope" ng-init="primaryQuery[0].scope = primaryQuery[0].scope||scopeList[0].id">'
+      +'        <option ng-repeat="sco in scopeList" value="{{sco.id}}" ng-selected="primaryQuery[0].scope== sco.id">{{sco.label}}</option>'
+      +'    </select>'
+      +' </p>'
+      +'</div>'
+      +'<div class="col-sm-9">'
+      +' <p class="input-group">'
+      +'    <input id="aspect_discovery_SimpleSearch_field_query" class="ds-text-field form-control" name="query" type="text" ng-model="primaryQuery[0].query">'
+      /* use ng-value for hidden field because ng-model is not doing double binding with hidden field */
+      +'    <input id="aspect_discovery_SimpleSearch_field_group_by" class="ds-hidden-field form-control" name="group_by" type="hidden" ng-value="primaryQuery[0].group_by">'
+      +'      <span class="input-group-btn">'
+      +'         <button id="aspect_discovery_SimpleSearch_field_submit" class="ds-button-field btn btn-default search-icon" name="submit" type="submit">Go</button>'
+      +'         <button id="aspect_discovery_SimpleSearch_field_group" class="ds-button-field btn btn-default search-icon" name="group" type="button" ng-click="addGroupBy()">Group</button>'
+      +'      </span>'
+      +' </p>'
+      +'</div>'
+      +'');
+}]);
+
+angular.module('template/handlebars/primary_query.html', [])
+.run(['$templateCache', function ($templateCache) {
+   $templateCache.put('template/handlebars/primary_query.html',
+       '<div class="col-sm-3">'
+      +' <p>'
+      +'    <select id="aspect_discovery_SimpleSearch_field_scope" class="ds-select-field form-control" name="scope" ng-model="primaryQuery[0].scope" ng-init="primaryQuery[0].scope = primaryQuery[0].scope||scopeList[0].id">'
+      +'        <option ng-repeat="sco in scopeList" value="{{sco.id}}" ng-selected="primaryQuery[0].scope== sco.id">{{sco.label}}</option>'
+      +'    </select>'
+      +' </p>'
+      +'</div>'
+      +'<div class="col-sm-7">'
+      +' <p class="input-group">'
+      +'    <input id="aspect_discovery_SimpleSearch_field_query" class="ds-text-field form-control" name="query" type="text" ng-model="primaryQuery[0].query">'
+      +'      <span class="input-group-btn">'
+      +'         <button id="aspect_discovery_SimpleSearch_field_submit" class="ds-button-field btn btn-default search-icon" name="submit" type="submit">Go</button>'
+      +'      </span>'
+      +' </p>'
+      +'</div>'
+      +'<div class="col-sm-2">'
+      +' <p>'
+      +'    <select id="aspect_discovery_SimpleSearch_field_group_by" class="ds-select-field form-control" name="group_by" ng-model="primaryQuery[0].group_by" ng-init="primaryQuery[0].group_by = primaryQuery[0].group_by||groupByList[0].id">'
+      +'        <option ng-repeat="grp in groupByList" value="{{grp.id}}" ng-selected="primaryQuery[0].group_by == grp.id">{{grp.label}}</option>'
+      +'    </select>'
+      +' </p>'
+      +'</div>'
+      +'');
+}]);
+
 
 angular.module('template/handlebars/hidden_advanced_filters.html',[])
 .run(['$templateCache', function ($templateCache) {

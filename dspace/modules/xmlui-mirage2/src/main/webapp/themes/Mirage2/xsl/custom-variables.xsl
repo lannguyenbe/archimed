@@ -22,7 +22,7 @@
     
     <!-- ATTENTION - select="'value"' has 3 ''' -->
     
-    <xsl:variable name="ns.identifier.source" select="'ebucore.identifier[1]/ebucore:attributor@entityID'"/>
-    <xsl:variable name="identifier.source" select="'identifier[1]/ebucore:attributor@entityID'"/>
+    <xsl:variable name="ns.identifier.source" select="'rtbf.identifier.attributor'"/>
+    <xsl:variable name="identifier.source" select="'identifier.attributor'"/>
     
 </xsl:stylesheet>

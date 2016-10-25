@@ -159,6 +159,13 @@ public class SidebarFacetsTransformer extends AbstractDSpaceTransformer implemen
         if(query != null && !"".equals(query)){
             queryArgs.setQuery(query);
         }
+        
+        // Lan 06.10.2016 same code as in AbstractSearch.performSearch()
+        String groupBy = ObjectModelHelper.getRequest(objectModel).getParameter("group_by");
+        if (groupBy != null && !groupBy.equalsIgnoreCase("none")) {
+            queryArgs.addProperty("collapse.field", groupBy);
+        }
+        
 
         //We do not need to retrieve any dspace objects, only facets
         queryArgs.setMaxResults(0);
@@ -282,6 +289,11 @@ public class SidebarFacetsTransformer extends AbstractDSpaceTransformer implemen
         }
         if(StringUtils.isNotBlank(request.getParameter("rpp"))){
             parameters.add("rpp=" + request.getParameter("rpp"));
+        }
+
+        // Lan 04.10.2016
+        if(StringUtils.isNotBlank(request.getParameter("group_by"))){
+            parameters.add("group_by=" + request.getParameter("group_by"));
         }
 
         Map<String, String[]> parameterFilterQueries = DiscoveryUIUtils.getParameterFilterQueries(request);

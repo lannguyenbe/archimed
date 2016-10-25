@@ -42,6 +42,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
@@ -214,6 +215,7 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
 
         //We set our action to context path, since the eventual action will depend on which url we click on
         Division mainForm = searchDiv.addInteractiveDivision("main-form", getBasicUrl(), Division.METHOD_POST, "");
+//        Division mainForm = searchDiv.addInteractiveDivision("main-form", getBasicUrl(), Division.METHOD_GET, "");
 
         String query = getQuery();
         //Indicate that the form we are submitting lists search results
@@ -365,20 +367,38 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
                 for (DSpaceObject dso : commCollList)
                 {
                     DiscoverResult.DSpaceObjectHighlightResult highlightedResults = queryResults.getHighlightedResults(dso);
-                    if(dso.getType() == Constants.COMMUNITY)
-                    {
+                    org.dspace.app.xmlui.wing.element.List commCollMetadata = null;
+                    
+                    if(dso.getType() == Constants.COMMUNITY) {
                         //Render our community !
                         org.dspace.app.xmlui.wing.element.List communityMetadata = commCollWingList.addList(dso.getHandle() + ":community");
 
                         renderCommunity((Community) dso, highlightedResults, communityMetadata);
-                    }else
-                    if(dso.getType() == Constants.COLLECTION)
-                    {
+                        
+                        commCollMetadata = communityMetadata;
+                        
+                    } else if(dso.getType() == Constants.COLLECTION) {
                         //Render our collection !
                         org.dspace.app.xmlui.wing.element.List collectionMetadata = commCollWingList.addList(dso.getHandle() + ":collection");
-
+                        
                         renderCollection((Collection) dso, highlightedResults, collectionMetadata);
+                        
+                        commCollMetadata = collectionMetadata;
+
                     }
+                    
+                    // Lan 04.10.2016 : common  to community or collection
+                    DiscoverResult.GroupFilter groupFilter = queryResults.getGroupFilter(dso);
+
+                    if (groupFilter != null) {
+                        String paramsQuery = retrieveParameters();                        	
+                        org.dspace.app.xmlui.wing.element.List groupQuery = commCollMetadata.addList("group-query");
+                    	groupQuery.addItemXref(contextPath+ "/handle/" + dso.getHandle() 
+                                + "/discover?" + paramsQuery
+//                    			+ "query=" + encodeForURL(queryArgs.getQuery())
+                    			, String.valueOf(groupFilter.getCount()));
+                    }
+                    
                 }
             }
 
@@ -514,8 +534,11 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
      * @param highlightedResults the highlighted results
      * @throws WingException
      */
-    protected void renderCollection(Collection collection, DiscoverResult.DSpaceObjectHighlightResult highlightedResults, org.dspace.app.xmlui.wing.element.List collectionMetadata) throws WingException {
+    protected void renderCollection(Collection collection, DiscoverResult.DSpaceObjectHighlightResult highlightedResults, org.dspace.app.xmlui.wing.element.List collectionMetadata) throws WingException, SQLException {
 
+/*
+ * Lan 03.10.2016
+ *
         String description = collection.getMetadata("introductory_text");
         String description_abstract = collection.getMetadata("short_description");
         String description_table = collection.getMetadata("side_bar_text");
@@ -557,6 +580,45 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
         {
             addMetadataField(highlightedResults, "dc.title", collectionMetadata.addList(collection.getHandle() + ":dc.title"), title);
         }
+*/      
+        
+        // Lan 03.10.2016
+        String identifier_uri = "http://hdl.handle.net/" + collection.getHandle();
+        if(StringUtils.isNotBlank(identifier_uri))
+        {
+            addMetadataField(highlightedResults, "dc.identifier.uri", collectionMetadata.addList(collection.getHandle() + ":dc.identifier.uri"), identifier_uri);
+        }
+
+        MetadataField[] metadataFields = MetadataField.findAll(context);
+        for (MetadataField metadataField : metadataFields)
+        {
+            //Retrieve the schema for this field
+            String schema = MetadataSchema.find(context, metadataField.getSchemaID()).getName();
+            
+            //Check if our metadata field is highlighted
+            StringBuilder metadataKey = new StringBuilder();
+            metadataKey.append(schema).append(".").append(metadataField.getElement());
+            if (metadataField.getQualifier() != null)
+            {
+            	metadataKey.append(".").append(metadataField.getQualifier());
+            }
+
+            StringBuilder collName = new StringBuilder();
+            collName.append(collection.getHandle()).append(":").append(metadataKey.toString());
+            
+            Metadatum[] itemMetadata = collection.getMetadata(schema, metadataField.getElement(), metadataField.getQualifier(), Item.ANY);
+            if(!ArrayUtils.isEmpty(itemMetadata))
+            {
+            	org.dspace.app.xmlui.wing.element.List metadataFieldList = collectionMetadata.addList(collName.toString());
+            	for (Metadatum metadataValue : itemMetadata)
+            	{
+            		String value = metadataValue.value;
+            		addMetadataField(highlightedResults, metadataKey.toString(), metadataFieldList, value);
+            		break; // get first value only
+            	}
+            }
+        }
+        
     }
 
     /**
@@ -819,7 +881,8 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
             // TODO: This is a hack to get Publications (Articles) to always be at the top of Groups.
             // TODO: I think that can be more transparently done in the solr solrconfig.xml with DISMAX and boosting
             /** sort in groups to get publications to top */
-            queryArgs.setSortField("dc.type", DiscoverQuery.SORT_ORDER.asc);
+            // Lan 04.10.2016 : comment this
+            // queryArgs.setSortField("dc.type", DiscoverQuery.SORT_ORDER.asc);
 
         }
 
@@ -1111,4 +1174,58 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
                 + (queryArgs == null ? "" : queryArgs.getQuery()) + "\",results=(" + countCommunities + ","
                 + countCollections + "," + countItems + ")"));
     }
+    
+    /*
+     * Lan 24.10.2016 : copy from SidebarFacetsTransformer.java, remove group_by
+     */
+    private String retrieveParameters() throws UnsupportedEncodingException, UIException {
+        
+        Request request = ObjectModelHelper.getRequest(objectModel);
+    	
+        java.util.List<String> parameters = new ArrayList<String>();
+        if(StringUtils.isNotBlank(request.getParameter("query"))){
+            parameters.add("query=" + encodeForURL(request.getParameter("query")));
+        }
+
+
+        /*
+        if(StringUtils.isNotBlank(request.getParameter("scope"))){
+            parameters.add("scope=" + request.getParameter("scope"));
+        }
+        */
+        
+        if(StringUtils.isNotBlank(request.getParameter("sort_by"))){
+            parameters.add("sort_by=" + request.getParameter("sort_by"));
+        }
+        if(StringUtils.isNotBlank(request.getParameter("order"))){
+            parameters.add("order=" + request.getParameter("order"));
+        }
+        if(StringUtils.isNotBlank(request.getParameter("rpp"))){
+            parameters.add("rpp=" + request.getParameter("rpp"));
+        }
+
+        // Lan 04.10.2016
+        /*
+        if(StringUtils.isNotBlank(request.getParameter("group_by"))){
+            parameters.add("group_by=" + request.getParameter("group_by"));
+        }
+        */
+
+        Map<String, String[]> parameterFilterQueries = DiscoveryUIUtils.getParameterFilterQueries(request);
+        for(String parameter : parameterFilterQueries.keySet()){
+            for (int i = 0; i < parameterFilterQueries.get(parameter).length; i++) {
+                String value = parameterFilterQueries.get(parameter)[i];
+                parameters.add(parameter + "=" + encodeForURL(value));
+            }
+
+        }
+        //Join all our parameters using an "&" sign
+        String parametersString = StringUtils.join(parameters.toArray(new String[parameters.size()]), "&");
+        if(StringUtils.isNotEmpty(parametersString)){
+            parametersString += "&";
+        }
+        return parametersString;
+    }
+
+    
 }

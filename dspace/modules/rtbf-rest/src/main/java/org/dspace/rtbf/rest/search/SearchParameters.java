@@ -41,7 +41,9 @@ public class SearchParameters implements Request {
 	private boolean isSnippet = false;
 	@JsonProperty("collapse")
 	private boolean isCollapse = false;
-	private boolean isCollapseSet = false;
+	private boolean hasCollapseSet = false;
+	@JsonProperty("exact_term")
+	private boolean isExactTerm = false;
 	private String expand;
 	
 	private List<Map<String, String>> filters = new ArrayList<Map<String, String>> ();
@@ -161,8 +163,16 @@ public class SearchParameters implements Request {
 
 	public void setIsCollapse(boolean isCollapse) {
 		this.isCollapse = isCollapse;
-		this.isCollapseSet = true;
+		this.hasCollapseSet = true;
 	}
+	
+	public boolean getIsExactTerm() {
+		return isExactTerm;
+	}
+
+	public void setExactTerm(boolean isExactTerm) {
+		this.isExactTerm = isExactTerm;
+	}	
 
 	public String getExpand() {
 		return expand;
@@ -186,7 +196,7 @@ public class SearchParameters implements Request {
 		for (Map.Entry<String, String> e : defaults.entrySet()) {
 			switch (e.getKey()) {
 			case "collapse":
-				if (!this.isCollapseSet) {this.isCollapse = Boolean.parseBoolean(e.getValue());}
+				if (!this.hasCollapseSet) {this.isCollapse = Boolean.parseBoolean(e.getValue());}
 				break;
 			default: 
 				break;
@@ -214,6 +224,7 @@ public class SearchParameters implements Request {
 		if ((str = mvm.getFirst("highlight")) != null && str.length() > 0) { this.isHighlight = Boolean.parseBoolean(str);}
 		if ((str = mvm.getFirst("snippet")) != null && str.length() > 0) { this.isSnippet = Boolean.parseBoolean(str);}
 		if ((str = mvm.getFirst("collapse")) != null && str.length() > 0) { this.isCollapse = Boolean.parseBoolean(str);}
+		if ((str = mvm.getFirst("exact_term")) != null && str.length() > 0) { this.isExactTerm = Boolean.parseBoolean(str);}
 		if ((str = mvm.getFirst("expand")) != null && str.length() > 0) { this.expand = str;}
 		
 
@@ -330,6 +341,11 @@ public class SearchParameters implements Request {
 	}
 
 	@Override
+	public boolean isExactTerm() {
+		return getIsExactTerm();
+	}
+
+	@Override
 	public boolean isHighlight() {
 		return getIsHighlight();
 	}
@@ -353,4 +369,5 @@ public class SearchParameters implements Request {
 	public void setFacetPage(int facetPage) {
 		this.facetPage = facetPage;
 	}
+
 }

@@ -258,7 +258,9 @@
                                 <xsl:value-of select="$metsDoc/mets:METS/@OBJEDIT"/>
                             </xsl:when>
                             <xsl:otherwise>
-                                <xsl:value-of select="concat($context-path, '/handle/', $handle)"/>
+                                <!-- Lan 14.11.2016 : show full to spare a click -->
+                                <!-- xsl:value-of select="concat($context-path, '/handle/', $handle)"/ -->                            
+                                <xsl:value-of select="concat($context-path, '/handle/', $handle, '?show=full')"/>                            
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:attribute>

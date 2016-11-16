@@ -60,6 +60,9 @@ public interface Request {
 
 	public boolean isCollapse();
 	public void setIsCollapse(boolean bool);
+	
+	public boolean isExactTerm();
+
 
 
 }

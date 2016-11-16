@@ -342,6 +342,11 @@ public abstract class Resource
     		query.addProperty("expand", "true");
     	}
 
+    	// Exact term match
+    	if (searchRequest.isExactTerm()) {
+    		query.addProperty("qf", "search_unstem");
+    	}
+
     	
     	// Facetting and facet pagination
     	if (searchRequest.isFacet()) {

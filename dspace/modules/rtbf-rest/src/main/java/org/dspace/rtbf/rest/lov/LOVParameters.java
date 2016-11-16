@@ -205,5 +205,13 @@ public class LOVParameters implements org.dspace.rtbf.rest.search.Request{
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public boolean isExactTerm() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	
 
 }

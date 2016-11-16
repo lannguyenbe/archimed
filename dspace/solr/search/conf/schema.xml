@@ -275,7 +275,9 @@
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_fr.txt" format="snowball" enablePositionIncrements="true" />
         <filter class="solr.ICUFoldingFilterFactory"/>
         <filter class="solr.SnowballPorterFilterFactory" language="French" protected="lang/protwords_fr.txt"/>
+        <!-- Lan 07.11.2016
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+        -->
       </analyzer>
       <analyzer type="query">
         <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -285,6 +287,21 @@
         <filter class="solr.SynonymFilterFactory" synonyms="lang/synonyms_fr.txt" ignoreCase="true" expand="true"/>
         <filter class="solr.ICUFoldingFilterFactory"/>
         <filter class="solr.SnowballPorterFilterFactory" language="French" protected="lang/protwords_fr.txt"/>
+        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <!-- Lan unstem -->
+    <fieldType name="textunstem" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_fr.txt" format="snowball" enablePositionIncrements="true" />
+        <filter class="solr.ICUFoldingFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_fr.txt" format="snowball" enablePositionIncrements="true" />
+        <filter class="solr.ICUFoldingFilterFactory"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
@@ -314,7 +331,9 @@
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/contractions_fr.txt"/>
         <filter class="solr.ICUFoldingFilterFactory"/>
+        <!-- Lan 07.11.2016
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+        -->
       </analyzer>
       <analyzer type="query">
         <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -631,6 +650,7 @@
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
    <field name="search_text" type="text" indexed="true" stored="false" multiValued="true"/>
+   <field name="search_unstem" type="textunstem" indexed="true" stored="false" multiValued="true"/>
 
 
    <field name="fulltext" type="text" indexed="true" stored="true" multiValued="true"/>
@@ -802,6 +822,7 @@
 
    <!-- copyField source="*" dest="search_text"/ -->
    <copyField source="catched_*" dest="search_text"/>
+   <copyField source="catched_*" dest="search_unstem"/>
    <copyField source="handle" dest="search_text"/>
    <copyField source="search.uniqueid" dest="search_text"/>
 

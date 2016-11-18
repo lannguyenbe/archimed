@@ -47,6 +47,8 @@ public class SearchResource extends Resource {
     	if (params == null) { params = new SearchParameters(); }
 		params.supersedeBy(uriParameters, defaults);
 		
+        params.setHttpRequest(request); // for SolrLogger purpose
+		
     	return getItemsSearchResponse(params);
     	
 
@@ -79,6 +81,8 @@ public class SearchResource extends Resource {
     	MultivaluedMap<String, String> uriParameters = info.getQueryParameters(); // uriParameters may be empty but is not null
     	    	    	
     	SearchParameters params = new SearchParameters().supersedeBy(uriParameters, defaults);
+    	
+        params.setHttpRequest(request); // for SolrLogger purpose
 		
     	return getItemsSearchResponse(params);
     }
@@ -96,6 +100,8 @@ public class SearchResource extends Resource {
     	
     	if (params == null) { params = new SearchParameters(); }
 		params.supersedeBy(uriParameters);
+		
+        params.setHttpRequest(request); // for SolrLogger purpose
 		
     	return getCollectionsSearchResponse(params);
     }
@@ -117,6 +123,8 @@ public class SearchResource extends Resource {
     	
     	SearchParameters params = new SearchParameters().supersedeBy(uriParameters);
 		
+        params.setHttpRequest(request); // for SolrLogger purpose
+		
     	return getCollectionsSearchResponse(params);
     }
 
@@ -133,6 +141,8 @@ public class SearchResource extends Resource {
     	
     	if (params == null) { params = new SearchParameters(); }
 		params.supersedeBy(uriParameters);
+		
+        params.setHttpRequest(request); // for SolrLogger purpose
 		
     	return getSeriesSearchResponse(params);
     }
@@ -154,6 +164,8 @@ public class SearchResource extends Resource {
     	
     	SearchParameters params = new SearchParameters().supersedeBy(uriParameters);
 		
+        params.setHttpRequest(request); // for SolrLogger purpose
+		
     	return getSeriesSearchResponse(params);
     }
     
@@ -170,6 +182,8 @@ public class SearchResource extends Resource {
     	
     	if (params == null) { params = new SearchParameters(); }
 		params.supersedeBy(uriParameters);
+		
+        params.setHttpRequest(request); // for SolrLogger purpose
 		
     	return getCollectionsGroupResponse(params);
     }
@@ -191,6 +205,8 @@ public class SearchResource extends Resource {
     	
     	SearchParameters params = new SearchParameters().supersedeBy(uriParameters);
 		
+        params.setHttpRequest(request); // for SolrLogger purpose
+		
     	return getCollectionsGroupResponse(params);
     }
 
@@ -208,6 +224,8 @@ public class SearchResource extends Resource {
     	
     	if (params == null) { params = new SearchParameters(); }
 		params.supersedeBy(uriParameters);
+		
+        params.setHttpRequest(request); // for SolrLogger purpose
 		
     	return getSeriesGroupResponse(params);
     }
@@ -230,6 +248,8 @@ public class SearchResource extends Resource {
     	
     	SearchParameters params = new SearchParameters().supersedeBy(uriParameters);
 		
+        params.setHttpRequest(request); // for SolrLogger purpose
+		
     	return getSeriesGroupResponse(params);
     }
 
@@ -250,14 +270,17 @@ public class SearchResource extends Resource {
         try {        	
             context = new org.dspace.core.Context();
             context.getDBConnection();
-                        
-			// expand the results if there is a query
+
+            // expand the results if there is a query
             if (qterms != null && qterms.length() > 0) {
             	expand += ",results";
             	if (isFacet) { expand += ",facets"; }
             }
             queryResults = getQueryResult(org.dspace.core.Constants.ITEM, context, searchRequest);
             response = new SequencesSearchResponse(queryResults, expand, context);
+ 
+            /* Lan 18.11.2016 : SolrLogger */
+            writeStats(params, context);         
 
             context.complete();
 
@@ -297,6 +320,9 @@ public class SearchResource extends Resource {
             queryResults = getQueryResult(org.dspace.core.Constants.COLLECTION, context, searchRequest);
             response = new EpisodesSearchResponse(queryResults, expand, context);
             
+            /* Lan 18.11.2016 : SolrLogger */
+            writeStats(params, context);         
+
             context.complete();
 
         } catch (Exception e) {
@@ -335,6 +361,9 @@ public class SearchResource extends Resource {
             queryResults = getGroupResult(org.dspace.core.Constants.COLLECTION, context, searchRequest);
             response = new EpisodesSearchResponse(queryResults, expand, context);
             
+            /* Lan 18.11.2016 : SolrLogger */
+            writeStats(params, context);         
+
             context.complete();
 
         } catch (Exception e) {
@@ -373,6 +402,9 @@ public class SearchResource extends Resource {
 	        queryResults = getQueryResult(org.dspace.core.Constants.COMMUNITY, context, searchRequest);
 	        response = new SeriesSearchResponse(queryResults, expand, context);
 
+            /* Lan 18.11.2016 : SolrLogger */
+            writeStats(params, context);         
+
             context.complete();
 
         } catch (Exception e) {
@@ -410,6 +442,9 @@ public class SearchResource extends Resource {
             queryResults = getGroupResult(org.dspace.core.Constants.COMMUNITY, context, searchRequest);
 	        response = new SeriesSearchResponse(queryResults, expand, context);
             
+            /* Lan 18.11.2016 : SolrLogger */
+            writeStats(params, context);         
+
             context.complete();
 
         } catch (Exception e) {

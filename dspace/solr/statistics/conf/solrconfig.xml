@@ -380,7 +380,8 @@
       -->
 
      <autoSoftCommit> 
-       <maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime> 
+       <!-- maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime --> 
+       <maxTime>20000</maxTime> <!--Default commit every 20 sec--> 
      </autoSoftCommit>
 
     <!-- Update Related Event Listeners

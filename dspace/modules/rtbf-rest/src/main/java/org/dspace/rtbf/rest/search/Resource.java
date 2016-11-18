@@ -9,6 +9,7 @@ package org.dspace.rtbf.rest.search;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,14 +21,11 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.dspace.content.DSpaceObject;
+import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.discovery.DiscoverFacetField;
@@ -41,10 +39,11 @@ import org.dspace.discovery.configuration.DiscoveryConfigurationParameters;
 import org.dspace.discovery.configuration.DiscoveryHitHighlightFieldConfiguration;
 import org.dspace.handle.HandleManager;
 import org.dspace.rtbf.rest.common.SimpleNode;
-import org.dspace.rtbf.rest.lov.LOVParameters;
 import org.dspace.rtbf.rest.util.RsConfigurationManager;
 import org.dspace.rtbf.rest.util.RsDiscoveryConfiguration;
 import org.dspace.sort.OrderFormat;
+import org.dspace.usage.UsageEvent;
+import org.dspace.usage.UsageSearchEvent;
 import org.dspace.utils.DSpace;
 
 /**
@@ -56,6 +55,48 @@ public abstract class Resource
 
     private static Logger log = Logger.getLogger(Resource.class);
     
+    private static final boolean writeStatistics;
+    static
+    {
+        writeStatistics = ConfigurationManager.getBooleanProperty("rtbf-rest", "stats", false);
+    }
+
+    protected void writeStats(
+    		SearchParameters params, Context context)
+    {
+        if (!writeStatistics)
+        {
+            return;
+        }
+
+        HttpServletRequest request  = params.getHttpRequest();
+   	
+    	List<String> queries = new ArrayList<String>();
+    	if (params.getQuery() != null) {
+            queries.add(params.getQuery());
+    	}
+    	
+    	queries.addAll(Arrays.asList(getFilterQueries(context, params)));
+
+        UsageSearchEvent searchEvent = new UsageSearchEvent(
+                UsageEvent.Action.SEARCH,
+                request,
+                context,
+                null, queries, /* scope */ null);
+        
+
+        searchEvent.setRpp(params.getLimit());
+        searchEvent.setSortBy(params.getSortBy());
+        searchEvent.setSortOrder(params.getOrder());
+        searchEvent.setPage(params.getOffset());
+        
+        //Fire our event
+        new DSpace().getEventService().fireEvent(searchEvent);
+
+        log.debug("fired event");
+    }
+    
+
     /**
      * Process exception, print message to logger error stream and abort DSpace
      * context.

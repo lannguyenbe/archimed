@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -47,6 +48,16 @@ public class SearchParameters implements Request {
 	private String expand;
 	
 	private List<Map<String, String>> filters = new ArrayList<Map<String, String>> ();
+	
+	private HttpServletRequest httpRequest;
+
+	public HttpServletRequest getHttpRequest() {
+		return httpRequest;
+	}
+
+	public void setHttpRequest(HttpServletRequest httpRequest) {
+		this.httpRequest = httpRequest;
+	}
 
 	public String getScope() {
 		if (scope != null) {

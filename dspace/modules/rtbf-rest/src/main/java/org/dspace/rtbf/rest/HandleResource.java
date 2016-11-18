@@ -9,12 +9,18 @@ package org.dspace.rtbf.rest;
 
 import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeManager;
+import org.dspace.content.DSpaceObject;
+import org.dspace.core.ConfigurationManager;
 import org.dspace.handle.HandleManager;
 import org.dspace.rtbf.rest.common.Constants;
 import org.dspace.rtbf.rest.common.RTBObject;
 import org.dspace.rtbf.rest.common.Episode;
 import org.dspace.rtbf.rest.common.Sequence;
 import org.dspace.rtbf.rest.common.Serie;
+import org.dspace.rtbf.rest.search.SearchParameters;
+import org.dspace.usage.UsageEvent;
+import org.dspace.usage.UsageSearchEvent;
+import org.dspace.utils.DSpace;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -25,6 +31,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,7 +74,10 @@ public class HandleResource {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
             log.info("DSO Lookup by handle: [" + prefix + "] / [" + suffix + "] got result of: " + dso.getTypeText() + "_" + dso.getID());
-
+            
+            // Lan 18.10.2016 : log to statistics index
+            writeStats(dso, request, context);
+            
             switch(dso.getType()) {
             case Constants.COMMUNITY:
             	return new Serie(viewType, (org.dspace.content.Community) dso, expand+","+Constants.SERIE_EXPAND_OPTIONS, context);
@@ -112,6 +122,10 @@ public class HandleResource {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
             log.info("DSO Lookup by handle: [" + prefix + "] / [" + suffix + "] / [" + owningHandle + "] got result of: " + dso.getTypeText() + "-" + dso.getID());
+            
+            // Lan 18.10.2016 : log to statistics index
+            writeStats(dso, request, context);
+            
             org.dspace.content.DSpaceObject owning_dso = HandleManager.resolveToObject(context, prefix + "/" + owningHandle);
 
             switch(dso.getType()) {
@@ -202,5 +216,27 @@ public class HandleResource {
     		throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
     	}
     }
+    
+    private static final boolean writeStatistics;
+    static
+    {
+        writeStatistics = ConfigurationManager.getBooleanProperty("rtbf-rest", "stats", false);
+    }
+
+    protected void writeStats(DSpaceObject dspaceObject,
+    		HttpServletRequest request, org.dspace.core.Context context)
+    {
+        if (!writeStatistics)
+        {
+            return;
+        }
+        
+        //Fire our event
+        new DSpace().getEventService().fireEvent(new UsageEvent(UsageEvent.Action.VIEW, request, context, dspaceObject));
+
+        log.debug("fired event");
+    }
+    
+    
 
 }

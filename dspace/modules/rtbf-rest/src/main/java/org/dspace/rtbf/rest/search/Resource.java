@@ -383,6 +383,19 @@ public abstract class Resource
     		query.addProperty("expand", "true");
     	}
 
+    	// Spell checking
+    	/* Lan 5.12.2016 : Solr bug : spellcheck is not working simultanously with collapse;
+    	 * spellcheck while collapse enabled does not return correct number of collations (none or
+    	 * less then no collapse)
+    	 */
+    	// TODO Solr bug
+    	if (searchRequest.isSpellCheck()) {
+            query.setQuery(toPhraseQuery(searchRequest.getQuery()));
+            // set qs to alow transposition (permutation) of tokens
+    		query.addProperty("qs", String.valueOf(countToken(searchRequest.getQuery())));    		
+    		query.setSpellCheck(true);
+    	}
+
     	// Exact term match
     	if (searchRequest.isExactTerm()) {
     		query.addProperty("qf", "search_unstem");
@@ -846,7 +859,22 @@ public abstract class Resource
 		
 	}
 	
-	
+	// Wrap query with double quote if it was not 
+	private String toPhraseQuery(String q) {
+		if (q.indexOf("\"") == -1) {
+			return ("\""+q+"\"");
+		}
+		return q;
+	}
+
+	// Count of tokens
+	private int countToken(String q) {
+		Pattern p = Pattern.compile("\\s+");
+		String[] tokens = p.split(q);
+		
+		return (tokens.length < 2) ? 0 : tokens.length;
+	}
+
 
 }
 

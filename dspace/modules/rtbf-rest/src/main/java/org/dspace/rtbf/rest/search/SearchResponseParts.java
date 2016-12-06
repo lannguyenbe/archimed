@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.WebApplicationException;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -52,6 +54,7 @@ public class SearchResponseParts {
 
 	}
 
+	
 	public static class Result {
 		
 	    private List<org.dspace.rtbf.rest.common.RTBObject> lst;
@@ -356,6 +359,27 @@ public class SearchResponseParts {
 		}
 		
 	}
+	
+
+	public static class Collations {
+
+	    private List<String> collationEntries;
+	    
+ 		public Collations(DiscoverResult queryResults) {
+ 			this.setCollationEntries(queryResults.getCollations()); 			
+ 		}
+
+		public List<String> getCollationEntries() {
+			return collationEntries;
+		}
+
+		public void setCollationEntries(List<String> entries) {
+			this.collationEntries = entries;
+		}
+		
+	}
+	
+
 
 		
 }

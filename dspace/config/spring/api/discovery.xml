@@ -26,7 +26,9 @@
 
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
 
+    <!-- Lan 25.11.2016 : comment the following line to disable the creation of a_spell field in search index
     <bean id="SolrServiceSpellIndexingPlugin" class="org.dspace.discovery.SolrServiceSpellIndexingPlugin" scope="prototype"/>
+    -->
 
     <!-- Lan 04.11.2014 : comment 2 following lines to disable "access rights awareness"
          anonymous can access anything, no need to login

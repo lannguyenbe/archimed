@@ -842,8 +842,19 @@
        <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
         if there are 4-9 clauses all but 25% are required, 
         and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
-     </lst>
+       <!-- str name="mm">3&lt;-25% 9&lt;-3</str -->
+       <str name="mm">5&lt;-66% 9&lt;-5</str>
+       
+       <!-- spell checking defaults -->
+       <str name="spellcheck.dictionary">contributorSpell</str>
+       <str name="spellcheck.alternativeTermCount">5</str>
+       <str name="spellcheck.maxResultsForSuggest">100</str>       
+       <str name="spellcheck.count">5</str>        
+       <str name="spellcheck.collate">true</str>
+       <str name="spellcheck.maxCollationTries">25</str>
+       <str name="spellcheck.maxCollations">5</str>        
+       <str name="spellcheck.collateParam.qf">search_unstem</str>
+    </lst>
       <arr name="last-components">
           <str>spellcheck</str>
       </arr>
@@ -869,13 +880,11 @@
        <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
         if there are 4-9 clauses all but 25% are required, 
         and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
+       <!-- str name="mm">3&lt;-25% 9&lt;-3</str -->
+       <str name="mm">5&lt;-66% 9&lt;-5</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
      </lst>
-     <arr name="last-components">
-        <str>spellcheck</str>
-     </arr>
      <lst name="appends">
          <!-- Lan 09.02.2015 : Impose this default filter query to collapse multiple
               sequences to one : 
@@ -890,6 +899,7 @@
 
      </lst>
     </requestHandler>
+
 
     <!-- Lan 09.11.2016 : change boost, add qf -->
     <requestHandler name="/select" class="solr.SearchHandler">
@@ -910,9 +920,23 @@
        <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
         if there are 4-9 clauses all but 25% are required, 
         and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
+       <!-- str name="mm">3&lt;-25% 9&lt;-3</str -->
+       <str name="mm">5&lt;-66% 9&lt;-5</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
+
+       <!-- spell checking defaults -->
+       <str name="spellcheck.dictionary">contributorSpell</str>
+       <str name="spellcheck.alternativeTermCount">5</str>
+       <str name="spellcheck.maxResultsForSuggest">100</str>       
+       <str name="spellcheck.count">5</str>        
+       <str name="spellcheck.collate">true</str>
+       <!-- Lan 29.11.2016 : Solr bug : collapse is not working with spellcheck.maxCollationTries > 0 -->
+       <!-- with the consequence that there is no guaranty that there are documents that match the collation -->
+       <!-- str name="spellcheck.maxCollationTries">25</str-->
+       <str name="spellcheck.maxCollationTries">0</str>
+       <str name="spellcheck.maxCollations">5</str>        
+       <str name="spellcheck.collateParam.qf">search_unstem</str>
      </lst>
      <arr name="last-components">
         <str>spellcheck</str>
@@ -987,9 +1011,23 @@
        <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
         if there are 4-9 clauses all but 25% are required, 
         and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
+       <!-- str name="mm">3&lt;-25% 9&lt;-3</str -->
+       <str name="mm">5&lt;-66% 9&lt;-5</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
+
+       <!-- spell checking defaults -->
+       <!-- Lan 05.12.2016 : Solr bug : collapse is not working with spellcheck -->
+       <!-- if fq={!query v=$collapseFQ} is present, no collation is returned  -->
+       <str name="spellcheck.dictionary">contributorSpell</str>
+       <str name="spellcheck.alternativeTermCount">5</str>
+       <str name="spellcheck.maxResultsForSuggest">100</str>       
+       <str name="spellcheck.count">5</str>        
+       <str name="spellcheck.collate">true</str>
+       <str name="spellcheck.maxCollationTries">25</str>
+       <str name="spellcheck.maxCollations">5</str>        
+       <str name="spellcheck.collateParam.qf">search_unstem</str>
+
        <!-- Lan 13.09.2016 : n'est plus utilisé dans rtbf-rest.xml depuis réindexation avec les fields ispartof_titre et is_partof_program_title pour tous les documents -->
        <!-- Lan 08.03.2016 : resolve filter for Serie Title and Date Diffusion using subquery -->
        <!-- To filter on Serie Title or Date Diffusion : fq={!query v=$serieTitleFQ}; 2 raw query params: serieTitleQ=dc.title:BULLETIN&dateDiffusionQ=date_diffusion_keyword:2015  -->
@@ -1008,6 +1046,10 @@
        <!-- str name="expand">true</str-->
        <str name="expand.rows">100</str>
      </lst>
+     <arr name="last-components">
+        <!-- Bug solr : spellcheck.maxCollationTries > 0 when spellcheck.collate=true does not work with field collapsing -->
+        <str>spellcheck</str>
+     </arr>
      <lst name="appends">
        <!-- exclude sequences with date_issued 1/1/1900 -->
        <!-- str name="fq">!discoverable:"false"</str -->
@@ -1032,10 +1074,24 @@
        <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
         if there are 4-9 clauses all but 25% are required, 
         and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
+       <!-- str name="mm">3&lt;-25% 9&lt;-3</str -->
+       <str name="mm">5&lt;-66% 9&lt;-5</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
+
+       <!-- spell checking defaults -->
+       <str name="spellcheck.dictionary">contributorSpell</str>
+       <str name="spellcheck.alternativeTermCount">5</str>
+       <str name="spellcheck.maxResultsForSuggest">100</str>       
+       <str name="spellcheck.count">5</str>        
+       <str name="spellcheck.collate">true</str>
+       <str name="spellcheck.maxCollationTries">25</str>
+       <str name="spellcheck.maxCollations">5</str>        
+       <str name="spellcheck.collateParam.qf">search_unstem</str>
      </lst>     
+     <arr name="last-components">
+        <str>spellcheck</str>
+     </arr>
      <lst name="appends">
        <!-- restrict to [2 TO 3] otherwise might appear the group of null value which contains a doc of resourcetype 4 if there is a match on a serie document -->
        <str name="fq">search.resourcetype:[2 TO 3]</str>
@@ -1065,10 +1121,24 @@
        <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
         if there are 4-9 clauses all but 25% are required, 
         and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
+       <!-- str name="mm">3&lt;-25% 9&lt;-3</str -->
+       <str name="mm">5&lt;-66% 9&lt;-5</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
+
+       <!-- spell checking defaults -->
+       <str name="spellcheck.dictionary">contributorSpell</str>
+       <str name="spellcheck.alternativeTermCount">5</str>
+       <str name="spellcheck.maxResultsForSuggest">100</str>       
+       <str name="spellcheck.count">5</str>        
+       <str name="spellcheck.collate">true</str>
+       <str name="spellcheck.maxCollationTries">25</str>
+       <str name="spellcheck.maxCollations">5</str>        
+       <str name="spellcheck.collateParam.qf">search_unstem</str>
      </lst>
+     <arr name="last-components">
+        <str>spellcheck</str>
+     </arr>
      <lst name="appends">
        <!-- restrict to [2 TO 4] otherwise might appear the group of null value which contains a doc of other resourcetype if there is a match on a document -->
        <str name="fq">search.resourcetype:[2 TO 4]</str>
@@ -1098,7 +1168,8 @@
        <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
         if there are 4-9 clauses all but 25% are required, 
         and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
+       <!-- str name="mm">3&lt;-25% 9&lt;-3</str -->
+       <str name="mm">5&lt;-66% 9&lt;-5</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
      </lst>
@@ -1130,7 +1201,8 @@
        <!-- 3<-25% 9<-3 : if there are 1 or 2 or 3 clauses all are required, 
         if there are 4-9 clauses all but 25% are required, 
         and if there are more than 9 clauses, all but three are required -->
-       <str name="mm">3&lt;-25% 9&lt;-3</str>
+       <!-- str name="mm">3&lt;-25% 9&lt;-3</str -->
+       <str name="mm">5&lt;-66% 9&lt;-5</str>
        <str name="pf">search_text^50</str>
        <str name="ps">5</str>
      </lst>
@@ -1280,7 +1352,7 @@
        <str name="spellcheck.extendedResults">false</str>       
        <str name="spellcheck.count">5</str>
        <str name="spellcheck.alternativeTermCount">2</str>
-       <str name="spellcheck.maxResultsForSuggest">5</str>       
+       <str name="spellcheck.maxResultsForSuggest">100</str>       
        <str name="spellcheck.collate">true</str>
        <str name="spellcheck.collateExtendedResults">true</str>  
        <str name="spellcheck.maxCollationTries">5</str>
@@ -1539,8 +1611,43 @@
       <str>myLastComponentName</str>
     </arr>
   -->
-   <!-- Lan 05.01.2015 : rename /spellcheck to /spellcheck_index -->
-   <!-- The spell check component can return a list of alternative spelling
+
+  <!-- Lan 29.11.2016 : Suggest -->
+ <!-- comment out because cause reload problem as directory suggester_dir is buildOnStartup event it is stated false -->
+ <!--
+  <searchComponent name="suggest" class="solr.SuggestComponent">
+  	<lst name="suggester">
+      <str name="name">contributorSuggester</str>
+      <!- - str name="lookupImpl">AnalyzingInfixLookupFactory</str - -> <!- - with duplicate - ->
+      <!- - str name="lookupImpl">BlendedInfixLookupFactory</str - -> <!- - without duplicate - ->
+      <str name="lookupImpl">BlendedInfixLookupFactory</str>
+      <str name="indexPath">suggester_dir</str>
+      <str name="suggestAnalyzerFieldType">text_edge</str>
+      <str name="field">author_keyword</str>
+      <!- - str name="blenderType">position_linear</str - -!>
+      
+      
+      <str name="dictionaryImpl">DocumentDictionaryFactory</str>
+      <str name="weightField">dummy_f</str>
+      <str name="buildOnStartup">false</str>
+      <str name="buildOnCommit">false</str>
+    </lst>
+  </searchComponent>
+
+  <requestHandler name="/suggest" class="solr.SearchHandler" startup="lazy">
+    <lst name="defaults">
+      <str name="suggest">true</str>
+      <str name="suggest.count">10</str>
+      <str name="suggest.dictionary">contributorSuggester</str>
+    </lst>
+    <arr name="components">
+      <str>suggest</str>
+    </arr>
+  </requestHandler>
+-->  
+
+  <!-- Lan 05.01.2015 : rename /spellcheck to /spellcheck_index -->
+  <!-- The spell check component can return a list of alternative spelling
   suggestions.  -->
   <!-- searchComponent name="spellcheck" class="solr.SpellCheckComponent"-->
   <searchComponent name="spellcheck_index" class="solr.SpellCheckComponent">
@@ -1590,20 +1697,32 @@
   WANT FOR YOUR PRODUCTION SYSTEM!
   #############################################################################
   -->
-  <requestHandler name="/spell" class="solr.SearchHandler" lazy="true">
+  <requestHandler name="/contributorSpell" class="solr.SearchHandler" lazy="true">
     <lst name="defaults">
-      <!-- omp = Only More Popular -->
-      <str name="spellcheck.onlyMorePopular">false</str>
-      <!-- exr = Extended Results -->
-      <str name="spellcheck.extendedResults">false</str>
-      <!--  The number of suggestions to return -->
-      <str name="spellcheck.count">1</str>
+      <str name="echoParams">explicit</str>
+      <str name="defType">edismax</str>
+      <str name="df">search_unstem</str>
+      <!-- str name="qs">3</str-->
+      
+      <!-- Spell checking defaults -->
+      <str name="spellcheck.dictionary">contributorSpell</str>
+      <str name="spellcheck">on</str>
+      <str name="spellcheck.extendedResults">false</str>       
+      <str name="spellcheck.count">5</str>
+      <str name="spellcheck.alternativeTermCount">5</str>
+      <str name="spellcheck.maxResultsForSuggest">100</str>       
+      <str name="spellcheck.collate">true</str>
+      <str name="spellcheck.collateExtendedResults">false</str>
+      <str name="spellcheck.maxCollationTries">25</str>
+      <str name="spellcheck.maxCollations">5</str>        
+      <str name="spellcheck.collateParam.qf">search_unstem</str>
+      <!-- str name="spellcheck.collateParam.qs">3</str -->
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
     </arr>
   </requestHandler>
-
+  
   <searchComponent name="tvComponent" class="org.apache.solr.handler.component.TermVectorComponent"/>
   <!-- A Req Handler for working with the tvComponent.  This is purely as an example.
   You will likely want to add the component to your already specified request handlers. -->
@@ -1669,15 +1788,13 @@
   
   <!-- Lan 11.09.2015 : spellcheck on author name -->
   <searchComponent name="spellcheck" class="solr.SpellCheckComponent">
-
-    <!-- str name="queryAnalyzerFieldType">text_general</str-->
-    <str name="queryAnalyzerFieldType">textgen</str>
-
+    <str name="queryAnalyzerFieldType">text_contain</str>
+    
     <!-- a spellchecker built from a field of the main index -->
     <lst name="spellchecker">
-      <str name="name">default</str>
-      <!-- str name="field">search_text</str-->
-      <str name="field">author_keyword</str>
+      <str name="name">contributorSpell</str>
+      <!-- str name="field">a_spell</str-->
+      <str name="field">contributor_contain</str>
       <str name="classname">solr.DirectSolrSpellChecker</str>
       <!-- the spellcheck distance measure used, the default is the internal levenshtein -->
       <str name="distanceMeasure">internal</str>
@@ -1693,9 +1810,9 @@
       <int name="minQueryLength">4</int>
       <!-- maximum threshold of documents a query term can appear to be considered for correction -->
       <float name="maxQueryFrequency">0.01</float>
-      <!-- uncomment this to require suggestions to occur in 1% of the documents
-      	<float name="thresholdTokenFrequency">.01</float>
-      -->
+      <!-- uncomment this to require suggestions to occur in 1% of the documents -->
+      <!-- Lan 02.12.2016 = .00001 is order of 100 docs on 4.000.000 of total docs -->
+      <float name="thresholdTokenFrequency">.00001</float>
     </lst>
     
   </searchComponent>
@@ -1827,7 +1944,9 @@
 
        http://wiki.apache.org/solr/TermVectorComponent
     -->
+  <!-- Lan 21.10.2016 comment this requestHandler
   <searchComponent name="tvComponent" class="solr.TermVectorComponent"/>
+  -->
 
   <!-- A request handler for demonstrating the term vector component
 

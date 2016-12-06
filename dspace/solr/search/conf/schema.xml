@@ -652,7 +652,6 @@
    <field name="search_text" type="text" indexed="true" stored="false" multiValued="true"/>
    <field name="search_unstem" type="textunstem" indexed="true" stored="false" multiValued="true"/>
 
-
    <field name="fulltext" type="text" indexed="true" stored="true" multiValued="true"/>
 
     <!-- Internal DSpace Object ID -->
@@ -894,6 +893,9 @@
     </fieldType>
        
 <!-- Lan ************************************************************************************ -->
+
+<!-- Lan 29.11.2016 : suggestComponent -->
+   <field name="dummy_f" type="float" indexed="true" stored="true" />
 
 
 </schema>

@@ -45,6 +45,9 @@ public class SearchParameters implements Request {
 	private boolean hasCollapseSet = false;
 	@JsonProperty("exact_term")
 	private boolean isExactTerm = false;
+	@JsonProperty("spellcheck")
+	private boolean isSpellCheck = false;
+
 	private String expand;
 	
 	private List<Map<String, String>> filters = new ArrayList<Map<String, String>> ();
@@ -236,6 +239,7 @@ public class SearchParameters implements Request {
 		if ((str = mvm.getFirst("snippet")) != null && str.length() > 0) { this.isSnippet = Boolean.parseBoolean(str);}
 		if ((str = mvm.getFirst("collapse")) != null && str.length() > 0) { this.isCollapse = Boolean.parseBoolean(str);}
 		if ((str = mvm.getFirst("exact_term")) != null && str.length() > 0) { this.isExactTerm = Boolean.parseBoolean(str);}
+		if ((str = mvm.getFirst("spellcheck")) != null && str.length() > 0) { this.isSpellCheck = Boolean.parseBoolean(str);}
 		if ((str = mvm.getFirst("expand")) != null && str.length() > 0) { this.expand = str;}
 		
 
@@ -380,5 +384,20 @@ public class SearchParameters implements Request {
 	public void setFacetPage(int facetPage) {
 		this.facetPage = facetPage;
 	}
+
+	@Override
+	public boolean isSpellCheck() {
+		return isSpellCheck;
+	}
+
+	public void setSpellCheck(boolean isSpellCheck) {
+		this.isSpellCheck = isSpellCheck;
+	}
+
+	public boolean getIsSpellCheck() {
+		return isSpellCheck();
+	}
+
+
 
 }

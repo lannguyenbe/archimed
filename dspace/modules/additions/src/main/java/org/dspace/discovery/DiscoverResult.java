@@ -32,6 +32,7 @@ public class DiscoverResult {
     private Map<String, List<SearchDocument>> expandDocuments;
     private Map<String, GroupFilter> groupFilters;
     private String spellCheckQuery;
+    private List<String> collations;
 
 
     public DiscoverResult() {
@@ -41,6 +42,7 @@ public class DiscoverResult {
         highlightedResults = new HashMap<String, DSpaceObjectHighlightResult>();
         expandDocuments = new LinkedHashMap<String, List<SearchDocument>>();
         groupFilters = new HashMap<String, GroupFilter>();
+        collations = new ArrayList<String>();
     }
 
 
@@ -271,7 +273,16 @@ public class DiscoverResult {
         }
     }
 
-    /**
+    public List<String> getCollations() {
+		return collations;
+	}
+
+
+	public void setCollations(List<String> collations) {
+		this.collations = collations;
+	}
+
+	/**
      * This class contains values from the fields searched for in DiscoveryQuery.java
      */
     public static final class SearchDocument{

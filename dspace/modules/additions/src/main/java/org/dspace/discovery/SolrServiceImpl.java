@@ -59,6 +59,7 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.Group;
 import org.apache.solr.client.solrj.response.GroupCommand;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.SpellCheckResponse.Collation;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -2969,21 +2970,20 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         {
             List<String> values = discoveryQuery.getProperties().get(property);
             
-            // Lan 23.09.2016 : process "collapse.field" property especially 
-            // use "collapse_field" to choose another RequestHandler than /select which is the default
-            if (property.equals("collapse.field")) {
-            	solrQuery.setRequestHandler(values.get(0));
-            } else {
+            switch (property) {
+			case "qt":
+	            // Lan 15.12.2015 : process "qt" property especially; set by rtbf-rest
+	            // use "qt" to choose another RequestHandler than /select
+			case "collapse.field":
+	            // Lan 23.09.2016 : process "collapse.field" property especially; set by xmlui
+	            // use "collapse_field" to choose another RequestHandler than /select which is the default
+            	solrQuery.setRequestHandler(values.get(0));				
+				break;
+			default:
                 solrQuery.add(property, values.toArray(new String[values.size()]));
-            }
-
-            // Lan 15.12.2015 : process "qt" property especially 
-            // use "qt" to choose another RequestHandler than /select
-            if (property.equals("qt")) {
-            	solrQuery.setRequestHandler(values.get(0));
-            } else {
-                solrQuery.add(property, values.toArray(new String[values.size()]));
-            }
+				break;
+			}
+            
         }
 
         List<DiscoverFacetField> facetFields = discoveryQuery.getFacetFields();
@@ -3284,6 +3284,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                 }
             }
 
+            // Get the first collation suggested
             if(solrQueryResponse.getSpellCheckResponse() != null)
             {
                 String recommendedQuery = solrQueryResponse.getSpellCheckResponse().getCollatedResult();
@@ -3292,6 +3293,22 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                     result.setSpellCheckQuery(recommendedQuery);
                 }
             }
+            
+            // Get all collations suggested
+            if(solrQueryResponse.getSpellCheckResponse() != null)
+            {
+                if (solrQueryResponse.getSpellCheckResponse().getCollatedResults() != null) {
+	                List<String> recommendedQueries = new ArrayList<String>();
+	                for (Collation collation : solrQueryResponse.getSpellCheckResponse().getCollatedResults()) {
+						recommendedQueries.add(collation.getCollationQueryString());
+					}
+	
+	                if (!recommendedQueries.isEmpty()) {
+	                    result.setCollations(recommendedQueries);
+	                }
+                }
+            }
+
         }
 
         return result;
@@ -3428,12 +3445,28 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                 }
             }
 
+            // Get all collations suggested
             if(solrQueryResponse.getSpellCheckResponse() != null)
             {
                 String recommendedQuery = solrQueryResponse.getSpellCheckResponse().getCollatedResult();
                 if(StringUtils.isNotBlank(recommendedQuery))
                 {
                     result.setSpellCheckQuery(recommendedQuery);
+                }
+            }
+
+            // Get all collations suggested
+            if(solrQueryResponse.getSpellCheckResponse() != null)
+            {
+                if (solrQueryResponse.getSpellCheckResponse().getCollatedResults() != null) {
+	                List<String> recommendedQueries = new ArrayList<String>();
+	                for (Collation collation : solrQueryResponse.getSpellCheckResponse().getCollatedResults()) {
+						recommendedQueries.add(collation.getCollationQueryString());
+					}
+	
+	                if (!recommendedQueries.isEmpty()) {
+	                    result.setCollations(recommendedQueries);
+	                }
                 }
             }
         }

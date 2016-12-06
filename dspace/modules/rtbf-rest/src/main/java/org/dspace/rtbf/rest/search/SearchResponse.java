@@ -21,6 +21,8 @@ public class SearchResponse {
     private List<RTBObject> results;
 //    private SearchResponseParts.Result results;
     private SearchResponseParts.FacetCounts facets;
+    private List<String> collations;
+//    private SearchResponseParts.Collations collations;
 	
     private List<String> expand = new ArrayList<String>();
 	
@@ -57,6 +59,10 @@ public class SearchResponse {
         	setFacets(new SearchResponseParts.FacetCounts(queryResults));
         } else {
             this.addExpand("facets");
+        }
+        
+        if (!queryResults.getCollations().isEmpty()) {
+        	setCollations((new SearchResponseParts.Collations(queryResults)).getCollationEntries());
         }
         
 	}
@@ -122,6 +128,14 @@ public class SearchResponse {
 
 	public void setMeta(SearchResponseParts.Meta meta) {
 		this.meta = meta;
+	}
+
+	public List<String> getCollations() {
+		return collations;
+	}
+
+	public void setCollations(List<String> collations) {
+		this.collations = collations;
 	}
 
 }

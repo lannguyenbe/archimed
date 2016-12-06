@@ -62,6 +62,9 @@ public interface Request {
 	public void setIsCollapse(boolean bool);
 	
 	public boolean isExactTerm();
+	
+	public boolean isSpellCheck();
+
 
 
 

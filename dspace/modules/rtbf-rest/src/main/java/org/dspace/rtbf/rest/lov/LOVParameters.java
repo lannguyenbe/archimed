@@ -212,6 +212,12 @@ public class LOVParameters implements org.dspace.rtbf.rest.search.Request{
 		return false;
 	}
 
+	@Override
+	public boolean isSpellCheck() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	
 
 }

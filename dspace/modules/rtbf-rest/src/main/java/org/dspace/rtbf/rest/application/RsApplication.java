@@ -10,6 +10,7 @@ import org.dspace.rtbf.rest.lov.LOVAuthors;
 import org.dspace.rtbf.rest.lov.LOVChannels;
 import org.dspace.rtbf.rest.lov.LOVCodeOrigines;
 import org.dspace.rtbf.rest.lov.LOVEvents;
+import org.dspace.rtbf.rest.lov.LOVQueryQ;
 import org.dspace.rtbf.rest.lov.LOVSerieTitles;
 import org.dspace.rtbf.rest.lov.LOVPlaces;
 import org.dspace.rtbf.rest.lov.LOVProductionTypes;
@@ -49,6 +50,8 @@ public class RsApplication extends Application {
         set.add(LOVRoyaltyCodes.class);
         set.add(LOVEvents.class);
         set.add(LOVChannels.class);
+        // q suggestions are got from statistic index
+        set.add(LOVQueryQ.class);
         return set;
 	}
 

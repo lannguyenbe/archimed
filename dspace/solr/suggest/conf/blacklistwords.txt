@@ -1,0 +1,3 @@
+# Par exemple les gros mots, les mots trop suggestifs ...
+blacklistworda
+blacklistwordb

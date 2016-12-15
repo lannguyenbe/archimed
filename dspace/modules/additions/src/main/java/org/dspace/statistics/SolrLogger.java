@@ -484,6 +484,18 @@ public class SolrLogger
                 solrDoc.addField("query", query);
             }
 
+            // Lan 08.12.2016 : isolate q from fq in queries
+            // based on a quick rule that q does not contains ':'
+            String query_q;
+            if (!queries.isEmpty()) {
+            	query_q = queries.get(0);
+            	if (query_q.contains(":")) { query_q = null; }
+            	if (query_q != null) {
+                    solrDoc.addField("query_q", query_q);
+            	}
+            	
+            }
+
             if(resultObject != null){
                 //We have a search result
                 solrDoc.addField("statistics_type", StatisticsType.SEARCH_RESULT.text());
@@ -902,8 +914,14 @@ public class SolrLogger
 
     public static void query(String query, int max) throws SolrServerException
     {
-        query(query, null, null,0, max, null, null, null, null, null, false);
+        query(query, null, null,0, max, null, null, null, null, null, false, null);
     }
+
+    public static QueryResponse query(String query, int max, String requestHandler) throws SolrServerException
+    {
+        return query(query, null, null, max , max, null, null, null, null, null, false, requestHandler);
+    }
+
 
     /**
      * Query used to get values grouped by the given facet field.
@@ -1106,6 +1124,19 @@ public class SolrLogger
             String dateEnd, List<String> facetQueries, String sort, boolean ascending)
             throws SolrServerException
     {
+    	return query(query, filterQuery,
+                facetField, rows, max, dateType, dateStart,
+                dateEnd, facetQueries, sort, ascending, null);
+    }
+
+
+    // Lan 12.12.2016 : add handler
+    public static QueryResponse query(String query, String filterQuery,
+            String facetField, int rows, int max, String dateType, String dateStart,
+            String dateEnd, List<String> facetQueries, String sort, boolean ascending
+            , String handler)
+            throws SolrServerException
+    {
         if (solr == null)
         {
             return null;
@@ -1115,6 +1146,11 @@ public class SolrLogger
         SolrQuery solrQuery = new SolrQuery().setRows(rows).setQuery(query)
                 .setFacetMinCount(1);
         addAdditionalSolrYearCores(solrQuery);
+        
+        // Lan 12.12.2016 : set request handler
+        if (handler != null) {
+        	solrQuery.setRequestHandler(handler);
+        }
 
         // Set the date facet if present
         if (dateType != null)

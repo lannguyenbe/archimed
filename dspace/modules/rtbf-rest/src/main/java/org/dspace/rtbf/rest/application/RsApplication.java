@@ -10,13 +10,13 @@ import org.dspace.rtbf.rest.lov.LOVAuthors;
 import org.dspace.rtbf.rest.lov.LOVChannels;
 import org.dspace.rtbf.rest.lov.LOVCodeOrigines;
 import org.dspace.rtbf.rest.lov.LOVEvents;
-import org.dspace.rtbf.rest.lov.LOVQueryQ;
 import org.dspace.rtbf.rest.lov.LOVSerieTitles;
 import org.dspace.rtbf.rest.lov.LOVPlaces;
 import org.dspace.rtbf.rest.lov.LOVProductionTypes;
 import org.dspace.rtbf.rest.lov.LOVPublishers;
 import org.dspace.rtbf.rest.lov.LOVRoyaltyCodes;
 import org.dspace.rtbf.rest.lov.LOVSubjects;
+import org.dspace.rtbf.rest.lov.LOVSuggestQ;
 
 public class RsApplication extends Application {
 
@@ -50,8 +50,8 @@ public class RsApplication extends Application {
         set.add(LOVRoyaltyCodes.class);
         set.add(LOVEvents.class);
         set.add(LOVChannels.class);
-        // q suggestions are got from statistic index
-        set.add(LOVQueryQ.class);
+        // Lan 20.12.2016 : q suggestions are got from suggest index
+        set.add(LOVSuggestQ.class);
         return set;
 	}
 

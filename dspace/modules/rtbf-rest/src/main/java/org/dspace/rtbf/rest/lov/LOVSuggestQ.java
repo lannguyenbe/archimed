@@ -19,23 +19,24 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.SpellCheckResponse.Collation;
 import org.apache.solr.common.SolrDocument;
 import org.dspace.rtbf.rest.common.Constants;
 import org.dspace.rtbf.rest.common.SimpleNode;
 import org.dspace.rtbf.rest.search.Request;
 import org.dspace.rtbf.rest.search.Resource;
 import org.dspace.sort.OrderFormat;
-import org.dspace.statistics.SolrLogger;
+import org.dspace.suggest.SuggestSearch;
 
 @Path("/")
-public class LOVQueryQ extends Resource {
-	private static Logger log = Logger.getLogger(LOVQueryQ.class);
+public class LOVSuggestQ extends Resource {
+	private static Logger log = Logger.getLogger(LOVSuggestQ.class);
 	
     public static final String FACETFIELD = "query_q";
     public static final SimpleNode.Attribute ELEMENT = SimpleNode.Attribute.KEY;
 
     @GET
-	@Path("queryQ")
+	@Path("suggestQ")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public List<SimpleNode> getQueryQ(
     		@QueryParam("pt") @DefaultValue(Constants.LOV_ALL) String pt
@@ -60,8 +61,8 @@ public class LOVQueryQ extends Resource {
 	
     /**
      * Differ from the others LOV which use "search" index, this 
-     * - do the search on "statistic" index,
-     * - get result from doc, not by facetting 
+     * - do the search on "suggest" index,
+     * - get result from doc, not from facets
      * - need to import statistics.SolrLogger.java, not discovery.SolrServiceImpl
      * 
      * @see org.dspace.rtbf.rest.search.Resource#getACNodes(java.lang.String, org.dspace.rtbf.rest.common.SimpleNode.Attribute, java.lang.String, org.dspace.rtbf.rest.search.Request, java.lang.String)
@@ -90,30 +91,41 @@ public class LOVQueryQ extends Resource {
             // Remove diacritic + escape all but alphanum
             qterms = OrderFormat.makeSortString(partialTerms, null, OrderFormat.TEXT)
                         .replaceAll("([^\\p{Alnum}\\s])", "\\\\$1");
-            query = "{!q.op=AND}" + field + "_partial:(" + qterms + ")";
 
-            log.debug("Statistics query terms.(qterms=" + qterms + ").");
+            query = qterms;
+            log.debug("Suggest query terms.(qterms=" + qterms + ").");
         }
 		
         QueryResponse solrQueryResponse = null;
         
         try {
-        	solrQueryResponse = SolrLogger.query(query, limit, "/selectQ");
+        	solrQueryResponse = SuggestSearch.query(query, limit, "/selectQ");
 		} catch (SolrServerException e) {
 	        log.error(e.getMessage());
 	        throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
 		}
         
-        if (solrQueryResponse != null && solrQueryResponse.getResults() != null) {
-        	for (SolrDocument doc : solrQueryResponse.getResults()) {
-        		results.add(new SimpleNode().setAttribute(attr, (String) doc.getFieldValue(field)));
+        if (solrQueryResponse != null) {
+        	if (solrQueryResponse.getResults() != null) {
+        		for (SolrDocument doc : solrQueryResponse.getResults()) {
+        			results.add(new SimpleNode().setAttribute(attr, (String) doc.getFieldValue(field)));
+        		}
         	}
-        	return results;
-        }
-                
-        return null;
-    }
-	
 
+        	if (solrQueryResponse.getSpellCheckResponse() != null)
+            {
+                if (solrQueryResponse.getSpellCheckResponse().getCollatedResults() != null) {
+	                for (Collation collation : solrQueryResponse.getSpellCheckResponse().getCollatedResults()) {
+	        			results.add(new SimpleNode().setAttribute(SimpleNode.Attribute.COLLATION, collation.getCollationQueryString()));
+					}
+	
+                }
+            }
+
+            return results;
+        }
+        return null;
+
+    }
 	
 }

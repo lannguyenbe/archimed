@@ -380,8 +380,7 @@
       -->
 
      <autoSoftCommit> 
-       <!-- maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime --> 
-       <maxTime>20000</maxTime> <!--Default commit every 20 sec--> 
+       <maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime> 
      </autoSoftCommit>
 
     <!-- Update Related Event Listeners
@@ -806,11 +805,15 @@
        of SearchComponents (see below) and supports distributed
        queries across multiple shards
     -->
-  <requestHandler name="/selectQ" class="solr.SearchHandler">
+ <requestHandler name="/selectQ" class="solr.SearchHandler">
      <lst name="defaults">
        <str name="echoParams">explicit</str>
        <int name="rows">10</int>
-       <str name="df">query_q_partial</str>
+       <!-- str name="df">query_q_partial</str-->
+       <!-- Lan 19.12.2016 : recherche phonetique donne trop de faux semblant : rechercher sur "dutroux" -->
+       <!-- a tester d'autres algorithmes voir schema.xml -->
+       <!-- str name="qf">query_q^30 query_q_partial^10 phonetic</str-->
+       <!-- str name="qf">query_q^30 query_q_partial^10 phonetic_do</str-->
        <str name="qf">query_q^30 query_q_partial</str>
        <str name="pf">query_q^50</str>
        <!-- Lan 09.12.2016 : boosting by time -->
@@ -818,12 +821,81 @@
        <!-- boost pregen query versus user typed in query -->
 	   <str name="bq">is_pregen:true</str>
        <!-- bf is additive boot : popularity, length of the query -->
-	   <!-- norm(query_q) the shorter is the query, the greater is normField -->
-	   <str name="bf">product(log(sum(query_freq,1)),100)^30 product(log(sum(data_freq,1)),100)^10 norm(query_q)</str>
-       <!-- boost is multiplicative factor : the most recent first -->
-       <str name="boost">recip(ms(NOW/HOUR,time),3.16e-11,1,1)</str>
+	   <str name="bf">product(log(sum(query_freq,1)),100)^30 product(log(sum(data_freq,1)),100) </str>
+       <!-- boost is multiplicative factor : the most recent first, query_freq weight more then data_freq -->
+       <str name="boost">product(recip(ms(NOW/HOUR,time),3.16e-11,1,1),product(sum(1,query_freq),sum(1,log(div(1e+10,sub(1e+10,data_freq))))))</str>
+       <!-- shorter first -->
+       <str name="sort">score desc, query_q_len asc</str>
+
+       <!-- spell checking defaults -->
+       <str name="spellcheck">true</str>
+       <str name="spellcheck.dictionary">contributorSpell</str>
+       <str name="spellcheck.dictionary">placeSpell</str>
+       <str name="spellcheck.alternativeTermCount">5</str>
+       <str name="spellcheck.maxResultsForSuggest">0</str>       
+       <str name="spellcheck.count">5</str>        
+       <str name="spellcheck.collate">true</str>
+       <str name="spellcheck.maxCollationTries">25</str>
+       <str name="spellcheck.maxCollations">5</str>        
+       <!-- str name="spellcheck.collateParam.qf">contributor place</str-->
      </lst>
+      <arr name="last-components">
+          <str>spellcheck</str>
+      </arr>
   </requestHandler>
+  
+  <!-- Lan 11.09.2015 : spellcheck on author name -->
+  <searchComponent name="spellcheck" class="solr.SpellCheckComponent">
+    <str name="queryAnalyzerFieldType">textunstem</str>
+    
+    <!-- a spellchecker built from a field of the main index -->
+    <lst name="spellchecker">
+      <str name="name">contributorSpell</str>
+      <str name="field">contributor</str>
+      <str name="classname">solr.DirectSolrSpellChecker</str>
+      <!-- the spellcheck distance measure used, the default is the internal levenshtein -->
+      <str name="distanceMeasure">internal</str>
+      <!-- minimum accuracy needed to be considered a valid spellcheck suggestion -->
+      <float name="accuracy">0.5</float>
+      <!-- the maximum #edits we consider when enumerating terms: can be 1 or 2 -->
+      <int name="maxEdits">2</int>
+      <!-- the minimum shared prefix when enumerating terms -->
+      <int name="minPrefix">1</int>
+      <!-- maximum number of inspections per result. -->
+      <int name="maxInspections">5</int>
+      <!-- minimum length of a query term to be considered for correction -->
+      <int name="minQueryLength">4</int>
+      <!-- maximum threshold of documents a query term can appear to be considered for correction -->
+      <float name="maxQueryFrequency">0.01</float>
+      <!-- uncomment this to require suggestions to occur in 1% of the documents -->
+      <!-- Lan 02.12.2016 = .00001 is order of 100 docs on 4.000.000 of total docs -->
+      <float name="thresholdTokenFrequency">.00001</float>
+    </lst>
+    
+    <lst name="spellchecker">
+      <str name="name">placeSpell</str>
+      <str name="field">place</str>
+      <str name="classname">solr.DirectSolrSpellChecker</str>
+      <!-- the spellcheck distance measure used, the default is the internal levenshtein -->
+      <str name="distanceMeasure">internal</str>
+      <!-- minimum accuracy needed to be considered a valid spellcheck suggestion -->
+      <float name="accuracy">0.5</float>
+      <!-- the maximum #edits we consider when enumerating terms: can be 1 or 2 -->
+      <int name="maxEdits">2</int>
+      <!-- the minimum shared prefix when enumerating terms -->
+      <int name="minPrefix">1</int>
+      <!-- maximum number of inspections per result. -->
+      <int name="maxInspections">5</int>
+      <!-- minimum length of a query term to be considered for correction -->
+      <int name="minQueryLength">4</int>
+      <!-- maximum threshold of documents a query term can appear to be considered for correction -->
+      <float name="maxQueryFrequency">0.01</float>
+      <!-- uncomment this to require suggestions to occur in 1% of the documents -->
+      <!-- Lan 02.12.2016 = .00001 is order of 100 docs on 4.000.000 of total docs -->
+      <float name="thresholdTokenFrequency">.00001</float>
+    </lst>
+  </searchComponent>
+  
  
   <requestHandler name="/select" class="solr.SearchHandler">
     <!-- default values for query parameters can be specified, these
@@ -1032,7 +1104,7 @@
          on each Update Request
       -->
        <lst name="defaults">
-         <str name="update.chain">dedupe</str>
+         <str name="update.chain">rtbf-custom</str>
        </lst>
         <!-- Update chain processor required by DSpace to auto generate the UUID field in solr -->
         <!--
@@ -1255,7 +1327,7 @@
 
    <!-- The spell check component can return a list of alternative spelling
   suggestions.  -->
-  <searchComponent name="spellcheck" class="solr.SpellCheckComponent">
+  <searchComponent name="spellcheck_orig1" class="solr.SpellCheckComponent">
 
     <str name="queryAnalyzerFieldType">textSpell</str>
 
@@ -1372,7 +1444,7 @@
 
         http://wiki.apache.org/solr/SpellCheckComponent
      -->
-  <searchComponent name="spellcheck" class="solr.SpellCheckComponent">
+  <searchComponent name="spellcheck_orig2" class="solr.SpellCheckComponent">
 
     <str name="queryAnalyzerFieldType">text_general</str>
 
@@ -1792,7 +1864,8 @@
        uniqueness based on that anyway.  
        
     -->
-     <updateRequestProcessorChain name="dedupe">
+     <updateRequestProcessorChain name="rtbf-custom">
+       <!-- dedupe -->
        <processor class="solr.processor.SignatureUpdateProcessorFactory">
          <bool name="enabled">true</bool>
          <str name="signatureField">uid</str>
@@ -1800,6 +1873,30 @@
          <str name="fields">query_q</str>
          <str name="signatureClass">solr.processor.Lookup3Signature</str>
        </processor>
+
+       <!-- Count of tokens -->
+       <!-- 1. Copy the field -->
+       <processor class="solr.CloneFieldUpdateProcessorFactory">
+         <str name="source">query_q</str>
+         <str name="dest">query_q_len</str>
+       </processor>
+       <!-- 2. Reduce words into a single letter "X" -->
+       <processor class="solr.RegexReplaceProcessorFactory">
+         <str name="fieldName">query_q_len</str>
+         <str name="pattern">\w+</str>
+         <str name="replacement">X</str>
+       </processor>
+       <!-- 3. Remove punctuation and white space, leaving just the "X"es. -->
+       <processor class="solr.RegexReplaceProcessorFactory">
+         <str name="fieldName">query_q_len</str>
+         <str name="pattern">[^X]</str>
+         <str name="replacement"></str>
+       </processor>
+       <!-- 4. A count of the "X"es is a good proxy for the word count. -->
+       <processor class="solr.FieldLengthUpdateProcessorFactory">
+         <str name="fieldName">query_q_len</str>
+       </processor>
+   
        <processor class="solr.LogUpdateProcessorFactory" />
        <processor class="solr.RunUpdateProcessorFactory" />
      </updateRequestProcessorChain>

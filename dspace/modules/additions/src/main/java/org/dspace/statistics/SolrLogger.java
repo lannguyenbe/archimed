@@ -914,14 +914,8 @@ public class SolrLogger
 
     public static void query(String query, int max) throws SolrServerException
     {
-        query(query, null, null,0, max, null, null, null, null, null, false, null);
+        query(query, null, null,0, max, null, null, null, null, null, false);
     }
-
-    public static QueryResponse query(String query, int max, String requestHandler) throws SolrServerException
-    {
-        return query(query, null, null, max , max, null, null, null, null, null, false, requestHandler);
-    }
-
 
     /**
      * Query used to get values grouped by the given facet field.
@@ -1124,19 +1118,6 @@ public class SolrLogger
             String dateEnd, List<String> facetQueries, String sort, boolean ascending)
             throws SolrServerException
     {
-    	return query(query, filterQuery,
-                facetField, rows, max, dateType, dateStart,
-                dateEnd, facetQueries, sort, ascending, null);
-    }
-
-
-    // Lan 12.12.2016 : add handler
-    public static QueryResponse query(String query, String filterQuery,
-            String facetField, int rows, int max, String dateType, String dateStart,
-            String dateEnd, List<String> facetQueries, String sort, boolean ascending
-            , String handler)
-            throws SolrServerException
-    {
         if (solr == null)
         {
             return null;
@@ -1147,11 +1128,6 @@ public class SolrLogger
                 .setFacetMinCount(1);
         addAdditionalSolrYearCores(solrQuery);
         
-        // Lan 12.12.2016 : set request handler
-        if (handler != null) {
-        	solrQuery.setRequestHandler(handler);
-        }
-
         // Set the date facet if present
         if (dateType != null)
         {

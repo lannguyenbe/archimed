@@ -6,12 +6,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class SimpleNode {
     
     public enum Attribute {
-        TITLE, NAME, KEY
+        TITLE, NAME, KEY, COLLATION
     }
 	
 	private String title;
     private String name;
     private String key;
+    private String collation;
 	
 	public SimpleNode() {}
 	
@@ -43,6 +44,14 @@ public class SimpleNode {
         this.key = s;
     }
 
+	public String getCollation() {
+		return collation;
+	}
+
+	public void setCollation(String collation) {
+		this.collation = collation;
+	}
+
     public SimpleNode setAttribute(Attribute name, String val) {
         switch (name) {
         case TITLE:
@@ -54,6 +63,9 @@ public class SimpleNode {
         case KEY:
             this.key = val;
             break;
+        case COLLATION:
+            this.collation = val;
+            break;
         default:
             break;
         }
@@ -61,6 +73,5 @@ public class SimpleNode {
         return this;
         
     }
-
 	
 }

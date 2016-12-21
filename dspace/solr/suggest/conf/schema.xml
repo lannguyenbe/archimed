@@ -315,9 +315,17 @@
       </analyzer>
     </fieldType>
     
-	<!-- text_phonetic_do : Matches a phonetic version of the suggest text, for a fuzzy effect 
+	<!-- text_phonetic : Matches a phonetic version of the suggest text, for a fuzzy effect 
 		 Note that there are other phonetic algorithms as well, but this works pretty well
 	-->
+	<fieldType name="text_phonetic" class="solr.TextField" positionIncrementGap="100">
+		<analyzer>
+			<tokenizer class="solr.StandardTokenizerFactory"/>
+			<!-- filter class="solr.DoubleMetaphoneFilterFactory" inject="false"/-->
+            <filter class="solr.BeiderMorseFilterFactory" nameType="GENERIC" ruleType="APPROX" concat="true" languageSet="auto" />
+		</analyzer>
+	</fieldType>
+
 	<fieldType name="text_phonetic_do" class="solr.TextField" positionIncrementGap="100">
 		<analyzer>
 			<tokenizer class="solr.StandardTokenizerFactory"/>
@@ -364,13 +372,17 @@
    <field name="is_pregen" type="boolean" indexed="true" stored="true" required="true" default="false" />
    <field name="data_freq" type="integer" indexed="true" stored="true" required="false" />
    <field name="query_freq" type="integer" indexed="true" stored="true" required="false" />
-   <!-- Lan 08.12.2016 : query_q records only q value; differ from query which records q and all fq -->
-   <!-- field name="query_q" type="string" indexed="true" stored="true" required="false" multiValued="false" docValues="true"/ -->
-   <!-- field name="query_q_partial" type="text_edge" indexed="true" stored="true" multiValued="false" omitNorms="true" /-->
+   <field name="query_q_len" type="integer" indexed="true" stored="true" required="false" />
+   <!-- Lan 08.12.2016 : query_q records only q value -->
    <field name="query_q" type="textunstem" indexed="true" stored="true" multiValued="false" omitNorms="false" />
    <field name="query_q_partial" type="text_edge" indexed="true" stored="false" multiValued="false" omitNorms="true" />
    <field name="query_q_ngram" type="text_ngram" indexed="true" stored="false" multiValued="false" omitNorms="true" />
-   <field name="query_q_phon" type="text_phonetic_do" indexed="true" stored="false" omitNorms="true" omitTermFreqAndPositions="true" />
+   <!-- Testing phonetic algorihms -->
+   <field name="phonetic_do" type="text_phonetic_do" indexed="true" stored="false" omitNorms="true" omitTermFreqAndPositions="true" />
+   <field name="phonetic" type="text_phonetic" indexed="true" stored="false" omitNorms="true" omitTermFreqAndPositions="true" />
+   <!-- Lan 16.12.2016 - to build spellcheck dictionaries -->
+   <field name="contributor" type="textunstem" indexed="true" stored="true" multiValued="false" omitNorms="false" />
+   <field name="place" type="textunstem" indexed="true" stored="true" multiValued="false" omitNorms="false" />
 
  </fields>
 
@@ -385,7 +397,6 @@
  <!-- Lan 08.12.2016 : partial uses ngram-->
  <copyField source="query_q" dest="query_q_partial"/>
  <copyField source="query_q" dest="query_q_ngram"/>
- <copyField source="query_q" dest="query_q_phon"/>
 
    
    

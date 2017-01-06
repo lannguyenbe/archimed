@@ -51,6 +51,10 @@
   <listener>
       <listener-class>org.dspace.rtbf.rest.util.RsContextListener</listener-class>
   </listener>
+  <!-- 29.12.2016 Lan: to support suggest tracking -->
+  <listener>
+      <listener-class>org.dspace.rtbf.rest.util.RsSuggestTracker</listener-class>
+  </listener>
   <filter>
     <filter-name>cross-origin</filter-name>
     <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>

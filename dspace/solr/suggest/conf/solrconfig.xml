@@ -380,7 +380,8 @@
       -->
 
      <autoSoftCommit> 
-       <maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime> 
+       <!-- maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime --> 
+       <maxTime>60000</maxTime> <!--Default commit every 60 sec--> 
      </autoSoftCommit>
 
     <!-- Update Related Event Listeners
@@ -842,6 +843,10 @@
       <arr name="last-components">
           <str>spellcheck</str>
       </arr>
+     <lst name="appends">
+       <!-- exclude admin records  -->
+      <str name="fq">!type:admin</str>
+     </lst>
   </requestHandler>
   
   <!-- Lan 11.09.2015 : spellcheck on author name -->
@@ -1866,24 +1871,29 @@
     -->
      <updateRequestProcessorChain name="rtbf-custom">
        <!-- dedupe -->
+       <!-- useless because q is already unique id
        <processor class="solr.processor.SignatureUpdateProcessorFactory">
          <bool name="enabled">true</bool>
-         <str name="signatureField">uid</str>
-         <bool name="overwriteDupes">true</bool>
-         <str name="fields">query_q</str>
+         <str name="signatureField">aid</str>
+         <bool name="overwriteDupes">false</bool>
+         <str name="fields">q</str>
          <str name="signatureClass">solr.processor.Lookup3Signature</str>
        </processor>
+       -->
 
        <!-- Count of tokens -->
        <!-- 1. Copy the field -->
        <processor class="solr.CloneFieldUpdateProcessorFactory">
-         <str name="source">query_q</str>
+         <str name="source">q</str>
          <str name="dest">query_q_len</str>
+       </processor>
+       <processor class="solr.processor.LastFieldValueUpdateProcessorFactory">
+         <str name="fieldName">query_q_len</str>
        </processor>
        <!-- 2. Reduce words into a single letter "X" -->
        <processor class="solr.RegexReplaceProcessorFactory">
          <str name="fieldName">query_q_len</str>
-         <str name="pattern">\w+</str>
+         <str name="pattern">\S+</str>
          <str name="replacement">X</str>
        </processor>
        <!-- 3. Remove punctuation and white space, leaving just the "X"es. -->

@@ -9,8 +9,10 @@ package org.dspace.statistics;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+
 import com.maxmind.geoip.Location;
 import com.maxmind.geoip.LookupService;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -48,6 +50,7 @@ import org.dspace.statistics.util.SpiderDetector;
 import org.dspace.usage.UsageWorkflowEvent;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.io.*;
 import java.net.URLEncoder;
 import java.sql.SQLException;
@@ -472,9 +475,16 @@ public class SolrLogger
         return doc1;
     }
 
+    public static void postSearch(DSpaceObject resultObject, HttpServletRequest request, EPerson currentUser,
+            List<String> queries, int rpp, String sortBy, String order, int page, DSpaceObject scope) {
+    	postSearch(resultObject, request, currentUser,
+                queries, rpp, sortBy, order, page, scope
+                , null);
+    }
     
     public static void postSearch(DSpaceObject resultObject, HttpServletRequest request, EPerson currentUser,
-                                 List<String> queries, int rpp, String sortBy, String order, int page, DSpaceObject scope) {
+                                 List<String> queries, int rpp, String sortBy, String order, int page, DSpaceObject scope
+                                 , ObjectCount resultsCount) {
         try
         {
             SolrInputDocument solrDoc = getCommonSolrDoc(resultObject, request, currentUser);
@@ -482,18 +492,6 @@ public class SolrLogger
 
             for (String query : queries) {
                 solrDoc.addField("query", query);
-            }
-
-            // Lan 08.12.2016 : isolate q from fq in queries
-            // based on a quick rule that q does not contains ':'
-            String query_q;
-            if (!queries.isEmpty()) {
-            	query_q = queries.get(0);
-            	if (query_q.contains(":")) { query_q = null; }
-            	if (query_q != null) {
-                    solrDoc.addField("query_q", query_q);
-            	}
-            	
             }
 
             if(resultObject != null){
@@ -521,6 +519,16 @@ public class SolrLogger
 
             if(page != -1){
                 solrDoc.addField("page", page);
+            }
+            
+            // Lan 04.01.2017
+            // resultsCont exists only for SearchEvent using rtbf-rest
+            if (resultsCount != null ) {
+            	solrDoc.addField("numFound", resultsCount.getCount());
+            	
+            	if (resultsCount.getValue() != null) {
+                    solrDoc.addField("query_q", resultsCount.getValue());
+            	}
             }
 
             solr.add(solrDoc);
@@ -938,8 +946,17 @@ public class SolrLogger
             String filterQuery, String facetField, int max, boolean showTotal,
             List<String> facetQueries) throws SolrServerException
     {
+    	return queryFacetField(query,
+                filterQuery, facetField, 0 /* offset */, max, showTotal,
+                facetQueries);
+    }
+    
+    public static ObjectCount[] queryFacetField(String query,
+            String filterQuery, String facetField, int offset, int max, boolean showTotal,
+            List<String> facetQueries) throws SolrServerException
+    {
         QueryResponse queryResponse = query(query, filterQuery, facetField,
-                0,max, null, null, null, facetQueries, null, false);
+                0, offset /* offset */,max, null, null, null, facetQueries, null, false);
         if (queryResponse == null)
         {
             return new ObjectCount[0];
@@ -1114,9 +1131,20 @@ public class SolrLogger
     }
 
     public static QueryResponse query(String query, String filterQuery,
-            String facetField, int rows, int max, String dateType, String dateStart,
-            String dateEnd, List<String> facetQueries, String sort, boolean ascending)
-            throws SolrServerException
+    		String facetField, int rows, int max, String dateType, String dateStart,
+    		String dateEnd, List<String> facetQueries, String sort, boolean ascending)
+    		throws SolrServerException
+    {
+    	return query(query, filterQuery,
+    			facetField, rows, 0, max, dateType, dateStart,
+    			dateEnd, facetQueries, sort, ascending);
+
+    }
+
+    public static QueryResponse query(String query, String filterQuery,
+    		String facetField, int rows, int offset, int max, String dateType, String dateStart,
+    		String dateEnd, List<String> facetQueries, String sort, boolean ascending)
+    		throws SolrServerException
     {
         if (solr == null)
         {
@@ -1161,11 +1189,18 @@ public class SolrLogger
             solrQuery.addFacetField(facetField);
         }
 
+        // Set offset to get first value
+        if (offset > 0) {
+        	solrQuery.setParam("facet.offset", String.valueOf(offset));
+        }
+
         // Set the top x of if present
         if (max != -1)
         {
-            solrQuery.setFacetLimit(max);
+            //solrQuery.setFacetLimit(max);
+        	solrQuery.setParam("facet.limit", String.valueOf(max));
         }
+        
 
         // A filter is used instead of a regular query to improve
         // performance and ensure the search result ordering will
@@ -1625,4 +1660,90 @@ public class SolrLogger
         }
 
     }
+    
+
+    // Lan 03.01.2017
+    public static ObjectCount[] queryNewerThen(String query,
+            String filterQuery, String facetField, int offset, int max) throws SolrServerException
+    {
+        QueryResponse queryResponse = queryNewerThen(query, filterQuery, facetField,
+                0, offset /* offset */,max);
+        if (queryResponse == null)
+        {
+            return new ObjectCount[0];
+        }
+
+        FacetField field = queryResponse.getFacetField(facetField);
+        // At least make sure we have one value
+        if (0 < field.getValueCount())
+        {
+            // Create an array for our result
+            ObjectCount[] result = new ObjectCount[field.getValueCount()];
+            // Run over our results & store them
+            for (int i = 0; i < field.getValues().size(); i++)
+            {
+                FacetField.Count fieldCount = field.getValues().get(i);
+                result[i] = new ObjectCount();
+                result[i].setCount(fieldCount.getCount());
+                result[i].setValue(fieldCount.getName());
+            }
+            return result;
+        }
+        else
+        {
+            // Return an empty array cause we got no data
+            return new ObjectCount[0];
+        }
+    }
+
+    public static QueryResponse queryNewerThen(String query, String filterQuery,
+    		String facetField, int rows, int offset, int max)
+    		throws SolrServerException
+    {
+        if (solr == null)
+        {
+            return null;
+        }
+
+        SolrQuery solrQuery = new SolrQuery().setRows(rows).setRequestHandler("/suggestTrack").setQuery(query)
+                .setFacetMinCount(1);
+        addAdditionalSolrYearCores(solrQuery);
+        
+        if (facetField != null)
+        {
+            solrQuery.addFacetField(facetField);
+        }
+
+        // Set offset to get first value
+        if (offset > 0) {
+        	solrQuery.setParam("facet.offset", String.valueOf(offset));
+        }
+
+        // Set the top x of if present
+        if (max != -1)
+        {
+            //solrQuery.setFacetLimit(max);
+        	solrQuery.setParam("facet.limit", String.valueOf(max));
+        }
+        
+
+        if (filterQuery != null)
+        {
+            solrQuery.add("newerThenQ", filterQuery);
+        }
+
+        QueryResponse response;
+        try
+        {
+            response = solr.query(solrQuery);
+        }
+        catch (SolrServerException e)
+        {
+            System.err.println("Error using query " + query);
+            throw e;
+        }
+        return response;
+    }
+    
+    
 }

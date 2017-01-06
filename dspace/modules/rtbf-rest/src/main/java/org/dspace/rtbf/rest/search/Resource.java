@@ -42,6 +42,7 @@ import org.dspace.rtbf.rest.common.SimpleNode;
 import org.dspace.rtbf.rest.util.RsConfigurationManager;
 import org.dspace.rtbf.rest.util.RsDiscoveryConfiguration;
 import org.dspace.sort.OrderFormat;
+import org.dspace.usage.RsUsageSearchEvent;
 import org.dspace.usage.UsageEvent;
 import org.dspace.usage.UsageSearchEvent;
 import org.dspace.utils.DSpace;
@@ -62,7 +63,7 @@ public abstract class Resource
     }
 
     protected void writeStats(
-    		SearchParameters params, Context context)
+    		SearchParameters params, Context context, long numFound)
     {
         if (!writeStatistics)
         {
@@ -78,17 +79,19 @@ public abstract class Resource
     	
     	queries.addAll(Arrays.asList(getFilterQueries(context, params)));
 
-        UsageSearchEvent searchEvent = new UsageSearchEvent(
+        RsUsageSearchEvent searchEvent = new RsUsageSearchEvent(
                 UsageEvent.Action.SEARCH,
                 request,
                 context,
-                null, queries, /* scope */ null);
+                null, queries, null /* scope */);
         
 
         searchEvent.setRpp(params.getLimit());
         searchEvent.setSortBy(params.getSortBy());
         searchEvent.setSortOrder(params.getOrder());
-        searchEvent.setPage(params.getOffset());
+        searchEvent.setPage(params.getOffset());        
+        searchEvent.setQuery_q(params.getQ());
+        searchEvent.setNumFound(numFound);
         
         //Fire our event
         new DSpace().getEventService().fireEvent(searchEvent);

@@ -280,7 +280,7 @@ public class SearchResource extends Resource {
             response = new SequencesSearchResponse(queryResults, expand, context);
  
             /* Lan 18.11.2016 : SolrLogger */
-            writeStats(params, context);         
+            writeStats(params, context, queryResults.getTotalSearchResults());         
 
             context.complete();
 
@@ -321,7 +321,7 @@ public class SearchResource extends Resource {
             response = new EpisodesSearchResponse(queryResults, expand, context);
             
             /* Lan 18.11.2016 : SolrLogger */
-            writeStats(params, context);         
+            writeStats(params, context, queryResults.getTotalSearchResults());         
 
             context.complete();
 
@@ -362,7 +362,7 @@ public class SearchResource extends Resource {
             response = new EpisodesSearchResponse(queryResults, expand, context);
             
             /* Lan 18.11.2016 : SolrLogger */
-            writeStats(params, context);         
+            writeStats(params, context, queryResults.getTotalSearchResults());         
 
             context.complete();
 
@@ -403,7 +403,7 @@ public class SearchResource extends Resource {
 	        response = new SeriesSearchResponse(queryResults, expand, context);
 
             /* Lan 18.11.2016 : SolrLogger */
-            writeStats(params, context);         
+            writeStats(params, context, queryResults.getTotalSearchResults());         
 
             context.complete();
 
@@ -443,7 +443,7 @@ public class SearchResource extends Resource {
 	        response = new SeriesSearchResponse(queryResults, expand, context);
             
             /* Lan 18.11.2016 : SolrLogger */
-            writeStats(params, context);         
+            writeStats(params, context, queryResults.getTotalSearchResults());         
 
             context.complete();
 

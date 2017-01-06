@@ -338,7 +338,7 @@
 
  <fields>
    <!-- used to track the last time a document was indexed -->
-   <field name="SolrIndexer.lastIndexed" type="date" indexed="true" stored="true" default="NOW" multiValued="false" omitNorms="true" />
+   <field name="SolrIndexer.lastIndexed" type="tdate" indexed="true" stored="true" default="NOW+1HOUR" multiValued="false" omitNorms="true" />
    <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
    <!-- Valid attributes for fields:
      name: mandatory - the name for the field
@@ -358,15 +358,11 @@
        best performance.
    -->
 
-   <!-- field name="time" type="date" indexed="true" stored="true" required="true" / --> 
-   <!-- Lan 09.12.2016 : tdate allow date arithmetic like time:[NOW/DAY TO NOW] -->
-   <field name="time" type="tdate" indexed="true" stored="true" required="true" default="NOW" /> 
-   <field name="id" type="integer" indexed="true" stored="true" required="false" />
-   <field name="longitude" type="float" indexed="true" stored="true" required="false" />
-   <field name="latitude" type="float" indexed="true" stored="true" required="false" />
-
-   <!-- use update processor chain, see solrconfig.xml-->
-   <field name="uid" type="string" indexed="true" stored="true" required="true" docValues="true"/>
+   <field name="time" type="tdate" indexed="true" stored="true" /> 
+   <!-- uid is initialized by update processor chain, see solrconfig.xml-->
+   <!--
+   <field name="uid" type="string" indexed="true" stored="true" required="false" docValues="true"/>
+   -->
 
    <field name="type" type="string" indexed="true" stored="true" required="true" default="search" docValues="true"/>
    <field name="is_pregen" type="boolean" indexed="true" stored="true" required="true" default="false" />
@@ -383,10 +379,16 @@
    <!-- Lan 16.12.2016 - to build spellcheck dictionaries -->
    <field name="contributor" type="textunstem" indexed="true" stored="true" multiValued="false" omitNorms="false" />
    <field name="place" type="textunstem" indexed="true" stored="true" multiValued="false" omitNorms="false" />
+   <!-- Lan 29.12.2016 - q is un-analysed to be used as uniqueKey -->
+   <!-- q as uniqueId to be able to call requestHandler /get?id=<q> -->
+   <field name="q" type="string" indexed="true" stored="true" multiValued="false" omitNorms="false" />
+   <field name="lastSynced" type="tdate" indexed="true" stored="true" multiValued="false" omitNorms="true" />
 
  </fields>
 
- <uniqueKey>uid</uniqueKey>
+ <!-- uniqueKey>uid</uniqueKey -->
+ <uniqueKey>q</uniqueKey>
+
 
  <!-- field for the QueryParser to use when an explicit fieldname is absent -->
  <defaultSearchField>query_q_partial</defaultSearchField>
@@ -395,8 +397,11 @@
  <solrQueryParser defaultOperator="AND"/>
  
  <!-- Lan 08.12.2016 : partial uses ngram-->
- <copyField source="query_q" dest="query_q_partial"/>
- <copyField source="query_q" dest="query_q_ngram"/>
+ <copyField source="q" dest="query_q"/>
+ <copyField source="q" dest="query_q_partial"/>
+ <copyField source="q" dest="query_q_ngram"/>
+ <copyField source="SolrIndexer.lastIndexed" dest="time"/>
+
 
    
    

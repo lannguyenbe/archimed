@@ -25,8 +25,8 @@ import org.dspace.rtbf.rest.common.Constants;
 import org.dspace.rtbf.rest.common.SimpleNode;
 import org.dspace.rtbf.rest.search.Request;
 import org.dspace.rtbf.rest.search.Resource;
+import org.dspace.rtbf.suggest.SuggestSearch;
 import org.dspace.sort.OrderFormat;
-import org.dspace.suggest.SuggestSearch;
 
 @Path("/")
 public class LOVSuggestQ extends Resource {

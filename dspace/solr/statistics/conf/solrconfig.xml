@@ -869,7 +869,34 @@
       -->
     </requestHandler>
 
-  <!-- A request handler that returns indented JSON by default -->
+    <!-- Lan 03.01.2017 : facet results are used for suggest tracking -->
+    <!-- /suggestTrack only returns facet based on statistics produced by rtbf-rest which have additional fields query_q, numFound;
+         tracked query_q must satisfied a number of conditions : condition #1 ...
+    -->
+    <requestHandler name="/suggestTrack" class="solr.SearchHandler">
+     <lst name="defaults">
+       <str name="echoParams">explicit</str>
+       <int name="rows">10</int>
+       <str name="df">query_q</str>
+       <!-- To filter on time : add raw query param: newerThenQ=time:[2016-12-09T16\:36\:38.751Z TO *]  -->
+       <!-- default is [* TO *] -->
+       <str name="newerThenQ">time:[* TO *]</str>
+     </lst>
+     <lst name="invariants">
+       <str name="facet">true</str>
+       <str name="facet.field">query_q</str>
+       <!-- condition #1 : must have been submitted at least 10 times -->
+       <str name="f.query_q.facet.mincount">10</str>
+     </lst>
+     <lst name="appends">
+       <!-- condition #2 : must have results while searching on search index -->
+       <str name="fq">numFound:[1 TO *]</str>       
+       <!-- use join to be able to count query_q facet on the WHOLE index, for newest query_q filtered by $newerThenQ -->
+       <str name="fq">{!join from=query_q to=query_q}({! df=time v=$newerThenQ})</str>
+     </lst>
+    </requestHandler>
+
+    <!-- A request handler that returns indented JSON by default -->
   <requestHandler name="/query" class="solr.SearchHandler">
      <lst name="defaults">
        <str name="echoParams">explicit</str>

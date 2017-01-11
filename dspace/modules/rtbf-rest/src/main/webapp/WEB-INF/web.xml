@@ -53,7 +53,7 @@
   </listener>
   <!-- 29.12.2016 Lan: to support suggest tracking -->
   <listener>
-      <listener-class>org.dspace.rtbf.rest.util.RsSuggestTracker</listener-class>
+      <listener-class>org.dspace.rtbf.suggest.RsSuggestTracker</listener-class>
   </listener>
   <filter>
     <filter-name>cross-origin</filter-name>

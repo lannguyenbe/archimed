@@ -1,4 +1,4 @@
-package org.dspace.rtbf.rest.util;
+package org.dspace.rtbf.suggest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +13,6 @@ import org.dspace.core.ConfigurationManager;
 import org.dspace.discovery.SearchUtils;
 import org.dspace.discovery.configuration.DiscoveryHitHighlightFieldConfiguration;
 import org.dspace.rtbf.rest.common.Constants;
-import org.dspace.rtbf.suggest.SuggestHarvester;
 
 public class RsSuggestTracker implements ServletContextListener {
 

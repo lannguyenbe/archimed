@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dspace.content.DSpaceObject;
+import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.discovery.DiscoverResult.SearchDocument;
 import org.dspace.utils.DSpace;
@@ -13,6 +14,8 @@ import org.dspace.utils.DSpace;
 public class DiscoverSubItems {
 
     private static final Logger log = Logger.getLogger(DiscoverSubItems.class);
+    private static final int LIMITMAX = 5000;
+    
     
     protected Context context;
     protected DiscoverResult queryResults;
@@ -31,6 +34,7 @@ public class DiscoverSubItems {
 
         query.addProperty("qt", "/selectSequence");
         query.addFilterQueries("owning_collection:"+ org.dspace.core.Constants.COLLECTION + "-" + dso.getID());
+        query.setMaxResults(LIMITMAX);
         
         queryResults = SearchUtils.getSearchService().search(context, query);
     }

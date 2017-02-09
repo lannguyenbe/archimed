@@ -201,11 +201,11 @@ public class Sequence extends RTBObject{
     	case Constants.PLAYLIST_VIEW:
     	case Constants.SEARCH_RESULT_VIEW:
         	this.setDateIssued(new MetadataEntry(Constants.DATE_ISSUED, doc.getSearchFieldValues("dup_date_issued").get(0), null));
-        	List<MetadataEntry> entries = new ArrayList<MetadataEntry>();
+        	List<String> entries = new ArrayList<String>();
         	for (int i=0, len=doc.getSearchFieldValues("dup_channel_issued").size(); i < len; i++) {
-        		entries.add(new MetadataEntry(Constants.CHANNEL_ISSUED, doc.getSearchFieldValues("dup_channel_issued").get(i), null));
+        		entries.add(doc.getSearchFieldValues("dup_channel_issued").get(i));
         	}
-    		this.setChannelIssued(entries);
+    		this.setChannelIssuedList(entries);
     		innerViewType = Constants.MIN_VIEW;
     		break;
     	default:

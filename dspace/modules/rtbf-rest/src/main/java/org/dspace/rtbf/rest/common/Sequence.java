@@ -325,7 +325,10 @@ public class Sequence extends RTBObject{
         entries.add(new Serie(innerViewType, parentCommunity, null, context));
         // repository level
         org.dspace.content.Community topparentCommunity = parentCommunity.getParentCommunity();
-    	entries.add(new Serie(innerViewType, topparentCommunity, null, context));
+        // Lan 15.02.2017 : orphans have no repository level
+        if (topparentCommunity != null) { // not an orphan
+        	entries.add(new Serie(innerViewType, topparentCommunity, null, context));
+        }
 		return entries;   	
     }
         		                    

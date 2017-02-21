@@ -154,7 +154,10 @@ public abstract class Resource
     protected void filterFacetResults(List<FacetResult> facets, String qterms) {
     
         // Match pattern that begins a word
-        String search = qterms.replaceAll("(\\p{Alnum}+)", "\\\\b$1");
+        // String search = qterms.replaceAll("(\\p{Alnum}+)", "\\\\b$1");
+    	// above is not working for term containing underscore e.g. la_une, la_deux
+    	// Lan 21.02.2017 : only boundering word beginning with Alphanum becomes boundering pattern
+        String search = qterms.replaceAll("\\b(\\p{Alnum}+?.*?)\\b", "\\\\b$1");
         log.debug("Regex filter facet results.(search=" + search + ").");
 
         // Compile individual patterns

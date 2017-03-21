@@ -195,7 +195,9 @@ public class SearchFacetFilter extends AbstractDSpaceTransformer implements Cach
 
         queryArgs.setQuery(((request.getParameter("query") != null && !"".equals(request.getParameter("query").trim())) ? request.getParameter("query") : null));
 //        queryArgs.setQuery("search.resourcetype:" + Constants.ITEM);
-        queryArgs.setDSpaceObjectFilter(Constants.ITEM);
+
+        // Lan 21.03.2017 : Remove restriction on ITEM only 
+        // queryArgs.setDSpaceObjectFilter(Constants.ITEM);
 
         queryArgs.setMaxResults(0);
 

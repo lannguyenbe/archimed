@@ -453,6 +453,9 @@ public abstract class Resource
     		 * "date_issued_dt" as <dateFacet> = real solr field in date type; the mapping from <keyName>_dt to <facetName> is done in rtbf-rest.cfg, is optional in this case
     		 */
     		
+    		// facet.pivot on channel
+    		query.addFacetPivotField("channel_tax_0_filter,channel_keyword");
+    		
     	}
     	
     	// Highlighting

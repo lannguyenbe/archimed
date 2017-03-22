@@ -25,7 +25,19 @@
   <condition property="os.unix">
     <os family="unix"/>
   </condition>
+	
+  <target name="mvn-additions" >
+    <artifact:mvn pom="${env.DSSRC}/dspace/modules/additions/pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <arg value="install"/>
+    </artifact:mvn>
+  </target>
 
+  <target name="mvn-rtbf-rest" >
+    <artifact:mvn pom="${env.DSSRC}/dspace/modules/rtbf-rest/pom.xml" mavenHome="${env.M2_HOME}" fork="false">
+      <arg value="package"/>
+    </artifact:mvn>
+  </target>
+	
   <target name="touch">
     <touch file="${env.DS}/webapps/rtbf-rest.xml"/>
   </target>

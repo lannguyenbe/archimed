@@ -58,6 +58,7 @@ import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.Group;
 import org.apache.solr.client.solrj.response.GroupCommand;
+import org.apache.solr.client.solrj.response.PivotField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SpellCheckResponse.Collation;
 import org.apache.solr.client.solrj.util.ClientUtils;
@@ -3034,6 +3035,15 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 
             solrQuery.setParam(FacetParams.FACET_OFFSET, String.valueOf(discoveryQuery.getFacetOffset()));
         }
+        
+        // Lan 21.03.2017 : add facet.pivot
+        List<String> facetPivotFields = discoveryQuery.getFacetPivotFields();
+        if(0 < facetPivotFields.size()) {
+        	for (String pivot : facetPivotFields) {
+            	solrQuery.addFacetPivotField(pivot);
+			}
+        }
+        
 
 /*
         if(0 < discoveryQuery.getHitHighlightingFields().size())
@@ -3282,6 +3292,37 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         result.addFacetResult(facetField, new DiscoverResult.FacetResult(filter, name, null, name, count));
                     }
                 }
+            }
+            
+            // Lan 21.02.2017
+            // Get facet.pivot results            
+            NamedList<List<PivotField>> pivotFields = solrQueryResponse.getFacetPivot();
+            if (pivotFields != null) {
+            	for (int i = 0; i <  pivotFields.size(); i++) {
+                String pvfName = pivotFields.getName(i); // channel_tax_0_filter,channel_keyword
+            	for (PivotField pv1 : pivotFields.getVal(i)) {
+            		String pv1_name = pv1.getField(); // channel_tax_0_filter
+            		Object pv1_value = pv1.getValue();
+            		int pv1_count = pv1.getCount();
+            		List<PivotField> pv1_list = pv1.getPivot();
+            		for (int j = 0, jlen = pv1_list.size(); j < jlen; j++) {
+            			PivotField pv2 = pv1_list.get(j);
+                		String pv2_name = pv2.getField(); // channel_keyword
+                		String pv2_value = pv2.getValue().toString();
+                		int pv2_count = pv2.getCount();
+                		
+                		if (j == 0) { // the first
+                			result.addFacetResult(pv2_name, new DiscoverResult.FacetResult(pv2_value, pv2_value, null, pv2_value, pv2_count));
+                		} else {
+                			//do nothing
+                		}
+
+            		
+            		}
+            	}
+					
+				}
+            	
             }
 
             // Get the first collation suggested

@@ -3302,22 +3302,20 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                 String pvfName = pivotFields.getName(i); // channel_tax_0_filter,channel_keyword
             	for (PivotField pv1 : pivotFields.getVal(i)) {
             		String pv1_name = pv1.getField(); // channel_tax_0_filter
-            		Object pv1_value = pv1.getValue();
+            		String pv1_value = pv1.getValue().toString();
             		int pv1_count = pv1.getCount();
-            		List<PivotField> pv1_list = pv1.getPivot();
-            		for (int j = 0, jlen = pv1_list.size(); j < jlen; j++) {
-            			PivotField pv2 = pv1_list.get(j);
+            		
+        			DiscoverResult.FacetResult pv1facet = new DiscoverResult.FacetResult(pv1_value, pv1_value, null, pv1_value, pv1_count);
+        			result.addFacetResult(pv1_name, pv1facet);
+
+            		List<PivotField> pv2_list = pv1.getPivot();
+            		for (int j = 0, jlen = pv2_list.size(); j < jlen; j++) {
+            			PivotField pv2 = pv2_list.get(j);
                 		String pv2_name = pv2.getField(); // channel_keyword
                 		String pv2_value = pv2.getValue().toString();
                 		int pv2_count = pv2.getCount();
                 		
-                		if (j == 0) { // the first
-                			result.addFacetResult(pv2_name, new DiscoverResult.FacetResult(pv2_value, pv2_value, null, pv2_value, pv2_count));
-                		} else {
-                			//do nothing
-                		}
-
-            		
+            			pv1facet.addSubFacet(pv2_name, new DiscoverResult.FacetResult(pv2_value, pv2_value, null, pv2_value, pv2_count));
             		}
             	}
 					

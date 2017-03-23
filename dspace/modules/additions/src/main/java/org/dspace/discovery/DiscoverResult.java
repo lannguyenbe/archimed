@@ -106,6 +106,18 @@ public class DiscoverResult {
         return facetResults.get(facet) == null ? new ArrayList<FacetResult>() : facetResults.get(facet);
     }
 
+    public FacetResult getFacetResult(String facet, String value){
+    	List<FacetResult> fList = facetResults.get(facet);
+    	if (fList != null) {
+    		for (FacetResult f : fList) {
+    			if (value.equals(f.getAsFilterQuery())) {
+    				return f;
+    			}				
+			}    		
+    	}
+    	return null;
+    }
+
     public DSpaceObjectHighlightResult getHighlightedResults(DSpaceObject dso)
     {
         return highlightedResults.get(dso.getHandle());
@@ -132,13 +144,19 @@ public class DiscoverResult {
         private String authorityKey;
         private String sortValue;
         private long count;
+        
+        // Lan 22.03.2017 - to support hierarchical facet
+        private Map<String, List<FacetResult>> subFacets;
+
 
         public FacetResult(String asFilterQuery, String displayedValue, String authorityKey, String sortValue, long count) {
             this.asFilterQuery = asFilterQuery;
             this.displayedValue = displayedValue;
             this.authorityKey = authorityKey;
             this.sortValue = sortValue;
-            this.count = count;
+            this.count = count;            
+            this.subFacets = new LinkedHashMap<String, List<FacetResult>>();
+
         }
 
         public String getAsFilterQuery() {
@@ -167,6 +185,24 @@ public class DiscoverResult {
         {
             return authorityKey != null?"authority":"equals";
         }
+
+        public void addSubFacet(String facetField, FacetResult ...facetResults){
+            List<FacetResult> facetValues = this.subFacets.get(facetField);
+            if(facetValues == null)
+            {
+                facetValues = new ArrayList<FacetResult>();
+            }
+            facetValues.addAll(Arrays.asList(facetResults));
+            this.subFacets.put(facetField, facetValues);
+        }
+
+        public Map<String, List<FacetResult>> getSubFacets() {
+			return subFacets;
+		}
+
+		public void setSubFacets(Map<String, List<FacetResult>> subFacets) {
+			this.subFacets = subFacets;
+		}
     }
     
     public static final class GroupFilter{

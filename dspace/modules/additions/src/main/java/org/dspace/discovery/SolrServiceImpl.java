@@ -3036,7 +3036,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             solrQuery.setParam(FacetParams.FACET_OFFSET, String.valueOf(discoveryQuery.getFacetOffset()));
         }
         
-        // Lan 21.03.2017 : add facet.pivot
+        // Lan 21.03.2017 : support facet pivot from rtbf-rest
         List<String> facetPivotFields = discoveryQuery.getFacetPivotFields();
         if(0 < facetPivotFields.size()) {
         	for (String pivot : facetPivotFields) {
@@ -3933,6 +3933,19 @@ public class SolrServiceImpl implements SearchService, IndexingService {
     public String toSortFieldIndex(String metadataField, String type)
     {
         return metadataField + "_sort";
+    }
+
+    // 24.03.2017 Lan
+    protected String pivotingFacetField(DiscoverFacetField facetFieldConfig, String field)
+    {
+    	int lastIndexOf;
+    	if(facetFieldConfig.getType().equals(DiscoveryConfigurationParameters.TYPE_HIERARCHICAL))
+        {
+    		// pivot string for hierarchical facetting on "channel" is "{!key=channel}channel_tax_0_filter,channel_keyword"
+    		return String.format("{!key=%1$s}%1$s_tax_0_filter,%1$s_keyword", field);
+        }else{
+            return null;
+        }
     }
 
     protected String transformFacetField(DiscoverFacetField facetFieldConfig, String field, boolean removePostfix)

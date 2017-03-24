@@ -38,6 +38,12 @@
     </artifact:mvn>
   </target>
 	
+  <target name="mvn-xmlui" >
+    <artifact:mvn pom="${env.DSSRC}/dspace/modules/xmlui/pom.xml" mavenHome="${env.M2_HOME}" fork="true">
+      <arg value="package"/>
+    </artifact:mvn>
+  </target>
+
   <target name="touch">
     <touch file="${env.DS}/webapps/rtbf-rest.xml"/>
   </target>
@@ -46,7 +52,11 @@
     <touch file="${env.DS}/../dspace-dev4/webapps/rtbf-rest.xml"/>
   </target>
 
-  <target name="mytest" depends="ask_dspace_dir">
+  <target name="touch-xmlui-dev4">
+    <touch file="${env.DS}/../dspace-dev4/webapps/xmlui.xml"/>
+  </target>
+
+	<target name="mytest" depends="ask_dspace_dir">
    <echo message="dspace.dir=${dspace.dir}"/>
   </target>
 

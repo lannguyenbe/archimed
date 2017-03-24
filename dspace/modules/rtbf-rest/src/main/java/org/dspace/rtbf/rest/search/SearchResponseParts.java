@@ -252,6 +252,9 @@ public class SearchResponseParts {
 			public long count;
 			
 			public Filter fq;
+			
+		    public List<Entry> subEntries;
+
 		}
 		
 		private Map<String, List<Entry>> facetEntries;
@@ -277,14 +280,42 @@ public class SearchResponseParts {
 							e.fq = new Filter(fqField, f.getFilterType(), dtMath[1]);
 						}
 					}
-										
-					entries.add(e);
+					
+					// Lan 23.03.2017 : add hierarchical facetting
+					List<Entry> subEntries = new ArrayList<Entry>();
+					Map<String, List<FacetResult>>m2 = f.getSubFacets();
+
+					for (Map.Entry<String, List<FacetResult>> m2Entry : m2.entrySet()) {
+						String fqField2 = m2Entry.getKey();
+						for (FacetResult f2 : m2Entry.getValue()) {
+							Entry e2 = new Entry();
+							e2.key = f2.getDisplayedValue();
+							e2.count = f2.getCount();
+							e2.fq = new Filter(fqField2, f2.getFilterType(), f2.getAsFilterQuery());
+							subEntries.add(e2);
+						}						
+					}
+
+					// Finally
+					switch (subEntries.size()) {
+					case 0: // not a hierarchical indexed facet
+						entries.add(e);
+						break;
+					case 1: // is a hierachical indexed facet, but the value has no hierarchy : the bare value only
+						entries.add(subEntries.get(0));
+						break;
+					default: // > 1 entries : is a hierachical indexed facet, the first entry is the top level parent
+						e = subEntries.get(0);
+						e.subEntries = subEntries.subList(1, subEntries.size());
+						entries.add(e);
+					}
+					
 				}
 				this.facetEntries.put(facetKey, entries);
 			}					
  		}
 
- 		@XmlJavaTypeAdapter(SearchResponseParts.FacetCountsAdapter.class)
+		@XmlJavaTypeAdapter(SearchResponseParts.FacetCountsAdapter.class)
  		public Map<String, List<Entry>> getFacetEntries() {
 			return facetEntries;
 		}

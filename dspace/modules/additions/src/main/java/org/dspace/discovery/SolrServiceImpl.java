@@ -3298,15 +3298,16 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             // Get facet.pivot results            
             NamedList<List<PivotField>> pivotFields = solrQueryResponse.getFacetPivot();
             if (pivotFields != null) {
-            	for (int i = 0; i <  pivotFields.size(); i++) {
+            	for (int i = 0; i <  pivotFields.size(); i++) { // presently size is 1
                 String pvfName = pivotFields.getName(i); // channel_tax_0_filter,channel_keyword
             	for (PivotField pv1 : pivotFields.getVal(i)) {
             		String pv1_name = pv1.getField(); // channel_tax_0_filter
             		String pv1_value = pv1.getValue().toString();
             		int pv1_count = pv1.getCount();
+            		String pv1_displayed = transformDisplayedValue(context, pv1_name, pv1_value);
             		
-        			DiscoverResult.FacetResult pv1facet = new DiscoverResult.FacetResult(pv1_value, pv1_value, null, pv1_value, pv1_count);
-        			result.addFacetResult(pv1_name, pv1facet);
+        			DiscoverResult.FacetResult pv1facet = new DiscoverResult.FacetResult(pv1_value, pv1_displayed, null, pv1_value, pv1_count);
+        			result.addFacetResult(pvfName+":"+pv1_name, pv1facet);
 
             		List<PivotField> pv2_list = pv1.getPivot();
             		for (int j = 0, jlen = pv2_list.size(); j < jlen; j++) {

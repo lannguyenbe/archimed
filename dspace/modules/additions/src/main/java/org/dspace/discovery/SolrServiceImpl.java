@@ -1832,9 +1832,10 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                     /* Lan rtbf.contributor_plus_role hardcode ! ******************************************/
                     /* create role_contributor_filter solr field for prefix facetting */
                     if (field.equals("rtbf.contributor_plus_role")) {
+                    	String splitter = ((HierarchicalSidebarFacetConfiguration) searchFilter).getSplitter();
                     	/* permute role before contributor */
-                    	String value_p1 = value.replaceAll("^(.+)/(.+)$", "$2/$1");
-                        // Remove diacritic + lower case
+                    	String value_p1 = value.replaceAll("^(.+)"+splitter+"(.+)$", "$2"+splitter+"$1");
+                       // Remove diacritic + lower case
                         String value_p2 = OrderFormat.makeSortString(value_p1, null, OrderFormat.TEXT);
                     	doc.addField("role_"+searchFilter.getIndexFieldName() + "_filter", value_p2 + separator + value);
 
@@ -2275,14 +2276,6 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 
                     for (DiscoverySearchFilter searchFilter : searchFilterConfigs)
                     {
-                    	/*
-                    	 * Lan 25.07.2016 : value to be indexed might be a regex o the value of the field
-                    	 */
-/*                    	if (searchFilter.getMetadataValues().size() > 0) {
-                    		log.info("debug 200");
-                    	}
-                    	
-*/                    	
                     	                    	
                         String separator = new DSpace().getConfigurationService().getProperty("discovery.solr.facets.split.char");
                         if(separator == null)
@@ -2329,8 +2322,9 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         /* TODO remove rtbf.contributor_plus_role hardcode ! ******************************************/
                         /* create role_contributor_filter solr field for prefix facetting */
                         if (field.equals("rtbf.contributor_plus_role")) {
+                        	String splitter = ((HierarchicalSidebarFacetConfiguration) searchFilter).getSplitter();
                         	/* permute role before contributor */
-                        	String value_p1 = value.replaceAll("^(.+)/(.+)$", "$2/$1");
+                        	String value_p1 = value.replaceAll("^(.+)"+splitter+"(.+)$", "$2"+splitter+"$1");
                             // Remove diacritic + lower case
                             String value_p2 = OrderFormat.makeSortString(value_p1, null, OrderFormat.TEXT);
                         	doc.addField("role_"+searchFilter.getIndexFieldName() + "_filter", value_p2 + separator + value);

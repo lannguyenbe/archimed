@@ -2277,8 +2277,6 @@
     </processor>
     <processor class="solr.RegexReplaceProcessorFactory">
         <str name="fieldName">role_keyword</str>
-        <!-- str name="pattern">(.+)/(.+)</str -->
-        <!-- str name="pattern">^(.*)/([^/]+)$</str -->
         <str name="pattern">(.+)::(.+)</str>
         <str name="replacement">$2</str>
         <bool name="literalReplacement">false</bool>
@@ -2291,8 +2289,7 @@
     </processor>
     <processor class="solr.RegexReplaceProcessorFactory">
         <str name="fieldName">role_place_keyword</str>
-        <!-- str name="pattern">(.+)/(.+)</str -->
-        <str name="pattern">^(.*)/([^/]+)$</str>
+        <str name="pattern">(.+)::(.+)</str>
         <str name="replacement">$2</str>
         <bool name="literalReplacement">false</bool>
     </processor>

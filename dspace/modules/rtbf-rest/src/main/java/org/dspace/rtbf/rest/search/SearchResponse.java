@@ -19,10 +19,8 @@ public class SearchResponse {
     private SearchResponseParts.ResponseHeader responseHeader;
     private SearchResponseParts.Meta meta;
     private List<RTBObject> results;
-//    private SearchResponseParts.Result results;
     private SearchResponseParts.FacetCounts facets;
     private List<String> collations;
-//    private SearchResponseParts.Collations collations;
 	
     private List<String> expand = new ArrayList<String>();
 	

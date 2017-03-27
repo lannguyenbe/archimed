@@ -437,7 +437,7 @@ public abstract class Resource
     		for (String role : rolePrefix) {
     			// remove diacritic + lower case
     			String prefix = OrderFormat.makeSortString(role, null, OrderFormat.TEXT);
-    			DiscoverFacetField dff = new DiscoverFacetField("{!key="+role+":contributor"+"_filter"+" facet.prefix="+prefix+"/}role_contributor"
+    			DiscoverFacetField dff = new DiscoverFacetField("{!key="+role+":contributor_filter"+" facet.prefix="+prefix+"::}role_contributor"
 		                , DiscoveryConfigurationParameters.TYPE_TEXT // TYPE_TEXT has effects : add _filter to role_contributor to process; remove _filter from key after processing
 		                , /* facet limit  */ facetLimit
 		                , /* facet sort   */ DiscoveryConfigurationParameters.SORT.COUNT
@@ -452,6 +452,9 @@ public abstract class Resource
     		 * "date_issued" as <keyName> = indexFieldName in SearchFilter in discovery.xml, determines <keyName>_dt that is used as filtertype for searching
     		 * "date_issued_dt" as <dateFacet> = real solr field in date type; the mapping from <keyName>_dt to <facetName> is done in rtbf-rest.cfg, is optional in this case
     		 */
+    		
+    		// facet.pivot on channel
+    		query.addFacetPivotField("{!key=channel}channel_tax_0_filter,channel_keyword");
     		
     	}
     	

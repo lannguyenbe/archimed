@@ -627,7 +627,9 @@
         </property>
         <property name="facetLimit" value="10"/>
         <property name="sortOrder" value="COUNT"/>
-        <property name="splitter" value="/"/>
+        <!-- IMPORTANT : if splitter value has changed then edit also solrconfig.xml -->
+        <!-- which is responsible for the computation of field role_keyword -->
+        <property name="splitter" value="::"/>
         <property name="skipFirstNodeLevel" value="false"/>
     </bean>
 

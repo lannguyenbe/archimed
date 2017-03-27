@@ -58,6 +58,7 @@ import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.Group;
 import org.apache.solr.client.solrj.response.GroupCommand;
+import org.apache.solr.client.solrj.response.PivotField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SpellCheckResponse.Collation;
 import org.apache.solr.client.solrj.util.ClientUtils;
@@ -1831,9 +1832,10 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                     /* Lan rtbf.contributor_plus_role hardcode ! ******************************************/
                     /* create role_contributor_filter solr field for prefix facetting */
                     if (field.equals("rtbf.contributor_plus_role")) {
+                    	String splitter = ((HierarchicalSidebarFacetConfiguration) searchFilter).getSplitter();
                     	/* permute role before contributor */
-                    	String value_p1 = value.replaceAll("^(.+)/(.+)$", "$2/$1");
-                        // Remove diacritic + lower case
+                    	String value_p1 = value.replaceAll("^(.+)"+splitter+"(.+)$", "$2"+splitter+"$1");
+                       // Remove diacritic + lower case
                         String value_p2 = OrderFormat.makeSortString(value_p1, null, OrderFormat.TEXT);
                     	doc.addField("role_"+searchFilter.getIndexFieldName() + "_filter", value_p2 + separator + value);
 
@@ -2274,14 +2276,6 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 
                     for (DiscoverySearchFilter searchFilter : searchFilterConfigs)
                     {
-                    	/*
-                    	 * Lan 25.07.2016 : value to be indexed might be a regex o the value of the field
-                    	 */
-/*                    	if (searchFilter.getMetadataValues().size() > 0) {
-                    		log.info("debug 200");
-                    	}
-                    	
-*/                    	
                     	                    	
                         String separator = new DSpace().getConfigurationService().getProperty("discovery.solr.facets.split.char");
                         if(separator == null)
@@ -2328,8 +2322,9 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         /* TODO remove rtbf.contributor_plus_role hardcode ! ******************************************/
                         /* create role_contributor_filter solr field for prefix facetting */
                         if (field.equals("rtbf.contributor_plus_role")) {
+                        	String splitter = ((HierarchicalSidebarFacetConfiguration) searchFilter).getSplitter();
                         	/* permute role before contributor */
-                        	String value_p1 = value.replaceAll("^(.+)/(.+)$", "$2/$1");
+                        	String value_p1 = value.replaceAll("^(.+)"+splitter+"(.+)$", "$2"+splitter+"$1");
                             // Remove diacritic + lower case
                             String value_p2 = OrderFormat.makeSortString(value_p1, null, OrderFormat.TEXT);
                         	doc.addField("role_"+searchFilter.getIndexFieldName() + "_filter", value_p2 + separator + value);
@@ -3034,6 +3029,15 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 
             solrQuery.setParam(FacetParams.FACET_OFFSET, String.valueOf(discoveryQuery.getFacetOffset()));
         }
+        
+        // Lan 21.03.2017 : support facet pivot from rtbf-rest
+        List<String> facetPivotFields = discoveryQuery.getFacetPivotFields();
+        if(0 < facetPivotFields.size()) {
+        	for (String pivot : facetPivotFields) {
+            	solrQuery.addFacetPivotField(pivot);
+			}
+        }
+        
 
 /*
         if(0 < discoveryQuery.getHitHighlightingFields().size())
@@ -3282,6 +3286,36 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         result.addFacetResult(facetField, new DiscoverResult.FacetResult(filter, name, null, name, count));
                     }
                 }
+            }
+            
+            // Lan 21.02.2017
+            // Get facet.pivot results            
+            NamedList<List<PivotField>> pivotFields = solrQueryResponse.getFacetPivot();
+            if (pivotFields != null) {
+            	for (int i = 0; i <  pivotFields.size(); i++) { // presently size is 1
+                String pvfName = pivotFields.getName(i); // channel_tax_0_filter,channel_keyword
+            	for (PivotField pv1 : pivotFields.getVal(i)) {
+            		String pv1_name = pv1.getField(); // channel_tax_0_filter
+            		String pv1_value = pv1.getValue().toString();
+            		int pv1_count = pv1.getCount();
+            		String pv1_displayed = transformDisplayedValue(context, pv1_name, pv1_value);
+            		
+        			DiscoverResult.FacetResult pv1facet = new DiscoverResult.FacetResult(pv1_value, pv1_displayed, null, pv1_value, pv1_count);
+        			result.addFacetResult(pvfName+":"+pv1_name, pv1facet);
+
+            		List<PivotField> pv2_list = pv1.getPivot();
+            		for (int j = 0, jlen = pv2_list.size(); j < jlen; j++) {
+            			PivotField pv2 = pv2_list.get(j);
+                		String pv2_name = pv2.getField(); // channel_keyword
+                		String pv2_value = pv2.getValue().toString();
+                		int pv2_count = pv2.getCount();
+                		
+            			pv1facet.addSubFacet(pv2_name, new DiscoverResult.FacetResult(pv2_value, pv2_value, null, pv2_value, pv2_count));
+            		}
+            	}
+					
+				}
+            	
             }
 
             // Get the first collation suggested
@@ -3893,6 +3927,19 @@ public class SolrServiceImpl implements SearchService, IndexingService {
     public String toSortFieldIndex(String metadataField, String type)
     {
         return metadataField + "_sort";
+    }
+
+    // 24.03.2017 Lan
+    protected String pivotingFacetField(DiscoverFacetField facetFieldConfig, String field)
+    {
+    	int lastIndexOf;
+    	if(facetFieldConfig.getType().equals(DiscoveryConfigurationParameters.TYPE_HIERARCHICAL))
+        {
+    		// pivot string for hierarchical facetting on "channel" is "{!key=channel}channel_tax_0_filter,channel_keyword"
+    		return String.format("{!key=%1$s}%1$s_tax_0_filter,%1$s_keyword", field);
+        }else{
+            return null;
+        }
     }
 
     protected String transformFacetField(DiscoverFacetField facetFieldConfig, String field, boolean removePostfix)

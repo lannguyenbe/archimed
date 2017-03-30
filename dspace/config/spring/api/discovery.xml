@@ -747,8 +747,10 @@
         <property name="skipFirstNodeLevel" value="false"/>
     </bean>
     
+    <!-- Lan 28.03.2017 - modify to hierarchical for POC -->
     <!-- Lan 25.08.2015 - add this filter to advanced search -->
-    <bean id="searchFilterChannel" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+    <bean id="searchFilterChannel" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
+    <!-- bean id="searchFilterChannel" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet" -->
         <property name="indexFieldName" value="channel"/>
         <property name="metadataFields">
             <list>
@@ -757,6 +759,8 @@
         </property>
         <property name="facetLimit" value="10"/>
         <property name="sortOrder" value="COUNT"/>
+        <property name="splitter" value="::"/>
+        <property name="skipFirstNodeLevel" value="false"/>
     </bean>
 
     <!-- Lan 24.02.2016 - add set_support filter to advanced search -->

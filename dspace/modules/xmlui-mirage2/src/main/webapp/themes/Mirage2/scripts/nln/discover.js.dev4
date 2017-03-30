@@ -7,15 +7,19 @@ var app = angular.module('discoverApp', ['ngResource','nln.ui','nln.ui.utils'
 //
 // Run
 app.run(['$rootScope', function($rootScope) { 
-  $rootScope.endPoint = 'http://vm-dev4.inf.rtbf.be:8080/rs/service';
+  $rootScope.endPoint = 'http://vm-dev4.inf.rtbf.be:8080/rs';
   $rootScope.resources = {
-     authors: '/authors/names'
+     channels: '/channels'
+    ,authors: '/contributors/names'
     ,authorsJ: 'authors.json'
-    ,series: '/communities/titles'
+    ,series: '/serie_titles'
   };
 }]);
 //
 // Factories   
+app.factory('Channels', ['$rootScope', '$resource', function($rootScope, $resource) {
+  return $resource($rootScope.endPoint + $rootScope.resources.channels);
+}]);    
 app.factory('Authors', ['$rootScope', '$resource', function($rootScope, $resource) {
 //      return resource = $resource($rootScope.resources.authorsJ);
   return $resource($rootScope.endPoint + $rootScope.resources.authors);
@@ -26,8 +30,8 @@ app.factory('Series', ['$rootScope', '$resource', function($rootScope, $resource
 }]);    
 //
 // Controller
-app.controller('SearchBoxController', ['$scope', '$rootScope', '$window', 'focus', 'Authors', 'Series',
-function($scope, $rootScope, $window, focus, Authors, Series) {
+app.controller('SearchBoxController', ['$scope', '$rootScope', '$window', 'focus', 'Channels', 'Authors', 'Series',
+function($scope, $rootScope, $window, focus, Channels, Authors, Series) {
 
 
    /* Primary search : free text query and community scope */
@@ -36,11 +40,13 @@ function($scope, $rootScope, $window, focus, Authors, Series) {
       if ($scope.primaryQuery.length == 0) {
          $scope.primaryQuery.push({
             scope: '',
-            query: ''
+            query: '',
+            group_by: ''
          });
       }
     }
     $scope.scopeList = $window.DSpace.i18n.discovery.scope;
+    $scope.groupByList = $window.DSpace.i18n.discovery.group_by;
 
    /* Filters */
     $scope.filters = $window.DSpace.discovery.filters;
@@ -125,6 +131,10 @@ function($scope, $rootScope, $window, focus, Authors, Series) {
 
 
    /* Typa */
+    $scope.getChannels = function (pattern, success, error) {
+      return(Channels.query({pt: pattern}, success, error));
+    };
+
     $scope.getAuthors = function (pattern, success, error) {
       return(Authors.query({pt: pattern}, success, error));
     };
@@ -139,6 +149,30 @@ function($scope, $rootScope, $window, focus, Authors, Series) {
         ,{"name":"Tramontane Radio"}
         ,{"name":"Tramontane TV"}
     ];
+    
+    /* GroupBy */
+    $scope.addGroupBy = function() {
+        switch ($scope.primaryQuery[0].group_by) {
+            case "episode" :
+                $scope.primaryQuery[0].group_by = "/groupEpisode";
+                break;
+            case "serie" :
+                $scope.primaryQuery[0].group_by = "/groupSerie";
+                break;
+            default :
+                $scope.primaryQuery[0].group_by = "";
+                break;                
+        }
+        /*
+        if ($scope.primaryQuery[0].group_by) {
+            $scope.primaryQuery[0].group_by = "";
+        } else if ($scope.primaryQuery[0].group_by == "episode") {
+            $scope.primaryQuery[0].group_by = "/groupEpisode";
+        } else if ($scope.primaryQuery[0].group_by == "serie") {
+            $scope.primaryQuery[0].group_by = "/groupSerie";
+        }
+        */
+    }
 
 
 }]);
@@ -170,6 +204,33 @@ app.directive('typaInputCtrl', function() {
 });
 
 
+app.directive('typaInputChannel', function() {
+  return {
+    controller: function($scope, $element) {
+      function init() {
+         enableInput({}, $scope.fil.type);
+      }
+
+      function enableInput(ev, ft) {
+         if (ft == 'channel') { 
+            // enable
+            $element.removeAttr('disabled').show('fast');
+         } else {
+            $element.attr('disabled','true').hide('normal');
+         }
+      }
+
+      $scope.onSelectAddChannel = function(idx, selVal) {
+         $scope.addNewFilter(idx, 'channel', 'equals' , selVal);
+      }
+
+      $scope.$on('filterType', enableInput);
+      init();
+    } //controller
+  };
+});
+
+
 app.directive('typaInputAuthor', function() {
   return {
     controller: function($scope, $element) {
@@ -178,7 +239,7 @@ app.directive('typaInputAuthor', function() {
       }
 
       function enableInput(ev, ft) {
-         if (ft == 'author') { 
+         if (ft == 'contributor') { 
             // enable
             $element.removeAttr('disabled').show('fast');
          } else {
@@ -187,7 +248,7 @@ app.directive('typaInputAuthor', function() {
       }
 
       $scope.onSelectAddAuthor = function(idx, selVal) {
-         $scope.addNewFilter(idx, 'author', 'equals' , selVal);
+         $scope.addNewFilter(idx, 'contributor', 'equals' , selVal);
       }
 
       $scope.$on('filterType', enableInput);
@@ -205,7 +266,7 @@ app.directive('typaInputTitleSerie', function() {
       }
 
       function enableInput(ev, ft) {
-         if (ft == 'titlecom') { 
+         if (ft == 'ispartof_title') { 
             // enable
             $element.removeAttr('disabled').show('fast');
          } else {
@@ -214,7 +275,7 @@ app.directive('typaInputTitleSerie', function() {
       }
 
       $scope.onSelectAddTitleSerie = function(idx, selVal) {
-         $scope.addNewFilter(idx, 'titlecom', 'equals' , selVal);
+         $scope.addNewFilter(idx, 'ispartof_title', 'equals' , selVal);
       }
 
       $scope.$on('filterType', enableInput);
@@ -263,7 +324,7 @@ app.directive('typaInputNone', function() {
       }
 
       function enableInput(ev, ft) {
-         if (ft != 'author' && ft != 'titlecom' && ft != 'identifier_attributor') { 
+         if (ft != 'channel' && ft != 'contributor' && ft != 'ispartof_title' && ft != 'identifier_attributor') { 
             // enable
             $element.removeAttr('disabled').show('fast');
          } else {
@@ -284,12 +345,13 @@ angular.module('template/handlebars/hidden_primary_query.html',[])
        '<p class="ds-paragraph">'
       +'    <input id="aspect_discovery_SimpleSearch_field_query" class="ds-hidden-field form-control" type="hidden" name="query" value="{{primaryQuery[0].query}}">'
       +'    <input id="aspect_discovery_SimpleSearch_field_scope" class="ds-hidden-field form-control" type="hidden" name="scope" value="{{primaryQuery[0].scope}}">'
+      +'    <input id="aspect_discovery_SimpleSearch_field_group_by" class="ds-hidden-field form-control" type="hidden" name="group_by" value="{{primaryQuery[0].group_by}}">'
       +'</p>'
       +'');
 }]);
 
 
-angular.module('template/handlebars/primary_query.html', [])
+angular.module('template/handlebars/old_primary_query.html', [])
 .run(['$templateCache', function ($templateCache) {
    $templateCache.put('template/handlebars/primary_query.html',
        '<div class="col-sm-3">'
@@ -306,6 +368,59 @@ angular.module('template/handlebars/primary_query.html', [])
       +'</div>'
       +'');
 }]);
+
+angular.module('template/handlebars/old2_primary_query.html', [])
+.run(['$templateCache', function ($templateCache) {
+   $templateCache.put('template/handlebars/primary_query.html',
+       '<div class="col-sm-3">'
+      +' <p>'
+      +'    <select id="aspect_discovery_SimpleSearch_field_scope" class="ds-select-field form-control" name="scope" ng-model="primaryQuery[0].scope" ng-init="primaryQuery[0].scope = primaryQuery[0].scope||scopeList[0].id">'
+      +'        <option ng-repeat="sco in scopeList" value="{{sco.id}}" ng-selected="primaryQuery[0].scope== sco.id">{{sco.label}}</option>'
+      +'    </select>'
+      +' </p>'
+      +'</div>'
+      +'<div class="col-sm-9">'
+      +' <p class="input-group">'
+      +'    <input id="aspect_discovery_SimpleSearch_field_query" class="ds-text-field form-control" name="query" type="text" ng-model="primaryQuery[0].query">'
+      /* use ng-value for hidden field because ng-model is not doing double binding with hidden field */
+      +'    <input id="aspect_discovery_SimpleSearch_field_group_by" class="ds-hidden-field form-control" name="group_by" type="hidden" ng-value="primaryQuery[0].group_by">'
+      +'      <span class="input-group-btn">'
+      +'         <button id="aspect_discovery_SimpleSearch_field_submit" class="ds-button-field btn btn-default search-icon" name="submit" type="submit">Go</button>'
+      +'         <button id="aspect_discovery_SimpleSearch_field_group" class="ds-button-field btn btn-default search-icon" name="group" type="button" ng-click="addGroupBy()">Group</button>'
+      +'      </span>'
+      +' </p>'
+      +'</div>'
+      +'');
+}]);
+
+angular.module('template/handlebars/primary_query.html', [])
+.run(['$templateCache', function ($templateCache) {
+   $templateCache.put('template/handlebars/primary_query.html',
+       '<div class="col-sm-3">'
+      +' <p>'
+      +'    <select id="aspect_discovery_SimpleSearch_field_scope" class="ds-select-field form-control" name="scope" ng-model="primaryQuery[0].scope" ng-init="primaryQuery[0].scope = primaryQuery[0].scope||scopeList[0].id">'
+      +'        <option ng-repeat="sco in scopeList" value="{{sco.id}}" ng-selected="primaryQuery[0].scope== sco.id">{{sco.label}}</option>'
+      +'    </select>'
+      +' </p>'
+      +'</div>'
+      +'<div class="col-sm-7">'
+      +' <p class="input-group">'
+      +'    <input id="aspect_discovery_SimpleSearch_field_query" class="ds-text-field form-control" name="query" type="text" ng-model="primaryQuery[0].query">'
+      +'      <span class="input-group-btn">'
+      +'         <button id="aspect_discovery_SimpleSearch_field_submit" class="ds-button-field btn btn-default search-icon" name="submit" type="submit">Go</button>'
+      +'      </span>'
+      +' </p>'
+      +'</div>'
+      +'<div class="col-sm-2">'
+      +' <p>'
+      +'    <select id="aspect_discovery_SimpleSearch_field_group_by" class="ds-select-field form-control" name="group_by" ng-model="primaryQuery[0].group_by" ng-init="primaryQuery[0].group_by = primaryQuery[0].group_by||groupByList[0].id">'
+      +'        <option ng-repeat="grp in groupByList" value="{{grp.id}}" ng-selected="primaryQuery[0].group_by == grp.id">{{grp.label}}</option>'
+      +'    </select>'
+      +' </p>'
+      +'</div>'
+      +'');
+}]);
+
 
 angular.module('template/handlebars/hidden_advanced_filters.html',[])
 .run(['$templateCache', function ($templateCache) {
@@ -352,6 +467,10 @@ angular.module('template/handlebars/hbs_advanced_filters.html', [])
       +'        <p>'
       +'            <input id="aspect_discovery_SimpleSearch_field_filter_{{$index}}"'
       +'                   typa-input-none'
+      +'                   class="ds-text-field form-control discovery-filter-input discovery-filter-input"'
+      +'                   name="filter_{{$index}}" type="text" ng-model="fil.query">'
+      +'            <input id="aspect_discovery_SimpleSearch_field_filter_{{$index}}"'
+      +'                   typa-input-channel autocomplete="off" nln-typahead nln-typa-resource="getChannels" nln-typa-not-filter="true" nln-typa-callback-add="onSelectAddChannel"'
       +'                   class="ds-text-field form-control discovery-filter-input discovery-filter-input"'
       +'                   name="filter_{{$index}}" type="text" ng-model="fil.query">'
       +'            <input id="aspect_discovery_SimpleSearch_field_filter_{{$index}}"'

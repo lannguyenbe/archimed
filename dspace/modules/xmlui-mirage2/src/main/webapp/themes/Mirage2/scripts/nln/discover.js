@@ -7,15 +7,19 @@ var app = angular.module('discoverApp', ['ngResource','nln.ui','nln.ui.utils'
 //
 // Run
 app.run(['$rootScope', function($rootScope) { 
-  $rootScope.endPoint = 'http://localhost:8070/rs/service';
+  $rootScope.endPoint = 'http://vm-dev4.inf.rtbf.be:8080/rs';
   $rootScope.resources = {
-     authors: '/authors/names'
+     channels: '/channels'
+    ,authors: '/contributors/names'
     ,authorsJ: 'authors.json'
-    ,series: '/communities/titles'
+    ,series: '/serie_titles'
   };
 }]);
 //
 // Factories   
+app.factory('Channels', ['$rootScope', '$resource', function($rootScope, $resource) {
+  return $resource($rootScope.endPoint + $rootScope.resources.channels);
+}]);    
 app.factory('Authors', ['$rootScope', '$resource', function($rootScope, $resource) {
 //      return resource = $resource($rootScope.resources.authorsJ);
   return $resource($rootScope.endPoint + $rootScope.resources.authors);
@@ -26,8 +30,8 @@ app.factory('Series', ['$rootScope', '$resource', function($rootScope, $resource
 }]);    
 //
 // Controller
-app.controller('SearchBoxController', ['$scope', '$rootScope', '$window', 'focus', 'Authors', 'Series',
-function($scope, $rootScope, $window, focus, Authors, Series) {
+app.controller('SearchBoxController', ['$scope', '$rootScope', '$window', 'focus', 'Channels', 'Authors', 'Series',
+function($scope, $rootScope, $window, focus, Channels, Authors, Series) {
 
 
    /* Primary search : free text query and community scope */
@@ -127,6 +131,10 @@ function($scope, $rootScope, $window, focus, Authors, Series) {
 
 
    /* Typa */
+    $scope.getChannels = function (pattern, success, error) {
+      return(Channels.query({pt: pattern}, success, error));
+    };
+
     $scope.getAuthors = function (pattern, success, error) {
       return(Authors.query({pt: pattern}, success, error));
     };
@@ -196,6 +204,33 @@ app.directive('typaInputCtrl', function() {
 });
 
 
+app.directive('typaInputChannel', function() {
+  return {
+    controller: function($scope, $element) {
+      function init() {
+         enableInput({}, $scope.fil.type);
+      }
+
+      function enableInput(ev, ft) {
+         if (ft == 'channel') { 
+            // enable
+            $element.removeAttr('disabled').show('fast');
+         } else {
+            $element.attr('disabled','true').hide('normal');
+         }
+      }
+
+      $scope.onSelectAddChannel = function(idx, selVal) {
+         $scope.addNewFilter(idx, 'channel', 'equals' , selVal);
+      }
+
+      $scope.$on('filterType', enableInput);
+      init();
+    } //controller
+  };
+});
+
+
 app.directive('typaInputAuthor', function() {
   return {
     controller: function($scope, $element) {
@@ -204,7 +239,7 @@ app.directive('typaInputAuthor', function() {
       }
 
       function enableInput(ev, ft) {
-         if (ft == 'author') { 
+         if (ft == 'contributor') { 
             // enable
             $element.removeAttr('disabled').show('fast');
          } else {
@@ -213,7 +248,7 @@ app.directive('typaInputAuthor', function() {
       }
 
       $scope.onSelectAddAuthor = function(idx, selVal) {
-         $scope.addNewFilter(idx, 'author', 'equals' , selVal);
+         $scope.addNewFilter(idx, 'contributor', 'equals' , selVal);
       }
 
       $scope.$on('filterType', enableInput);
@@ -231,7 +266,7 @@ app.directive('typaInputTitleSerie', function() {
       }
 
       function enableInput(ev, ft) {
-         if (ft == 'titlecom') { 
+         if (ft == 'ispartof_title') { 
             // enable
             $element.removeAttr('disabled').show('fast');
          } else {
@@ -240,7 +275,7 @@ app.directive('typaInputTitleSerie', function() {
       }
 
       $scope.onSelectAddTitleSerie = function(idx, selVal) {
-         $scope.addNewFilter(idx, 'titlecom', 'equals' , selVal);
+         $scope.addNewFilter(idx, 'ispartof_title', 'equals' , selVal);
       }
 
       $scope.$on('filterType', enableInput);
@@ -289,7 +324,7 @@ app.directive('typaInputNone', function() {
       }
 
       function enableInput(ev, ft) {
-         if (ft != 'author' && ft != 'titlecom' && ft != 'identifier_attributor') { 
+         if (ft != 'channel' && ft != 'contributor' && ft != 'ispartof_title' && ft != 'identifier_attributor') { 
             // enable
             $element.removeAttr('disabled').show('fast');
          } else {
@@ -432,6 +467,10 @@ angular.module('template/handlebars/hbs_advanced_filters.html', [])
       +'        <p>'
       +'            <input id="aspect_discovery_SimpleSearch_field_filter_{{$index}}"'
       +'                   typa-input-none'
+      +'                   class="ds-text-field form-control discovery-filter-input discovery-filter-input"'
+      +'                   name="filter_{{$index}}" type="text" ng-model="fil.query">'
+      +'            <input id="aspect_discovery_SimpleSearch_field_filter_{{$index}}"'
+      +'                   typa-input-channel autocomplete="off" nln-typahead nln-typa-resource="getChannels" nln-typa-not-filter="true" nln-typa-callback-add="onSelectAddChannel"'
       +'                   class="ds-text-field form-control discovery-filter-input discovery-filter-input"'
       +'                   name="filter_{{$index}}" type="text" ng-model="fil.query">'
       +'            <input id="aspect_discovery_SimpleSearch_field_filter_{{$index}}"'

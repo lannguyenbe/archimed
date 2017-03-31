@@ -17,34 +17,30 @@ public class RsIndex {
 /*    @javax.ws.rs.core.Context public static ServletContext servletContext;*/
 
     /**
-     * Return html page with information about REST api. It contains methods all
-     * methods provide by REST api.
+     * Return html page with information about RTBF-REST api. It contains methods
+     * methods provide by RTBF-REST api.
+     * The suffix "REST" is misused, because there is noting rest out there, 
+     * the better name would be RTBF-WS for general Web Service
+     * 31.03.2017 Lan
      * 
-     * @return HTML page which has information about all methods of REST api.
+     * @return HTML page which has information about all methods of RTBF-REST api.
      */
     @GET
     @Produces(MediaType.TEXT_HTML)
     public String sayHtmlHello(@Context HttpServletRequest request)
             throws WebApplicationException
     { 
-        return "<html><title>Archimed RS - index</title>" +
-                "<body>"
-                	+ "<h1>Archimed RS API</h1>" +
-                	"Server path: " + request.getContextPath() +
-                	"<h2>Index</h2>" +
-                		"<ul>" +
-                			"<li>GET / - Return this page.</li>" +
-                			"<li>GET /test - Return the string \"RS api is running\" for testing purposes.</li>" +
-                		"</ul>" +
-                	"<h2>Handles</h2>" +
-                		"<ul>" +
-                			"<li>GET /handle/{prefix}/{handleid} - Returns a document with the specified handleID.</li>" +
-                		"</ul>" +
-                	"<h2>Search</h2>" +
-                	"<ul>" +
-                  		"<li>GET /search/sequences - Return list of sequences results of the query</li>" +
-                  	"</ul>" +
-                "</body></html> ";
+        return "<html><title>Archimed Web Services - index</title>" +
+        		"<head>" +
+        		"<script type=\"text/javascript\">" +
+        		"function loadIndex() {" +
+        		"	location.href= \"" + request.getContextPath() + "/index.html\";" +
+        		"}" +
+        		"</script>" +
+        		" </head>" +
+        		"<body onload=\"loadIndex()\">" +
+        		"</body>"
+        ;
     }
     
 

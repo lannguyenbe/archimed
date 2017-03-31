@@ -4,18 +4,62 @@
 </head>
 <body>
 <h1>Archimed RS API</h1>
-<h2>Index</h2>
 	<ul>
 		<li>GET / - Return this page.</li>
 		<li>GET /test - Return the string \"RS api is running\" for testing purposes.</li>
 	</ul>
-<h2>Handles</h2>
-	<ul>
-		<li>GET /handle/{prefix}/{handleid} - Returns a document with the specified handleID.</li>
-	</ul>
 <h2>Search</h2>
 	<ul>
-		<li>GET /search/sequences - Return list of sequences results of the query</li>
+		<li>GET /search/sequences - Return list of sequences matching the query</li>
+		<li>POST /searchp/sequences - Return list of sequences matching the query</li>
+		<li>GET /search/episodes - (obsolete) Return list of episodes matching the query</li>
+		<li>POST /searchp/episodes - (obsolete) Return list of episodes matching the query</li>
+		<li>GET /search/series - (obsolete) Return list of series matching the query</li>
+		<li>POST /searchp/series - (obsolete) Return list of series matching the query</li>
+
+		<li>GET /group/episodes - Return list of episodes of assets matching the query</li>
+		<li>POST /groupp/episodes - Return list of episodes of assets matching the query</li>
+		<li>GET /group/series - Return list of series of assets matching the query</li>
+		<li>POST /groupp/series - Return list of series of assets matching the query</li>
+	</ul>
+<h2>Handle <small>(permanent id)</small></h2>
+	<ul>
+		<li>GET /handle/ARCHIMED/<i>{handleid}</i> - Returns the asset details identified by <i>{handleid}</i></li>
+		<li>GET /handle/ARCHIMED/<i>{handleid}</i>/<i>{owninghandleid}</i> - Returns the sequence details identified by <i>{handleid}</i> in the context of the owning episode identified by <i>{owninghandleid}</i></li>
+		<li>GET /handle/admin/clearCache - clear memory cache of handles, typically after a DB update</li>
+	</ul>
+<h2>Asset</h2>
+	<ul>
+		<li>GET /sequences/<i>{sequenceid}</i> - Returns the sequence details identified by <i>{sequenceid}</i>
+		<li>GET /sequences/<i>{sequenceid}</i>/metadata - Returns only metadata of the sequence identified by <i>{sequenceid}</i>
+		<li>GET /episodes/<i>{episodeid}</i> - Returns the episode details identified by <i>{episodeid}</i>
+		<li>GET /episodes/<i>{episodeid}</i>/metadata - Returns only metadata of the episode identified by <i>{episodeid}</i>
+		<li>GET /episodes/<i>{episodeid}</i>/sequences - Returns list of sequences of the episode identified by <i>{episodeid}</i>
+		<li>GET /series/<i>{serieid}</i> - Returns the serie details identified by <i>{serieid}</i>
+		<li>GET /series/<i>{serieid}</i>/metadata - Returns only metadata of the serie identified by <i>{serieid}</i>
+		<li>GET /series/<i>{serieid}</i>/episodes - Returns list of episodes of the serie identified by <i>{serieid}</i>
+		<li>GET /series/top-series - Returns list of series representing the source repositories
+		<li>GET /series/<i>{topserieid}</i>/series - Returns list of series of the source repository identified by <i>{topserieid}</i>
+	</ul>
+<h2>List Of Values</h2>
+	<ul>
+		<li>GET /contributors/names - Returns LOV for persons names
+		<li>GET /contributors/roles - Returns LOV for persons roles
+		<li>GET /contributors/<i>{name}</i>/roles - Returns list of roles for the person identified by <i>{name}</i>
+		<li>GET /channels - Returns LOV for channels
+		<li>GET /code_origines - (obsolete) Returns LOV for code_origines of support
+		<li>GET /events - Returns LOV for events
+		<li>GET /places/names - Returns LOV for places names
+		<li>GET /places/roles - Returns LOV for places roles
+		<li>GET /production_types - Returns LOV for production_type
+		<li>GET /publishers - Returns LOV for producer
+		<li>GET /royalty_codes - Returns LOV for royalty_code
+		<li>GET /serie_titles - Returns LOV for series titles
+		<li>GET /subjects - Returns LOV for matters
 	</ul>
 </body>
+<h2>Suggest</h2>
+	<ul>
+		<li>GET /suggestQ?pt=<i>{terms}</i> - Suggests popular queries that have been made on <i>{terms}</i>
+	</ul>
 </html>

@@ -84,7 +84,7 @@ public class LOVAuthors extends Resource {
     {        
     	LOVParameters params = new LOVParameters(info.getQueryParameters());
 
-    	String partialTerms = name + " /"; // get name followed by /<role>
+    	String partialTerms = name + "::"; // get name followed by ::<role>
 		log.info("Reading roles of.(pt=" + name + ").");
         return(getACNodes("contributor", SimpleNode.Attribute.NAME, partialTerms, params));
     }

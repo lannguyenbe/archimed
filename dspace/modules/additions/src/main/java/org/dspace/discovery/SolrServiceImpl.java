@@ -2298,27 +2298,6 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         }
                         
 
-                        /* TODO remove extract code_origine from support hardcode ! ******************************************/
-                        if (field.equals("rtbf.support")) {
-                        	/* isolate code_origine part */
-                        	String value_p1 = value.replaceAll("^(((?!::).)+)::(((?!::).)+)(::)?(.*)?$", "$3").replaceAll("^(((?!\\\\\\\\).)+)(.*)$", "$1");
-                            doc.addField(searchFilter.getIndexFieldName(), value_p1);
-                            doc.addField(searchFilter.getIndexFieldName() + "_keyword", value_p1);
-                            doc.addField(searchFilter.getIndexFieldName() + "_contain", value_p1);
-                            doc.addField(searchFilter.getIndexFieldName() + "_partial", value_p1);
-                        	
-                        	/* isolate place part */
-                        	String value_p2 = value.replaceAll("^Fichier Sonuma.*$", "").replaceAll("^(((?!::).)+)::(((?!::).)+)(::)?(.*)?$", "$6");
-                        	if (!value_p2.isEmpty()) {
-                        		doc.addField(searchFilter.getIndexFieldName(), value_p2);
-                        		doc.addField(searchFilter.getIndexFieldName() + "_keyword", value_p2);
-                                doc.addField(searchFilter.getIndexFieldName() + "_contain", value_p2);
-                        		doc.addField(searchFilter.getIndexFieldName() + "_partial", value_p2);
-                        	}
-                        	
-                        	continue;
-                        }
-
                         /* TODO remove rtbf.contributor_plus_role hardcode ! ******************************************/
                         /* create role_contributor_filter solr field for prefix facetting */
                         if (field.equals("rtbf.contributor_plus_role")) {

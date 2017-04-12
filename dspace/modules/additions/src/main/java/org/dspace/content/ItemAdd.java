@@ -232,77 +232,43 @@ public class ItemAdd extends Item {
         	if (dit == null) {
         		return (metadata); // return as in table METADATAVALUE
         	}
-                        
-            // Patch date issued and channel issued with dit
-        	List<Metadatum> dcValues = new ArrayList(Arrays.asList(metadata));
-            
-            Iterator<Metadatum> iterator = dcValues.iterator();
-            while (iterator.hasNext()) {
-            	Metadatum dcValue = iterator.next();
+        	
+            // Patch date issued and channel issued and owning program, owning serie from dit
+        	for (Metadatum dcValue : metadata) {
             	String field = dcValue.schema + "." + dcValue.element;
                 if (dcValue.qualifier != null && !dcValue.qualifier.trim().equals(""))
                 {
                     field += "." + dcValue.qualifier;
                 }
-            	switch (field) {
-            		case "dcterms.isPartOf.title" :
-	            	case "dc.date.issued" :
-	            	case "rtbf.channel_issued" : 
-            		case "rtbf.isPartOf.program_title" :
-	            		iterator.remove();
-	            		break;
-	            	default:
-	            		break;
-            	}
-            }
-            
-            // Add serie title for dup item
-            Metadatum patch = new Metadatum();
-            patch.schema = "dcterms";
-            patch.element = "isPartOf";
-            patch.qualifier = "title";
-            try {
-				patch.value = this.getOwningCollection().getParentObject().getName();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+                switch (field) {
+                case "dcterms.isPartOf.title" :
+                	try {
+                		dcValue.value = this.getOwningCollection().getParentObject().getName();
+                	} catch (SQLException e) {
+                		// TODO Auto-generated catch block
+                		e.printStackTrace();
+                	}
+                	break;
+                case "dc.date.issued" :
+                	dcValue.value = dit.getDate_diffusion();
+                	break;
+                case "rtbf.channel_issued" : 
+                	dcValue.value = dit.getChannel();
+                	break;
+                case "rtbf.isPartOf.program_title" :
+                	try {
+                		dcValue.value = this.getOwningCollection().getName();
+                	} catch (SQLException e) {
+                		// TODO Auto-generated catch block
+                		e.printStackTrace();
+                	}
+                	break;
+                default:
+                	break;
+                }
 			}
-            dcValues.add(patch);
 
-            // Add date issued for dup item
-            patch = new Metadatum();
-            patch.schema = "dc";
-            patch.element = "date";
-            patch.qualifier = "issued";
-            patch.value = dit.getDate_diffusion();
-            dcValues.add(patch);
-
-            // Add channel issued for dup item
-            patch = new Metadatum();
-            patch.schema = "rtbf";
-            patch.element = "channel_issued";
-            patch.qualifier = null;
-            patch.value = dit.getChannel();
-            dcValues.add(patch);
-
-            // Add program title for dup item
-            patch = new Metadatum();
-            patch.schema = "rtbf";
-            patch.element = "isPartOf";
-            patch.qualifier = "program_title";
-            try {
-				patch.value = this.getOwningCollection().getName();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            dcValues.add(patch);
-
-            // Create an array of matching values
-        	Metadatum[] valueArray = new Metadatum[dcValues.size()];
-        	valueArray = (Metadatum[]) dcValues.toArray(valueArray);
-
-        	return valueArray;
+       	return metadata;
         }
 
 

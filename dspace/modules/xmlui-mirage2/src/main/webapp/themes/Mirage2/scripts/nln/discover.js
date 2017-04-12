@@ -10,6 +10,7 @@ app.run(['$rootScope', function($rootScope) {
   $rootScope.endPoint = 'http://vm-dev4.inf.rtbf.be:8080/rs';
   $rootScope.resources = {
      channels: '/channels'
+    ,events: '/events'
     ,authors: '/contributors/names'
     ,authorsJ: 'authors.json'
     ,series: '/serie_titles'
@@ -19,6 +20,10 @@ app.run(['$rootScope', function($rootScope) {
 // Factories   
 app.factory('Channels', ['$rootScope', '$resource', function($rootScope, $resource) {
   return $resource($rootScope.endPoint + $rootScope.resources.channels);
+}]);    
+//
+app.factory('Events', ['$rootScope', '$resource', function($rootScope, $resource) {
+  return $resource($rootScope.endPoint + $rootScope.resources.events);
 }]);    
 app.factory('Authors', ['$rootScope', '$resource', function($rootScope, $resource) {
 //      return resource = $resource($rootScope.resources.authorsJ);
@@ -30,8 +35,8 @@ app.factory('Series', ['$rootScope', '$resource', function($rootScope, $resource
 }]);    
 //
 // Controller
-app.controller('SearchBoxController', ['$scope', '$rootScope', '$window', 'focus', 'Channels', 'Authors', 'Series',
-function($scope, $rootScope, $window, focus, Channels, Authors, Series) {
+app.controller('SearchBoxController', ['$scope', '$rootScope', '$window', 'focus', 'Channels', 'Events', 'Authors', 'Series', 
+function($scope, $rootScope, $window, focus, Channels, Events, Authors, Series) {
 
 
    /* Primary search : free text query and community scope */
@@ -143,6 +148,10 @@ function($scope, $rootScope, $window, focus, Channels, Authors, Series) {
       return(Series.query({pt: pattern}, success, error));
     }
     
+    $scope.getEvents = function (pattern, success, error) {
+      return(Events.query({pt: pattern}, success, error));
+    };
+
     /* TODO - make this list .json - reloadable once per day from solr */
     $scope.identifierAttributors = [ /* quick and dirty !!! */
         {"name":"Sonuma TV"}
@@ -222,6 +231,32 @@ app.directive('typaInputChannel', function() {
 
       $scope.onSelectAddChannel = function(idx, selVal) {
          $scope.addNewFilter(idx, 'channel', 'equals' , selVal);
+      }
+
+      $scope.$on('filterType', enableInput);
+      init();
+    } //controller
+  };
+});
+
+app.directive('typaInputEvent', function() {
+  return {
+    controller: function($scope, $element) {
+      function init() {
+         enableInput({}, $scope.fil.type);
+      }
+
+      function enableInput(ev, ft) {
+         if (ft == 'event') { 
+            // enable
+            $element.removeAttr('disabled').show('fast');
+         } else {
+            $element.attr('disabled','true').hide('normal');
+         }
+      }
+
+      $scope.onSelectAddEvent = function(idx, selVal) {
+         $scope.addNewFilter(idx, 'event', 'equals' , selVal);
       }
 
       $scope.$on('filterType', enableInput);
@@ -324,7 +359,7 @@ app.directive('typaInputNone', function() {
       }
 
       function enableInput(ev, ft) {
-         if (ft != 'channel' && ft != 'contributor' && ft != 'ispartof_title' && ft != 'identifier_attributor') { 
+         if (ft != 'channel' && ft != 'event' && ft != 'contributor' && ft != 'ispartof_title' && ft != 'identifier_attributor') { 
             // enable
             $element.removeAttr('disabled').show('fast');
          } else {
@@ -471,6 +506,10 @@ angular.module('template/handlebars/hbs_advanced_filters.html', [])
       +'                   name="filter_{{$index}}" type="text" ng-model="fil.query">'
       +'            <input id="aspect_discovery_SimpleSearch_field_filter_{{$index}}"'
       +'                   typa-input-channel autocomplete="off" nln-typahead nln-typa-resource="getChannels" nln-typa-not-filter="true" nln-typa-callback-add="onSelectAddChannel"'
+      +'                   class="ds-text-field form-control discovery-filter-input discovery-filter-input"'
+      +'                   name="filter_{{$index}}" type="text" ng-model="fil.query">'
+      +'            <input id="aspect_discovery_SimpleSearch_field_filter_{{$index}}"'
+      +'                   typa-input-event autocomplete="off" nln-typahead nln-typa-resource="getEvents" nln-typa-not-filter="true" nln-typa-callback-add="onSelectAddEvent"'
       +'                   class="ds-text-field form-control discovery-filter-input discovery-filter-input"'
       +'                   name="filter_{{$index}}" type="text" ng-model="fil.query">'
       +'            <input id="aspect_discovery_SimpleSearch_field_filter_{{$index}}"'

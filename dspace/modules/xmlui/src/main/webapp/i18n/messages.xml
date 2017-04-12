@@ -56,6 +56,8 @@
     <!--  25.09.2015 Lan : new facet labels -->
 	<message key="xmlui.ArtifactBrowser.AdvancedSearch.type_channel">Channel</message>
 	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.channel">Channel</message>
+	<message key="xmlui.ArtifactBrowser.AdvancedSearch.type_event">Event</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.event">Event</message>
 	<message key="xmlui.ArtifactBrowser.AdvancedSearch.type_place">Location</message>
 	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.place">Location</message>
    <message key="xmlui.ArtifactBrowser.AdvancedSearch.type_contributor">Contributor</message>

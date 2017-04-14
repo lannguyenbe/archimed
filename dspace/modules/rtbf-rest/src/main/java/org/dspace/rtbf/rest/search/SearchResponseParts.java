@@ -50,10 +50,17 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class SearchResponseParts {
     private static Logger log = Logger.getLogger(SearchResponseParts.class);
 	
-	public static class ResponseHeader {
+	//TODO
+    public static class ResponseHeader {
 
 	}
 
+	//TODO
+    public static class Meta {
+
+	}
+
+	
 	
 	public static class Result {
 		
@@ -177,54 +184,6 @@ public class SearchResponseParts {
 			this.lst = lst;
 		}
 		
-	}
-
-	public static class Meta {
-
-		private List<MetadataEntry> sortEntries;
-		private MetadataWrapper sortMeta;
-
-	    public Meta() {
-	    	int idx = 1;
-	    	String definition;
-	    	
-	    	sortEntries = new ArrayList<MetadataEntry>();
-		    while ((definition = ConfigurationManager.getProperty(Constants.WEBAPP_NAME, Constants.SORTMETA+".field." + idx)) != null) {
-		        List<String> fields = new ArrayList<String>();
-		        fields = Arrays.asList(definition.split(":"));
-	            sortEntries.add(new MetadataEntry(fields.get(0), fields.get(1), null));
-		    	
-		    	idx++;
-		    }
-	    }
-
-	    @JsonIgnore
-	    @XmlTransient
-	    public List<MetadataEntry> getSortEntries() {
-			return sortEntries;
-		}
-
-		public void setSortEntriest(List<MetadataEntry> entries) { // neither jaxb nor jackson
-			this.sortEntries = entries;
-		}
-
-	    @JsonIgnore
-		public MetadataWrapper getSortMeta() { // jaxb only
-			if (sortEntries != null ) {
-				sortMeta = new MetadataWrapper(sortEntries);
-			}
-			return sortMeta;
-		}
-
-		public void setSortMeta(MetadataWrapper wrapper) {
-			this.sortMeta = wrapper;
-		}
-
-		@JsonGetter("sortMeta")
-		@XmlTransient
-		protected Map<String, Object> getMetadataEntriesAsMap() { // Jackson only
-			return MetadataEntry.listAsMap(this.sortEntries);
-		}
 	}
 
 

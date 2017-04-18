@@ -198,7 +198,8 @@ public class Episode extends RTBObject {
     	
     	DiscoverResult queryResults = new DiscoverSubItems(context, collection).getqueryResults();
     	SearchResponseParts.Result resultsWrapper = new SearchResponseParts.Result(Constants.PLAYLIST_VIEW, queryResults, context);
-    	this.setSequences(resultsWrapper.getLst());
+    	List<? extends RTBObject> genericList = resultsWrapper.getLst();
+    	this.setSequences((List<Sequence>) genericList);
     	
     }
 

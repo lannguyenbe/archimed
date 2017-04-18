@@ -85,7 +85,7 @@ public class RTBObject {
     protected List<Episode> parentEpisodeList;
     protected List<Serie> subSeries;
     protected List<Episode> episodes;
-    protected List<RTBObject> sequences;
+    protected List<Sequence> sequences;
     @JsonIgnore
     protected List<MetadataEntry> metadataEntries; // neither by Jaxb, nor Jackson
     @JsonIgnore
@@ -360,11 +360,11 @@ public class RTBObject {
 		this.countSequences = countSequences;
 	}
 
-	public List<RTBObject> getSequences() {
+	public List<Sequence> getSequences() {
 		return sequences;
 	}
 
-	public void setSequences(List<RTBObject> sequences) {
+	public void setSequences(List<Sequence> sequences) {
 		this.sequences = sequences;
 	}
 
